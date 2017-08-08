@@ -1,0 +1,33 @@
+.area-search-name-view label{
+    padding-left: 30px;
+    padding-right: 20px;
+}
+
+.area-search-area-view label {
+    padding-right: 20px;
+}
+.area-search-area-view select {
+    margin-right: 10px;
+}
+
+
+.area-search-control-view{
+    float: right;
+}
+.area-search-control-view button{
+    width: 80px;
+}
+.content-header {
+    padding-bottom: 10px;
+    background-color: red;
+}
+.area-result-view{
+    margin-top: 40px;
+    text-align: center;
+}
+.area-result-view th {
+    text-align: center;
+}
+.area-add-view{
+    padding-bottom: 20px;
+}
