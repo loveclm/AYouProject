@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <title>A游不错</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <meta name="apple-touch-fullscreen" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no">
+
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="../css/AdminLTE.min.css">
+    <link rel="stylesheet" href="../css/skins/_all-skins.min.css">
+    <link rel="stylesheet" href="../css/style.css">
+
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../js/tourismcourse.js"></script>
+</head>
+
+<body>
+    <div id="content">
+        <div class="header" id="app_header">
+            <h3 style="text-align: center">
+                <a href="#" style="float: left; position: fixed;left: 10px; top: 0px">
+                    <img src="../image/left_arrow.png" id="back_img">
+                </a>
+                旅游线路
+            </h3>
+        </div>
+        <div id="container">
+            <div id="tourismlist-header">
+                <h4>旅游线路 (共1条线路)</h4>
+            </div>
+            <div id="tourismlist-body">
+                <div class="tourismlist_item">
+                    <div  style="background-color: green; float: left">1</div>
+                    <h4 style="float: left; padding-left:10px;">旅游名称</h4>
+                    <img src="../image/more.png" style="float:right; padding:10px">
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
+<script type="text/javascript">
+    $(function(){
+        resize_tourism_course();
+    });
+</script>
