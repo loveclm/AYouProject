@@ -31,3 +31,19 @@
 .area-add-view{
     padding-bottom: 20px;
 }
+#pointList {
+    list-style: none;
+}
+#custom-confirm-delete-view, #custom-confirm-deploy-view {
+    position: absolute;
+    border: 1px solid;
+    text-align: center;
+    width: 20%;
+    background-color: white;
+    padding: 30px;
+    left: 40%;
+    top: 20%;
+}
+#custom-confirm-delete-view p, #custom-confirm-deploy-view p{
+    padding: 30px;
+}

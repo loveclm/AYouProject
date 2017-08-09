@@ -47,7 +47,10 @@ $route['404_override'] = 'error';
 $route['loginMe'] = 'login/loginMe';
 $route['dashboard'] = 'user';
 $route['area'] = 'area';
-$route['addarea'] = 'area/add';
+$route['addarea'] = 'area/addNew';
+$route['addNewArea'] = 'area/addNewArea';
+$route['areaListing/(:any)/(:any)/(:num)'] = "area/listing/$1/$2/$3";
+
 $route['logout'] = 'user/logout';
 $route['userListing'] = 'user/userListing';
 $route['userListing/(:num)'] = "user/userListing/$1";
