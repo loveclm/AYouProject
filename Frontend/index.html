@@ -14,20 +14,28 @@
     <link rel="stylesheet" href="css/AdminLTE.min.css">
     <link rel="stylesheet" href="css/skins/_all-skins.min.css">
     <link rel="stylesheet" href="css/style.css">
-
+    <style type="text/css">
+        #login #btn-close{
+            width: 10%;
+            position: absolute;
+            top: 45px;
+            right: -10px;
+        }
+    </style>
 
     <script type="text/javascript" src="https://api.map.baidu.com/api?v=2.0&ak=WOR15aX870MejqbOtiNH15rWL3COZxxR"></script>
     <script type="text/javascript" src="https://developer.baidu.com/map/jsdemo/demo/convertor.js"></script>
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"/>
     <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="js/mylocation.js"></script>
+    <script type="text/javascript" src="js/global.js"></script>
     <script type="text/javascript" src="js/main.js"></script>
 </head>
 
 <body>
     <div id="content">
         <div class="header" id="app_header">
-            <h3 style="text-align: center">烟雨江南</h3>
+            <h3>烟雨江南</h3>
         </div>
         <div id="container" class="baidu_map">
         </div>
@@ -41,19 +49,19 @@
         <!--phone number authorization dialog-->
         <div class="modal custom-modal" id="login">
             <div class="modal-dialog" id="login-dialog">
-                <div class="modal-content" style="background: rgba(0,0,0,0)">
+                <div class="modal-content" style="background: rgba(0,0,0,0);box-shadow: none">
                     <div class="modal-header" style="padding: 0px">
                         <img src="image/bg1.png" id="top-logo" style="width: 100%">
-                        <img src="image/close.png" id="btn-close" style="width: 10%" onclick="Login_dialog_close()">
+                        <img src="image/close.png" id="btn-close" onclick="Login_dialog_close()" style="cursor: pointer;">
                     </div>
                     <div class="modal-body" style="background: #ffffff">
                         <p>世界这么大， 一起去看看呗</p>
                         <p>让我带着你， 你带着钱, 现在就出发</p>
                         <p>哎呦不错， 我们的旅途从这裡开始...</p>
                     </div>
-                    <div class="modal-footer" style="background: #ffffff; padding: 0px">
-                        <div class="text-button" style="">授权验证</div>
-                        <div class="text-button" style="float: left;width: 50%; text-align: center; padding: 10px">立即购买</div>
+                    <div class="modal-footer">
+                        <div class="text-button" style="border-bottom-left-radius: 7px" onclick="verifyAuthorizationCode()">授权验证</div>
+                        <div class="text-button" style="border-bottom-right-radius: 7px" onclick="verifyPhone()">立即购买</div>
                     </div>
                 </div>
                 <!-- /.modal-content -->
@@ -78,15 +86,15 @@
                     <div class="modal-body" id="phone_verify_content">
                         <div>
                             <h4 style="float: left">手机号</h4>
-                            <input type="number" class="form-control" id="phone_number" placeholder="" style="width: 70%">
+                            <input type="text" class="form-control" id="phone_number" placeholder="" style="width: 70%" onkeypress="return event.charCode >= 48 && event.charCode <= 57">
                         </div>
                         <div>
                             <h4 style="float: left">验证码</h4>
-                            <input type="number" class="form-control" id="verify_code" placeholder="验证码" style="width: 35%">
-                            <div class="btn-custom" id="btn_sendSMS"><h5>获取验证码</h5></div>
+                            <input type="text" class="form-control" id="verify_code" placeholder="验证码" style="width: 35%" onkeypress="return event.charCode >= 48 && event.charCode <= 57">
+                            <div class="btn-custom" id="btn_sendSMS" onclick="sendSMSToPhone()"><h5>获取验证码</h5></div>
                         </div>
                     </div>
-                    <div class="btn-custom" id="confirm_verify">
+                    <div class="btn-custom" id="confirm_verify" onclick="confirm_verify_phone()">
                         <h4 style="margin: 5px 0px">立即验证</h4>
                     </div>
                 </div>
@@ -112,14 +120,17 @@
                     <div class="modal-body" id="code_auth_content">
                         <div style="margin: 20px 0px">
                             <h4 style="float: left; margin-left: 5px; margin-right: 15px">授权码</h4>
-                            <input type="number" class="form-control" id="auth_code" placeholder="" style="width: 70%">
+                            <input type="text" class="form-control" id="auth_code" placeholder="" style="width: 70%" onkeypress="return event.charCode >= 48 && event.charCode <= 57">
                         </div>
                     </div>
+                    <div id="auth_error" style="text-align:center; height:20px; display: none">
+                        <h4>授权码有误，请重新输入！</h4>
+                    </div>
                     <div style="margin: 10px 20px; height: 50px">
-                        <div class="btn-custom" style="float: left; margin: 0px 15px; padding: 0px 30px; border-radius: 20px">
+                        <div class="btn-custom" onclick="OnCancelauthcodeVerify()" style="float: left; margin: 0px 15px; padding: 0px 30px; border-radius: 20px">
                             <h4 style="margin: 5px 0px">取消</h4>
                         </div>
-                        <div class="btn-custom" style="float: left; margin: 0px 15px; padding: 0px 30px; border-radius: 20px">
+                        <div class="btn-custom" onclick="OnConfirmauthCode()" style="float: left; margin: 0px 15px; padding: 0px 30px; border-radius: 20px">
                             <h4 style="margin: 5px 0px">确认</h4>
                         </div>
 
@@ -141,7 +152,8 @@
                         <h4 style="font-weight: bold; padding-left: 20px">test</h4>
                     </div>
                     <div class="modal-body" id="menu-detail-content" style="overflow-y: scroll; height: 80%">
-
+                        <div id="detail_content_search"></div>
+                        <div id="detail_content_data"></div>
                     </div>
                     <div class="modal-footer" style="padding: 0px; border: none">
                     </div>
@@ -192,6 +204,10 @@
                 <h5>更多景区</h5>
             </div>
         </div>
+        <!--notification for 10 seconds-->
+        <div id="notification">
+            aaa
+        </div>
     </div>
 </body>
 </html>
@@ -199,12 +215,6 @@
 <script type="text/javascript">
     var cur_menu_index = 0;
     var cur_voice_type = 0;
-
-    $(function(){
-        resize();
-        //$('#login').show();
-        $('#phone_verify').show();
-    });
 
     function menuClicked(index) {
         // show the details along with menu item
@@ -217,6 +227,12 @@
         clearMenuSelection();
 
         cur_menu_index = index;
+
+        // check phone verification state
+        if(bPhoneverified == 0) {
+            verifyPhone();
+            return;
+        }
 
         $('#menu-item'+index).css({color:'#24c6d3'});
         $('#menu-item'+index).children().attr('src', 'image/home_icon'+index +'_n.png');
@@ -244,12 +260,13 @@
                 var captionListOfvoiceType = ['原声','美女','帅哥'];
                 for( var i= 1; i < 4; i++)
                 {
-                    content_html += '<div style="float:left; margin: 5px" id="voiceType'+ i +'" onclick="voiceSelected('+ i +')">'
+                    content_html += '<div style="float:left; margin: 5px; cursor:pointer;" id="voiceType'+ i +'" onclick="voiceSelected('+ i +')">'
                     content_html += '<img src=\'image/voice' + i + '.png\' style="width:70px; height:70px">';
                     content_html += '<h5 style="text-align: center">' + captionListOfvoiceType[i-1] + '</h5></div>';
                 }
-                $('#menu-detail-content').html(content_html);
 
+                $('#detail_content_data').html(content_html);
+                $('#detail_content_search').html('');
                 // show previous state
                 if(cur_voice_type != 0)
                     $('#voiceType'+cur_voice_type).css({color:'#24c6d3'});
@@ -298,17 +315,33 @@
 
     function Menu_detail_dialog_close(){
         $('#menu-detail').hide();
+        clearMenuSelection();
     }
 
     function settingGuanzhu(){
+        // check phone verification state
+        if(bPhoneverified == 0) {
+            verifyPhone();
+            return;
+        }
         window.location.href = 'views/guanzhu.html';
     }
 
     function showOrderList(){
+        // check phone verification state
+        if(bPhoneverified == 0) {
+            verifyPhone();
+            return;
+        }
         window.location.href = 'views/order.html';
     }
 
     function showMineScenicAreas(){
+        // check phone verification state
+        if(bPhoneverified == 0) {
+            verifyPhone();
+            return;
+        }
         window.location.href = 'views/minescenic.html';
     }
 

@@ -17,6 +17,7 @@
 
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../js/global.js"></script>
     <script type="text/javascript" src="../js/morescenic.js"></script>
 </head>
 
@@ -24,7 +25,7 @@
     <div id="content">
         <div class="header" id="app_header">
             <h3 style="text-align: center">
-                <a href="#" style="float: left; position: fixed;left: 10px; top: 0px">
+                <a href="javascript:history.back()" style="float: left; position: fixed;left: 10px; top: 0px">
                     <img src="../image/left_arrow.png" id="back_img">
                 </a>
                 更多景区
@@ -33,7 +34,7 @@
         <div id="container" style="background-color: #f6f6f6">
             <div id="search_scenic">
                 <div class="has-feedback">
-                    <input type="text" class="form-control input-sm" placeholder="请输入景区" style="width: 100%;border-radius: 20px;">
+                    <input type="text" class="form-control input-sm" onchange="filter_scenic(this.value)" placeholder="请输入景区">
                     <span class="glyphicon glyphicon-search form-control-feedback"></span>
                 </div>
             </div>
@@ -47,9 +48,3 @@
     </div>
 </body>
 </html>
-
-<script type="text/javascript">
-    $(function(){
-       resize_scenic();
-    });
-</script>

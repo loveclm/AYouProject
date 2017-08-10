@@ -2,6 +2,10 @@
  * Created by Administrator on 8/8/2017.
  */
 
+window.addEventListener('resize', function(event){
+    resize_guanzhu();
+});
+
 function guanzhuSettings(){
     // implement the process for 关注
 
@@ -29,15 +33,8 @@ function resize_guanzhu(){
     var map_top = document.getElementById('app_header').clientHeight;
     var map_width = document.getElementById('content').clientWidth;
     var map_height = document.body.clientHeight - map_top;
-    $('#container').css({width:map_width, height:map_height, top:map_top, bottom:0});
+    $('#container').css({display:'block',width:map_width, height:map_height, top:map_top, bottom:0});
 
     var content_margin=(document.body.clientWidth-width)/2;
     $('#back_img').css({position:'fixed',left: content_margin+10});
-}
-
-function getDevicePixelRatio() {
-    if(window.devicePixelRatio) {
-        return window.devicePixelRatio;
-    }
-    return screen.deviceXDPI / screen.logicalXDPI;
 }

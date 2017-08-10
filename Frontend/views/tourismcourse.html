@@ -17,6 +17,7 @@
 
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../js/global.js"></script>
     <script type="text/javascript" src="../js/tourismcourse.js"></script>
 </head>
 
@@ -24,7 +25,7 @@
     <div id="content">
         <div class="header" id="app_header">
             <h3 style="text-align: center">
-                <a href="#" style="float: left; position: fixed;left: 10px; top: 0px">
+                <a href="javascript: back()" style="float: left; position: fixed;left: 10px; top: 0px">
                     <img src="../image/left_arrow.png" id="back_img">
                 </a>
                 旅游线路
@@ -35,11 +36,13 @@
                 <h4>旅游线路 (共1条线路)</h4>
             </div>
             <div id="tourismlist-body">
+                <!--
                 <div class="tourismlist_item">
                     <div  style="background-color: green; float: left">1</div>
                     <h4 style="float: left; padding-left:10px;">旅游名称</h4>
                     <img src="../image/more.png" style="float:right; padding:10px">
                 </div>
+                -->
             </div>
         </div>
     </div>
@@ -71,10 +74,6 @@
 </html>
 
 <script type="text/javascript">
-    $(function(){
-        resize_tourism_course();
-    });
-
     function buy_course_dialog_close(){
         $('#buy_course').hide();
     }
