@@ -48,8 +48,11 @@ $route['loginMe'] = 'login/loginMe';
 $route['dashboard'] = 'user';
 $route['area'] = 'area';
 $route['addarea'] = 'area/addNew';
+$route['editarea/(:any)'] = 'area/edit/$1';
 $route['addNewArea'] = 'area/addNewArea';
 $route['areaListing/(:any)/(:any)/(:num)'] = "area/listing/$1/$2/$3";
+
+
 
 $route['logout'] = 'user/logout';
 $route['userListing'] = 'user/userListing';

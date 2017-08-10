@@ -78,7 +78,7 @@
                                     <td><?php echo $area->address;?></td>
                                     <td><?php echo $area->status == 1 ? '已上架': '未上架'; ?></td>
                                     <td>
-                                        <a>查看</a>
+                                        <a href="editarea/<?php echo $area->id;?>">查看</a>
                                         <?php
                                         if($area->status == 0){
                                             ?>

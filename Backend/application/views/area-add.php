@@ -7,12 +7,21 @@
     </section>
 
     <section class="content">
+
+        <?php
+            //var_dump($area);
+            if(isset($area)){
+                $areaInfo = json_decode($area[0]->info);
+
+                var_dump(json_encode($areaInfo->position));
+            }
+        ?>
             <div class="container">
                 <div class="row">
                     <div class="col-xs-6 col-sm-4 form-inline">
                         <div class="form-group area-add-view">
                             <label for="exampleInputName2">景区名称:</label>
-                            <input type="text" class="form-control" id="areaname" name="areaname">
+                            <input type="text" class="form-control" id="areaname" name="areaname" value="<?php echo isset($area) ? $area[0]->name : '';?>" />
                         </div>
                     </div>
 
@@ -20,7 +29,7 @@
                 <div class="row">
                     <div class="col-xs-6 col-sm-4 form-inline">
                         <div class="form-group area-add-view">
-                            <label for="exampleInputName2">上传录音：</label>
+                            <label>上传录音：</label>
                             <a class="btn btn-primary" href="<?php echo base_url(); ?>addarea">
                                 <span>上传录音</span>
                             </a>
@@ -31,7 +40,7 @@
                     <div class="col-xs-6 col-sm-4 form-inline">
                         <div class="form-group area-add-view">
                             <label for="exampleInputName2">景区折扣比率:</label>
-                            <input type="text" class="form-control" id="arearate" name="arearate">
+                            <input type="text" class="form-control" id="arearate" value="<?php echo isset($area) ? $area[0]->discount_rate : '';?>">
                             <label">%</label>
                         </div>
                     </div>
@@ -41,24 +50,22 @@
             <div class="container">
                 <div class="row">
                     <div>
-                        <input id="cityName" type="text" />
-                        <input type="button" value="find" onclick="theLocation()" />
+                        <input id="cityName" type="text" placeholder="输入您要定位的地址" />
+                        <input id="area-position" style="display: none;" name="position"/>
                     </div>
                     <div class="col-sm-7">
-                        <div id="custom-map-container" style="height: 600px;">
-                            <input id="area-position" style="display: none;" name="position"/>
-                        </div>
+                        <div id="custom-map-container" style="height: 600px;"></div>
                     </div>
                     <div class="col-sm-3" style="border: 1px solid;height: 600px;">
 
                         <div class="point-list-view">
                             <div class="form-group">
                                 <input id="upload-overlay" type="file" style="display: none;"/>
-                                <button type="button" onclick="uploadOveray();">上传覆盖图</button>
+                                <button type="button" onclick="uploadOverlay();">上传覆盖图</button>
                                 <input id="area-overlay" value="" style="display: none;"/>
                             </div>
                             <div class="form-group">
-                                <button type="button" onclick="addPointShow();">标记景点</button>
+                                <button type="button" onclick="showAddPoint();">标记景点</button>
                             </div>
                             <div class="form-group">
                                 <ul id="pointList">
@@ -68,6 +75,7 @@
                         </div>
 
                         <div class="point-add-view" style="display: none;">
+                            <input id="point-view-index" style="display: none;" value="0"/>
                             <div class="form-group">
                                 <label>景点名称：</label>
                                 <input type="text" class="form-control" id="pointname">
@@ -76,21 +84,50 @@
                                 <label>景点简述：</label>
                                 <input type="text" class="form-control" id="pointdescription">
                             </div>
+
+                            <div class="form-group">
+                                <input id="upload-point-image" type="file" style="display: none;">
+                                <input id="pointimage" value="" style="display: none;"/>
+                                <label>上传图片：</label>
+                                <a class="btn btn-primary" onclick="uploadPointImage();">
+                                    <span>上传图片</span>
+                                </a>
+                            </div>
+
+                            <div class="form-group">
+                                <img id="point-item-image" style="height: 150px;width: 100%;" src=""/>
+                            </div>
+
+                            <div class="form-group">
+                                <input id="upload-point-audio" type="file" style="display: none;">
+                                <input id="pointaudio" value="" style="display: none;"/>
+                                <label>上传录音：</label>
+                                <a class="btn btn-primary" onclick="uploadPointAudio();">
+                                    <span>上传录音</span>
+                                </a>
+                            </div>
+
                             <div class="form-group">
                                 <label>景点价格：</label>
                                 <input type="text" class="form-control" id="pointprice">
                             </div>
+
+                            <div class="form-group">
+                                <input type="checkbox" id="pointfree"/> 试听
+                            </div>
+
                             <div class="form-group">
                                 <button type="button" onclick="addPoint(0);">取消</button>
                                 <button type="button" onclick="addPoint(1);">完成</button>
                             </div>
+
                         </div>
                     </div>
 
                 </div>
 
             </div>
-            <input type="button" class="btn btn-primary" onclick="addTouristArea();" value="Submit" />
+            <input type="button" class="btn btn-primary" onclick="addTouristArea(<?php echo isset($area)? $area[0]->id: 0;?>);" value="Submit" />
 
     </section>
 </div>

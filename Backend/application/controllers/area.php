@@ -71,6 +71,28 @@ class Area extends BaseController
             $this->loadViews("area-add", $this->global, NULL, NULL);
         }
     }
+    /**
+     * This function is used to load the edit form
+     */
+    function edit($id)
+    {
+        if($this->isAdmin() == TRUE)
+        {
+            $this->loadThis();
+        }
+        else
+        {
+
+            $this->global['pageTitle'] = '编辑景区';
+            $this->global['area'] = $this->area_model->getAreaById($id);
+
+            $this->loadViews("area-add", $this->global, NULL, NULL);
+        }
+    }
+
+
+
+
 
     function pageNotFound()
     {
