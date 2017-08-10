@@ -43,6 +43,30 @@
             </div>
         </div>
     </div>
+    <!-- dialog buying the tourism course-->
+    <div class="modal custom-modal" id="buy_course">
+        <div class="modal-dialog" id="buy_course_dialog">
+            <div class="modal-content">
+                <div class="modal-header" id="buy_course_title">
+                    <button class="close" onclick="buy_course_dialog_close()">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                    <h5>故宫－圆明园－颐和园</h5>
+                </div>
+                <div class="modal-body" id="buy_course_content" style="overflow-y: scroll; height: 80%">
+                    <div class="course_column"><h5>景区 1 : 故宫 (10个景点)</h5></div>
+                    <div class="course_column"><h5>景区 2 : 圆明园 (10个景点)</h5></div>
+                    <div class="course_column"><h5>景区 3 : 颐和园 (10个景点)</h5></div>
+                    <div class="btn-custom btn-course"><h5>支付100元，解锁线路</h5></div>
+                    <div class="btn-custom btn-course"><h5>输入授权码</h5></div>
+                </div>
+                <div class="modal-footer" style="padding: 0px; border: none">
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
 </body>
 </html>
 
@@ -50,4 +74,8 @@
     $(function(){
         resize_tourism_course();
     });
+
+    function buy_course_dialog_close(){
+        $('#buy_course').hide();
+    }
 </script>

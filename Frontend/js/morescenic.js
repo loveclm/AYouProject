@@ -17,7 +17,7 @@ function display_scenic_data(){
     for( var i = 0; i < scenic_list.length; i++){
         content_html += '<div class="scenic_item" id="scenic_item'+ (i+1) +'">';
         content_html += '<img src="../image/voice.png" style="float: left; height:100%">';
-        content_html += '<h4 style="float: left; padding-left: 15px; font-weight: bold">' +scenic_list[i]['name'] +'</h4></div>';
+        content_html += '<h5 style="float: left; padding-left: 15px; font-weight: bold">' +scenic_list[i]['name'] +'</h5></div>';
         // define eventListener
     }
     $('#scenic_list').html(content_html);

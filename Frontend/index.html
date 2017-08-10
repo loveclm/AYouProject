@@ -34,7 +34,7 @@
         <div class="btn-right" id="btn-help" onclick="showhelp()"></div>
         <div class="btn-right" id="btn-follow" onclick="settingGuanzhu()"></div>
         <div class="btn-right" id="btn-order" onclick="showOrderList()"></div>
-        <div class="btn-right" id="btn-scenic"></div>
+        <div class="btn-right" id="btn-scenic" onclick="showMineScenicAreas()"></div>
         <div class="btn-right" id="btn-commentary"></div>
         <div class="btn-right" id="btn-automatic"></div>
 
@@ -61,12 +61,81 @@
             <!-- /.modal-dialog -->
         </div>
 
+        <!--phone number verify dialog-->
+        <div class="modal custom-modal" id="phone_verify">
+            <div class="modal-dialog" id="phone_verify_dialog">
+                <div class="modal-content" style="height: 100%;border-radius: 12px;">
+                    <div class="modal-header" id="phone_verify_title" style="padding: 0px; margin: 0px;border: none">
+                        <button class="close" onclick="phone_verify_dialog_close()">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                        <img src="image/top.png" style="width: 100%">
+                        <div style="text-align: center">
+                            <img src="image/sign_in.png">
+                            <h4>授权登录</h4>
+                        </div>
+                    </div>
+                    <div class="modal-body" id="phone_verify_content">
+                        <div>
+                            <h4 style="float: left">手机号</h4>
+                            <input type="number" class="form-control" id="phone_number" placeholder="" style="width: 70%">
+                        </div>
+                        <div>
+                            <h4 style="float: left">验证码</h4>
+                            <input type="number" class="form-control" id="verify_code" placeholder="验证码" style="width: 35%">
+                            <div class="btn-custom" id="btn_sendSMS"><h5>获取验证码</h5></div>
+                        </div>
+                    </div>
+                    <div class="btn-custom" id="confirm_verify">
+                        <h4 style="margin: 5px 0px">立即验证</h4>
+                    </div>
+                </div>
+                <!-- /.modal-content -->
+            </div>
+            <!-- /.modal-dialog -->
+        </div>
+
+        <!--code authorization dialog-->
+        <div class="modal custom-modal" id="code_auth">
+            <div class="modal-dialog" id="code_auth_dialog">
+                <div class="modal-content" style="height: 100%;border-radius: 12px;">
+                    <div class="modal-header" id="code_auth_title" style="padding: 0px; margin: 0px;border: none">
+                        <button class="close" onclick="code_auth_dialog_close()">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                        <img src="image/top.png" style="width: 100%">
+                        <div style="text-align: center">
+                            <img src="image/activation.png">
+                            <h4>授权激活</h4>
+                        </div>
+                    </div>
+                    <div class="modal-body" id="code_auth_content">
+                        <div style="margin: 20px 0px">
+                            <h4 style="float: left; margin-left: 5px; margin-right: 15px">授权码</h4>
+                            <input type="number" class="form-control" id="auth_code" placeholder="" style="width: 70%">
+                        </div>
+                    </div>
+                    <div style="margin: 10px 20px; height: 50px">
+                        <div class="btn-custom" style="float: left; margin: 0px 15px; padding: 0px 30px; border-radius: 20px">
+                            <h4 style="margin: 5px 0px">取消</h4>
+                        </div>
+                        <div class="btn-custom" style="float: left; margin: 0px 15px; padding: 0px 30px; border-radius: 20px">
+                            <h4 style="margin: 5px 0px">确认</h4>
+                        </div>
+
+                    </div>
+                </div>
+                <!-- /.modal-content -->
+            </div>
+            <!-- /.modal-dialog -->
+        </div>
+
         <!--property popup window along with selected menu item-->
         <div class="modal custom-modal" id="menu-detail">
             <div class="modal-dialog" id="menu-detail-dialog">
                 <div class="modal-content" style="height: 100%">
                     <div class="modal-header" id="menu-detail-title" style="padding: 5px; margin: 0px">
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="Menu_detail_dialog_close()">
+                        <button class="close" onclick="Menu_detail_dialog_close()">
                             <span aria-hidden="true">×</span>
                         </button>
                         <h4 style="font-weight: bold; padding-left: 20px">test</h4>
@@ -134,6 +203,7 @@
     $(function(){
         resize();
         //$('#login').show();
+        $('#phone_verify').show();
     });
 
     function menuClicked(index) {
@@ -208,6 +278,14 @@
         $('#login').hide();
     }
 
+    function phone_verify_dialog_close(){
+        $('#phone_verify').hide();
+    }
+
+    function code_auth_dialog_close(){
+        $('#code_auth').hide();
+    }
+
     function clearMenuSelection(){
         if(cur_menu_index != 0)
         {
@@ -229,6 +307,11 @@
     function showOrderList(){
         window.location.href = 'views/order.html';
     }
+
+    function showMineScenicAreas(){
+        window.location.href = 'views/minescenic.html';
+    }
+
     function showhelp(){
         $('#help').show();
     }

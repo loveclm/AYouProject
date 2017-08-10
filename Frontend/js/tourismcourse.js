@@ -23,14 +23,36 @@ function display_tourism_data(){
         else{
             curColor = tourismColors[i];
         }
-        content_html += '<div class="tourismlist_item" id="tourism_item'+ (i+1) +'">';
+        content_html += '<div class="tourismlist_item" id="tourism_item'+ (i+1) +'" onclick="showcourse('+i+')">';
         content_html += '<div  style="background-color:' + curColor + '; float:left">'+(i+1)+'</div>';
-        content_html += '<h4 style="float: left; padding-left:10px;">'+ tourism_list[i]['name'] +'</h4>';
+        content_html += '<h5 style="float: left; padding-left:10px;">'+ tourism_list[i]['name'] +'</h5>';
         content_html += '<img src="../image/more.png" style="float:right; padding:10px"></div>';
-        // define eventListener
-
     }
     $('#tourismlist-body').html(content_html);
+}
+
+function showcourse(index){
+    // initialize dialog
+    var scenic_names = tourism_list[index]['name'].split("－");
+    $('#buy_course_title').find('h5').html(tourism_list[index]['name']);
+
+    var content_html = "";
+    var total_cost = 0;
+    for( var i = 0; i < scenic_names.length; i++)
+    {
+        // loading the infos of the current scenic area
+        var attractionCnt = 10;
+        var scenic_cost = 30;
+
+        content_html += '<div class="course_column"><h5>景区 '+(i+1)+' : ' + scenic_names[i]+' ( '+attractionCnt+'个景点 )</h5></div>';
+
+        total_cost += scenic_cost;
+    }
+    content_html += '<div class="btn-custom btn-course"><h5>支付' + total_cost +'元，解锁线路</h5></div>';
+    content_html += '<div class="btn-custom btn-course"><h5>输入授权码</h5></div>';
+
+    $('#buy_course_content').html(content_html);
+    $('#buy_course').show();
 }
 
 function simulate_tourism_download(){

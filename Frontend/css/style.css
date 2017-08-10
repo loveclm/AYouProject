@@ -14,8 +14,11 @@ html, body{
     position: fixed;
     bottom: 0px;
     padding: 0px;
-
+    width: 100%;
     background-color: #ffffff;
+}
+.footer .order_footer{
+    border: none;
 }
 
 #content{
@@ -78,11 +81,94 @@ html, body{
     margin: 0px;
     background: rgba(0, 0, 0, 0);
 }
+
+.modal-header button{
+    position: absolute;
+    right: 5px;
+    top: 5px;
+}
+
 #login-dialog{
     margin: 0px;
     left: 15%;
     top: 25%;
     width: 70%;
+}
+.modal-header div{
+    position: absolute;
+    top: 5%;
+    left: 35%;
+    color: white;
+}
+.modal-header div img{
+    width: 40%;
+    height: 40%;
+    background-color: #ffffff;
+    border-radius: 50%;
+}
+#phone_verify_dialog, #code_auth_dialog{
+    margin: auto;
+    top: 25%;
+    width: 300px;
+}
+
+#buy_course_dialog{
+    margin: auto;
+    top: 20%;
+    width: 90%;
+}
+#buy_course_dialog .modal-content{
+    height: 100%;
+    border: 1px solid #24c6d3;
+}
+#buy_course_title{
+    padding: 5px;
+    margin: 0px;
+    color: #ffffff;
+    background-color: #24c6d3
+}
+#buy_course_title h5{
+    font-weight: bold;
+    padding-left: 20px
+}
+
+.btn-course{
+    margin: 10px 25px;
+    border-radius: 20px;
+}
+.course_column{
+    margin: 10px;
+    height: 30px;
+    border-bottom: 1px solid;
+    border-bottom-color: #f6f6f6;
+    padding: 0px 5px;
+}
+
+#confirm_verify{
+    margin: 5px 50px;
+    margin-bottom: 20px;
+    border-radius: 30px;
+}
+
+#phone_verify_content #btn_sendSMS{
+    float: left;
+    margin-left: 12px;
+    padding: 0px 5px;
+    border-radius: 5px;
+    height: 35px;
+    width: auto;
+}
+
+#phone_verify_content div{
+    height: 50px;
+}
+#phone_verify_content div h4{
+    float:left;
+    padding: 0px 5px;
+}
+#phone_verify_content input{
+    float: left;
+    margin-left: 10px;
 }
 
 #menu-detail-dialog{
@@ -175,7 +261,7 @@ html, body{
 }
 
 .order{
-    padding: 0px 20px;
+    padding: 0px 5%;
     margin: 4px 0px;
     background-color: #ffffff;
 }
@@ -195,14 +281,14 @@ html, body{
     border-bottom-color: #e6e6e6;
 }
 
-.order_header h4{
-    float: left;
-}
-.order_header .order_state{
+.order_state, .order_header .order_state{
     float: right;
 }
+.order_header h5{
+    float: left;
+}
 
-.order .order_body{
+.order_body{
     padding: 10px 0px;
     width: 100%;
     height: 100px;
@@ -210,16 +296,26 @@ html, body{
 
 .order_body img{
     float: left;
-    width: 80px;
-    height: 80px;
+    width: 70px;
+    height: 70px;
 }
 .order_body div{
     float: left;
     padding-top: 10px;
-    padding-left: 20px;
+    padding-left: 10px;
 }
 
-.order .order_footer{
+.order_body .scenic_content h5{
+    margin: 2px 0px;
+}
+
+.order_detail{
+    padding: 10px 20px;
+    margin: 7px 0px;
+    background-color: #ffffff;
+}
+
+.order_footer{
     width: 100%;
     height: 40px;
     border-top: 1px solid;
@@ -248,6 +344,25 @@ html, body{
     color: #ffffff;
 }
 
-.order_footer div h4{
+.order_footer div h5{
     margin: 2px;
+}
+
+.btn-custom{
+    text-align: center;
+    border: 1px solid;
+    border-color: #24c6d3;
+    background-color: #ffffff;
+    color: #24c6d3;
+}
+.btn-custom:active{
+    text-align: center;
+    border: 1px solid;
+    border-color: #24c6d3;
+    background-color: #24c6d3;
+    color: #ffffff;
+}
+
+.form-control::-webkit-input-placeholder{
+    color: #24c6d3;
 }

@@ -5,38 +5,102 @@
 var order_List = new Array();
 
 $(function(){
-    //display_order_data();
+    display_order_data();
 });
 
 function display_order_data(){
     //------- downloading or loading tourism data
     simulate_order_download();
     //------- show the scenic list
+    var state_class_List = ['order_using','order_unpaid','order_cancelled','order_expired'];
+    var state_string_List = ['使用中','未付款','已取消','已过期'];
+
     // show individual scenic data
-    var content_html = "";
+    var content_html_all = "";
+    var content_html_unpaid = "";
+    var content_html_cancelled = "";
+    var content_html_expired = "";
+    var tmp_content_html="";
+
+    // show each order information in order list
     for( var i = 0; i < order_List.length; i++){
-        content_html += '<div class="scenic_item" id="scenic_item'+ (i+1) +'">';
-        content_html += '<img src="../image/voice.png" style="float: left; height:100%">';
-        content_html += '<h4 style="float: left; padding-left: 15px; font-weight: bold">' +order_List[i]['name'] +'</h4></div>';
-        // define eventListener
+        tmp_content_html="";
+        tmp_content_html += '<div class="order '+state_class_List[order_List[i]['state']-1] +'">';
+        tmp_content_html += '<div class="order_header">';
+        tmp_content_html += '   <h5>订单编号 : '+ order_List[i]['id']+'</h5>';
+        tmp_content_html += '   <h5 class="order_state">'+state_string_List[order_List[i]['state']-1]+'</h5>';
+        tmp_content_html += '</div>';
+        tmp_content_html += '<div class="order_body" onclick="showOrderDetailInfo('+ i +')">';
+        tmp_content_html += '   <img src="'+order_List[i]['image_url']+'">';
+        tmp_content_html += '   <div>';
+        tmp_content_html += '       <h5>'+order_List[i]['name']+'</h5>';
+
+        if(order_List[i]['pay_method'] == 1)
+            tmp_content_html += '   <h5 style="color: red">¥' +order_List[i]['value']+ '</h5>';
+        else
+            tmp_content_html += '   <h5>授权码 : ' +order_List[i]['value']+ '</h5>';
+
+        tmp_content_html += '</div></div>';
+
+        if(order_List[i]['state'] != 1){
+            tmp_content_html += '<div class="order_footer">';
+
+            switch(order_List[i]['state'])
+            {
+                case 2:
+                    tmp_content_html +='    <div><h5>取消订单</h5></div>';
+                    tmp_content_html +='    <div><h5>付款</h5></div>';
+                    break;
+                case 3:
+                case 4:
+                    tmp_content_html +='    <div><h5>重新购买</h5></div>';
+                    break;
+            }
+            tmp_content_html += '</div>'
+        }
+        tmp_content_html +='</div>';
+
+        content_html_all += tmp_content_html;
+        switch (order_List[i]['state'])
+        {
+            case 2:
+                content_html_unpaid += tmp_content_html;
+                break;
+            case 3:
+                content_html_cancelled += tmp_content_html;
+                break;
+            case 4:
+                content_html_expired += tmp_content_html;
+                break;
+        }
+
+        $('#tab_all').html(content_html_all);
+        $('#tab_unpaid').html(content_html_unpaid);
+        $('#tab_cancelled').html(content_html_cancelled);
+        $('#tab_expired').html(content_html_expired);
     }
-    $('#order_List').html(content_html);
+}
+
+function showOrderDetailInfo(index)
+{
+    window.location.href = '../views/order_detail.html';
 }
 
 function simulate_order_download(){
     /* order's data format
     **  id means 订单编号
     **  name means order's name( attraction or scenic area name)
-    **  image_url is
+    **  image_url is image's url in server
+    **  value is one of the money and the authorize code
+    **  state is index of using, unpaid, cancelled, expired
+    **  if you pay online then 1(weixin) else 2(code using)
     */
-    order_List[0] = {id:'5897427848', name:'', image_url:'', value:'', state:1}
-    order_List[0]={name:'王老吉凉茶博物馆', id:1};
-    order_List[1]={name:'十里环水乡风景长廊', id:2};
-    order_List[2]={name:'李家成故居', id:3};
-    order_List[3]={name:'树下行人', id:4};
+    order_List[0] = {id:'5897427848', name:'鹤山古劳水乡', image_url:'../image/tmp_order.png', value:'30.00', state:1, pay_method:1};
+    order_List[1] = {id:'5897427812', name:'王老吉凉茶博物馆', image_url:'../image/tmp_order.png', value:'30.00', state:2, pay_method:1};
+    order_List[2] = {id:'5897427834', name:'十里环水乡风景长廊', image_url:'../image/tmp_order.png', value:'37843895', state:3, pay_method:2};
+    order_List[3] = {id:'5897427856', name:'树下行人', image_url:'../image/tmp_order.png', value:'30.00', state:4, pay_method:1};
+    order_List[4] = {id:'5897427811', name:'胡蝶故居', image_url:'../image/tmp_order.png', value:'8794943', state:4, pay_method:2};
 }
-
-
 
 function resize_orderlist(){
     initRatio = getDevicePixelRatio();
