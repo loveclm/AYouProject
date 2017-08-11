@@ -25,14 +25,14 @@
     <div id="content">
         <div class="header" id="app_header">
             <h3 style="text-align: center">
-                <a href="#" style="float: left; position: fixed;left: 10px; top: 0px">
+                <a href="javascript:history.back()" style="float: left; position: fixed;left: 10px; top: 0px">
                     <img src="../image/left_arrow.png" id="back_img">
                 </a>
                 订单
             </h3>
         </div>
         <div id="container"  style="background-color: #f6f6f6">
-            <div class="nav-tabs-custom">
+            <div class="nav-tabs-custom" id="order_tab">
                 <ul class="nav nav-tabs" id="tab_header">
                     <li class="col-xs-3 active"><a href="#tab_all" data-toggle="tab" aria-expanded="true">全部</a></li>
                     <li class="col-xs-3"><a href="#tab_unpaid" data-toggle="tab" aria-expanded="false">未付款</a></li>
@@ -169,9 +169,3 @@
     </div>
 </body>
 </html>
-
-<script type="text/javascript">
-    $(function(){
-        resize_orderlist();
-    });
-</script>

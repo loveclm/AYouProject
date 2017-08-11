@@ -21,19 +21,25 @@ class Areas extends REST_Controller {
         $this->response($this->area_model->get_all());
     }
 
-    public function edit_get($id = NULL)
+    public function find_post($key = '')
+    {
+        $this->response($this->area_model->findAreas($key));
+    }
+
+    public function edit_post($id = NULL)
     {
         if ( ! $id)
         {
             $this->response(array('status' => false, 'error_message' => 'No ID was provided.'), 400);
         }
 
-        $this->response($this->area_model->get($id));
+        $this->response($this->area_model->getAreaById($id));
     }
 
     public function save_post($id = NULL)
     {
-        if ( ! $id)
+
+        if (! $id)
         {
             $new_id = $this->area_model->addNewArea($this->post());
             $this->response(array('status' => true, 'id' => $new_id, 'message' => sprintf('Area #%d has been created.', $new_id)), 200);

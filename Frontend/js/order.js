@@ -2,19 +2,27 @@
  * Created by Administrator on 8/8/2017.
  */
 
-var order_List = new Array();
+var order_List = [];
 
 $(function(){
-    display_order_data();
+    resize_orderlist();
+    loadOrderData();
 });
 
 window.addEventListener('resize', function(event){
     resize_orderlist();
 });
 
+function loadOrderData(){
+
+    order_List = localStorage.getObject('cur_orders');
+    if(order_List === null)
+        getOrdersFromServer();
+    else
+        display_order_data();
+}
+
 function display_order_data(){
-    //------- downloading or loading tourism data
-    simulate_order_download();
     //------- show the scenic list
     var state_class_List = ['order_using','order_unpaid','order_cancelled','order_expired'];
     var state_string_List = ['使用中','未付款','已取消','已过期'];
@@ -35,7 +43,7 @@ function display_order_data(){
         tmp_content_html += '   <h5 class="order_state">'+state_string_List[order_List[i]['state']-1]+'</h5>';
         tmp_content_html += '</div>';
         tmp_content_html += '<div class="order_body" onclick="showOrderDetailInfo('+ i +')">';
-        tmp_content_html += '   <img src="'+order_List[i]['image_url']+'">';
+        tmp_content_html += '   <img src="'+order_List[i]['image']+'">';
         tmp_content_html += '   <div>';
         tmp_content_html += '       <h5>'+order_List[i]['name']+'</h5>';
 
@@ -52,12 +60,12 @@ function display_order_data(){
             switch(order_List[i]['state'])
             {
                 case 2:
-                    tmp_content_html +='    <div><h5>取消订单</h5></div>';
-                    tmp_content_html +='    <div><h5>付款</h5></div>';
+                    tmp_content_html +='    <div onclick="cancelOrder('+i+')"><h5>取消订单</h5></div>';
+                    tmp_content_html +='    <div onclick="pay_for_Order('+i+')"><h5>付款</h5></div>';
                     break;
                 case 3:
                 case 4:
-                    tmp_content_html +='    <div><h5>重新购买</h5></div>';
+                    tmp_content_html +='    <div onclick="purchase_again_Order('+i+')"><h5>重新购买</h5></div>';
                     break;
             }
             tmp_content_html += '</div>'
@@ -83,27 +91,69 @@ function display_order_data(){
         $('#tab_cancelled').html(content_html_cancelled);
         $('#tab_expired').html(content_html_expired);
     }
+
+    $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+        var index = $(e.target).closest('li').index();
+
+        localStorage.setItem('order_tab_index', index);
+    });
+
+    var index = localStorage.getItem('order_tab_index');
+    if( index != null)
+        $('.nav-tabs li:eq('+index+') a').tab('show');
+}
+
+function cancelOrder(index) {
+    // when user cancels his/her order, must send it to server
+    // send ajax request and receive ajax response and so process with the result of the backend
+    // If verification is fail, maintain old state.
+    /*
+     $.ajax({
+         type: 'GET',
+         url: 'http://server/backend/dbmanage.php', //rest API url
+         dataType: 'json',
+         data: {func: 'function_name', info: res}, // set function name and parameters
+         }).success(function(data){
+             $('#code_auth').hide();
+             // change attraction marks along information
+             loadOrderData();
+
+         }).fail(function(){
+             return;
+     });
+     */
+
+    //return;
+}
+
+function pay_for_Order(index) {
+    // calculate order's price
+    var cur_order = order_List[index];
+    var real_cost = cur_order['cost'] * cur_order['discount_rate'];
+
+    var payment_data = {
+        type : 4,      // 1: tourism course, 2: scenic area(all), 3: scenic area(part), 4: order, 5: attraction
+        id : cur_order['id'],
+        name: cur_order['name'],
+        image: cur_order['image'],
+        cost: cur_order['cost'],
+        real_cost: real_cost
+    };
+
+    localStorage.setObject('payment_data', payment_data);
+    window.location.href = '../views/purchase.html';
+}
+
+function purchase_again_Order(index) {
+    pay_for_Order(index);
 }
 
 function showOrderDetailInfo(index)
 {
-    window.location.href = '../views/order_detail.html';
-}
+    var cur_order = order_List[index];
+    localStorage.setObject('cur_order', cur_order);
 
-function simulate_order_download(){
-    /* order's data format
-    **  id means 订单编号
-    **  name means order's name( attraction or scenic area name)
-    **  image_url is image's url in server
-    **  value is one of the money and the authorize code
-    **  state is index of using, unpaid, cancelled, expired
-    **  if you pay online then 1(weixin) else 2(code using)
-    */
-    order_List[0] = {id:'5897427848', name:'鹤山古劳水乡', image_url:'../image/tmp_order.png', value:'30.00', state:1, pay_method:1};
-    order_List[1] = {id:'5897427812', name:'王老吉凉茶博物馆', image_url:'../image/tmp_order.png', value:'30.00', state:2, pay_method:1};
-    order_List[2] = {id:'5897427834', name:'十里环水乡风景长廊', image_url:'../image/tmp_order.png', value:'37843895', state:3, pay_method:2};
-    order_List[3] = {id:'5897427856', name:'树下行人', image_url:'../image/tmp_order.png', value:'30.00', state:4, pay_method:1};
-    order_List[4] = {id:'5897427811', name:'胡蝶故居', image_url:'../image/tmp_order.png', value:'8794943', state:4, pay_method:2};
+    window.location.href = '../views/order_detail.html';
 }
 
 function resize_orderlist(){

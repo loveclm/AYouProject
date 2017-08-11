@@ -41,7 +41,6 @@
 $route['default_controller'] = "login";
 $route['404_override'] = 'error';
 
-
 /*********** USER DEFINED ROUTES *******************/
 
 $route['loginMe'] = 'login/loginMe';
@@ -52,7 +51,10 @@ $route['editarea/(:any)'] = 'area/edit/$1';
 $route['addNewArea'] = 'area/addNewArea';
 $route['areaListing/(:any)/(:any)/(:num)'] = "area/listing/$1/$2/$3";
 
-
+$route['course'] = 'area/course';
+$route['addcourse'] = 'area/addCourse';
+$route['courseListing/(:any)/(:num)'] = "area/courselisting/$1/$2";
+$route['editcourse/(:any)'] = 'area/editcourse/$1';
 
 $route['logout'] = 'user/logout';
 $route['userListing'] = 'user/userListing';

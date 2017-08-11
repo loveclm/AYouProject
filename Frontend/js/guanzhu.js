@@ -2,6 +2,10 @@
  * Created by Administrator on 8/8/2017.
  */
 
+$(function(){
+    resize_guanzhu();
+});
+
 window.addEventListener('resize', function(event){
     resize_guanzhu();
 });
@@ -11,6 +15,10 @@ function guanzhuSettings(){
 
     // if 关注 is successful then jump to success page
     window.location.href = '../views/guanzhu_success.html';
+}
+
+function showMainpage(){
+    window.location.href = '../index.html';
 }
 
 function resize_guanzhu(){

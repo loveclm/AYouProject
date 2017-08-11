@@ -99,7 +99,7 @@
               </a>
             </li>
             <li class="treeview">
-              <a href="#" >
+              <a href="<?php echo base_url(); ?>course" >
                 <i class="fa fa-plane"></i>
                 <span>旅游线路管理</span>
               </a>

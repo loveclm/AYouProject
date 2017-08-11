@@ -7,13 +7,12 @@
     </section>
 
     <section class="content">
-
+        <input id="custom-base-url" value="<?php echo base_url(); ?>" style="display: none;"/>
         <?php
             //var_dump($area);
             if(isset($area)){
-                $areaInfo = json_decode($area[0]->info);
-
-                var_dump(json_encode($areaInfo->position));
+                $areaInfo = json_decode($area->info);
+                //var_dump(json_encode($areaInfo->position));
             }
         ?>
             <div class="container">
@@ -21,10 +20,10 @@
                     <div class="col-xs-6 col-sm-4 form-inline">
                         <div class="form-group area-add-view">
                             <label for="exampleInputName2">景区名称:</label>
-                            <input type="text" class="form-control" id="areaname" name="areaname" value="<?php echo isset($area) ? $area[0]->name : '';?>" />
+                            <input type="text" class="form-control" id="areaname" value="<?php echo isset($area) ? $area->name : '';?>" />
+                            <input type="text" id="point-list" style="display:none;" value="<?php echo isset($area) ? $area->id : '';?>" />
                         </div>
                     </div>
-
                 </div>
                 <div class="row">
                     <div class="col-xs-6 col-sm-4 form-inline">
@@ -40,18 +39,17 @@
                     <div class="col-xs-6 col-sm-4 form-inline">
                         <div class="form-group area-add-view">
                             <label for="exampleInputName2">景区折扣比率:</label>
-                            <input type="text" class="form-control" id="arearate" value="<?php echo isset($area) ? $area[0]->discount_rate : '';?>">
+                            <input type="text" class="form-control" id="arearate" value="<?php echo isset($area) ? $area->discount_rate : '';?>">
                             <label">%</label>
                         </div>
                     </div>
-
                 </div>
             </div>
             <div class="container">
                 <div class="row">
                     <div>
                         <input id="cityName" type="text" placeholder="输入您要定位的地址" />
-                        <input id="area-position" style="display: none;" name="position"/>
+                        <input id="area-position" style="display: none;" value="<?php echo isset($area) ? json_encode($areaInfo->position) : '';?>" />
                     </div>
                     <div class="col-sm-7">
                         <div id="custom-map-container" style="height: 600px;"></div>
@@ -62,7 +60,7 @@
                             <div class="form-group">
                                 <input id="upload-overlay" type="file" style="display: none;"/>
                                 <button type="button" onclick="uploadOverlay();">上传覆盖图</button>
-                                <input id="area-overlay" value="" style="display: none;"/>
+                                <input id="area-overlay" value="<?php echo isset($area) ? ($areaInfo->overay) : '';?>" style="display: none;"/>
                             </div>
                             <div class="form-group">
                                 <button type="button" onclick="showAddPoint();">标记景点</button>
@@ -127,7 +125,7 @@
                 </div>
 
             </div>
-            <input type="button" class="btn btn-primary" onclick="addTouristArea(<?php echo isset($area)? $area[0]->id: 0;?>);" value="Submit" />
+            <input type="button" class="btn btn-primary" onclick="addTouristArea(<?php echo isset($area)? $area->id: 0;?>);" value="Submit" />
 
     </section>
 </div>

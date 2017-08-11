@@ -53,10 +53,43 @@ function initMap(center) {
 
 // Code included inside $( document ).ready() will only run once the page Document Object Model (DOM) is ready for JavaScript code to execute
 $(document).ready(function(){
+    var position = $('#area-position').val();
+    if(position != '' && position != undefined){
+        var positionObj = JSON.parse(position);
+        var url = $('#custom-base-url').val();
 
-    // init AMap
-    currentLocation = [116.403322, 39.900255];
-    initMap(currentLocation);
+        leftBottom = positionObj[0];
+        rightTop = positionObj[1];
+
+        var overlay = $('#area-overlay').val();
+        var imageLayer = new AMap.ImageLayer({
+            url: url + 'uploads/' + overlay,
+            bounds: new AMap.Bounds(
+                leftBottom,   //左下角
+                rightTop    //右上角
+            ),
+            zooms: [16, 18]
+        });
+
+        map = new AMap.Map('custom-map-container', {
+            resizeEnable: true,
+            center: leftBottom,
+            zoom: 16,
+            layers: [
+                new AMap.TileLayer(),
+                imageLayer
+            ]
+        });
+
+        addPointFromArea(url);
+
+    }
+    else {
+
+        // init AMap
+        currentLocation = [116.403322, 39.900255];
+        initMap(currentLocation);
+    }
 
     /*
         Event code that find string for Search of Tourist Area
@@ -230,64 +263,8 @@ $(document).ready(function(){
         });
 
     }
-
-
 });
 
-function theLocation() {
-    var city = document.getElementById("cityName").value;
-    if(city != ""){
-        map.centerAndZoom(city, 17);
-    }
-}
-
-function take_location() {
-
-    geolocation.getCurrentPosition(function(r){
-        if(this.getStatus() == BMAP_STATUS_SUCCESS){
-            var curPoint = r.point;
-            var distance = 0;
-            ///// For test ///
-            //curPoint.lat += index * 0.1;
-            //console.log(curPoint);
-            //index++;
-
-            //  curPoint.lat = 30.2844280000;
-            //  curPoint.lng = 120.0371370000;
-
-            //curPoint.lat = 30.2440880000;
-            // curPoint.lng = 120.2168520000;
-
-            if(previousPoint != null) {
-
-                distance = map.getDistance(curPoint,previousPoint);
-            }
-
-            //console.log(distance);
-            //console.log(map.getDistance(curPoint,tagetPoint));
-            ////////
-
-            if(previousPoint == null || distance > 100){
-
-                if(walking) map.clearOverlays();
-                walking = new BMap.WalkingRoute(map, {renderOptions:{map: map, autoViewport: true}});
-                walking.search(curPoint, tagetPoint);
-
-                walking.setSearchCompleteCallback(function(){
-                    var pts = walking.getResults().getPlan(0).getRoute(0).getPath();
-
-                    var polyline = new BMap.Polyline(pts, {strokeColor:"green", strokeWeight:4, strokeOpacity:0.5, strokeStyle:"solid"});
-                    map.addOverlay(polyline);
-
-                });
-
-
-                previousPoint = curPoint;
-            }
-        }
-    },{enableHighAccuracy: true});
-
-}
 var markerId = 100;
 function showAddPoint() {
 
@@ -305,8 +282,66 @@ function showAddPoint() {
 
 }
 
-
 // Add attraction to Tourist Area
+function addPointFromArea(url) {
+
+    var areaid = $('#point-list').val();
+    $.post(url + "api/Areas/edit/" + areaid, '', function(result){
+        console.log(result);
+
+        var objList = JSON.parse(result['point_list']);
+        console.log(objList);
+        for(var i = 0; i< objList.length; i++){
+            var obj = objList[i];
+            var pointName = obj['name'];
+            var pointDescription = obj['description'];
+            var pointPrice = obj['price'];
+            var pointImage = obj['image'];
+            var pointAudio = obj['audio'];
+
+            var pointFree =  obj['trial'];
+            var pointPosition = JSON.parse(obj['position']);
+
+            markerId = markerId + 1;
+            var marker = new AMap.Marker({ //添加自定义点标记
+                map: map,
+                position: pointPosition, //基点位置
+                offset: new AMap.Pixel(-17, -42), //相对于基点的偏移位置
+                draggable: true,
+                id: markerId
+            });
+            marker.on('dragend',function(e){
+                var target = e['target']['G'];
+                var position = [e['lnglat']['lng'], e['lnglat']['lat']];
+                $('#pointposition-' + target['id']).val(JSON.stringify(position));
+                console.log(e);
+            });
+
+            marker.on('click',function(e){
+                var target = e['target']['G'];
+                var targetId = target['id'];
+                showEditPoint(targetId);
+                console.log(e);
+            });
+
+            markList.push(marker);
+
+            $( "#pointList" ).append( "<li id='pointitem-" + markerId + "'><div class='col-sm-4'>" + pointName + "</div>" +
+                "<input style='display: none;' value='" + pointDescription+"'/>" +
+                "<input style='display: none;' value='" + pointPrice+"'/>" +
+                "<input id='pointposition-" + markerId + "' style='display: none;' value='" + JSON.stringify(pointPosition) +"'/>" +
+                "<input style='display: none;' value='" + pointImage +"'/>" +
+                "<input style='display: none;' value='" + pointAudio +"'/>" +
+                "<input style='display: none;' value='" + pointFree +"'/>" +
+                "<div class='col-sm-4' data-id='" + markerId +"' onclick='editPoint(this);'>编辑</div>" +
+                "<div class='col-sm-4' data-id='" + markerId +"' onclick='deletePoint(this);'>删除</div>" +
+                "</li>" );
+        }
+    });
+
+
+}
+
 function addPoint(param) {
     var pointName = $('#pointname').val();
     var pointDescription = $('#pointdescription').val();
@@ -369,7 +404,6 @@ function addPoint(param) {
         }
     }
 }
-
 // edit Attraction
 function editPoint(e) {
 
@@ -429,7 +463,6 @@ function addTouristArea() {
     var rate = $("#arearate").val();
     var overlay = $('#area-overlay').val();
 
-
     var info = {
         overay: overlay,
         position: JSON.parse($('#area-position').val()),
@@ -437,15 +470,13 @@ function addTouristArea() {
     };
 
     var touristArea = {
-        name: area, discount_rate: rate, address: '', status: 0, type: 1, info: JSON.stringify(info),
-                            point_list: getAttractions()
-        };
+        name: area, discount_rate: rate, address: '', status: 0,
+        type: 1, info: JSON.stringify(info), point_list: getAttractions()
+    };
 
     $.post("api/Areas/save", touristArea, function(result){
-
         console.log(result);
     });
-
     return;
 }
 
@@ -455,7 +486,6 @@ function getAttractions() {
     var pointList = list.getElementsByTagName('li');
 
     for(var i = 0; i < pointList.length; i++){
-
         var pointInfo = $(pointList[i]).children();
         var pointName = $(pointInfo[0]).text();
         var pointDescription = $(pointInfo[1]).val();
@@ -479,7 +509,6 @@ function deleteArea(url, type) {
 
     $('#custom-confirm-delete-view').hide();
     if(type == 1){
-
         $.post(url + "api/Areas/remove/" + $('#current-areaid').val(), function(result){
             location.href = url + 'area';
         });
@@ -521,9 +550,7 @@ function searchArea(url) {
     var address = $('#searchAddress :selected').val();
     var status = $('#searchStatus :selected').val();
     name = name == '' ? 'all': name;
-
     location.href = url + 'area/listing/' + name+ '/' + address + '/' + status;
-
 }
 
 function uploadOverlay() {

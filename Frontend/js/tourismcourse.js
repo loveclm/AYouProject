@@ -3,6 +3,7 @@
  */
 var tourism_list = [];
 var tourismColors = ['#90d4e7','#fc8797','#fdc029','#01c8cf','#acacac'];
+var cur_tourism_id;
 
 $(function(){
     resize_tourism_course();
@@ -62,18 +63,81 @@ function showcourse(index){
         var attractionCnt = tourism_list[index]['scenic_areas'][i]['attractionCnt'];
         content_html += '<div class="course_column"><h5>景区 '+(i+1)+' : ' + tourism_list[index]['scenic_areas'][i]['name']+' ( '+attractionCnt+'个景点 )</h5></div>';
     }
-    content_html += '<div class="btn-custom btn-course"><h5>支付' + total_cost +'元，解锁线路</h5></div>';
-    content_html += '<div class="btn-custom btn-course"><h5>输入授权码</h5></div>';
+    content_html += '<div class="btn-custom btn-course" onclick="onlinePayment('+ index+')"><h5>支付' + total_cost +'元，解锁线路</h5></div>';
+    content_html += '<div class="btn-custom btn-course" onclick="buy_with_authCode('+index+')"><h5>输入授权码</h5></div>';
 
     $('#buy_course_content').html(content_html);
     $('#buy_course').show();
-
-    // store id and cost of the selected tourism course
-    var cur_tourism_id = tourism_list[index]['id'];
-    var cur_tourism_cost = total_cost;
-    localStorage.setItem('cur_tourism_id', cur_tourism_id);
-    localStorage.setItem('cur_tourism_cost', cur_tourism_cost);
 }
+
+// online payment
+function  onlinePayment(index) {
+    var cur_tourism = tourism_list[index];
+    // calculate discount price
+    var real_cost = cur_tourism['cost'] * cur_tourism['discount_rate'];
+
+    var payment_data = {
+        type : 1,      // 1: tourism course, 2: scenic area(all), 3: scenic area(part), 4: order, 5: attraction
+        id : cur_tourism['id'],
+        name: cur_tourism['name'],
+        image: cur_tourism['image'],
+        cost: cur_tourism['cost'],
+        real_cost: real_cost
+    };
+
+    localStorage.setObject('payment_data', payment_data);
+    window.location.href = '../views/purchase.html';
+}
+
+function  buy_with_authCode(index){
+    var cur_tourism = tourism_list[index];
+
+    $('#buy_course').hide();
+    $('#code_auth').show();
+}
+
+function OnCancelauthcodeVerify(){
+    $('#code_auth').hide();
+    $('#auth_code').val("");
+
+    //downloading needed data
+}
+
+function OnConfirmauthCode(){
+    /*  validate authorization code
+    **  If authorization code don't exist in the order lists of backend, verification is fail.
+     */
+    var auth_code = $('#auth_code').val();
+    if(auth_code == "")
+    {
+        alert('请输入授权码');
+        return;
+    }
+
+    // send ajax request and receive ajax response and so process with the result of the backend
+    // If verification is fail, maintain old state.
+    /*
+     $.ajax({
+         type: 'GET',
+         url: 'http://server/backend/dbmanage.php', //rest API url
+         dataType: 'json',
+         data: {func: 'function_name', info: res}, // set function name and parameters
+         }).success(function(data){
+             $('#code_auth').hide();
+             // change attraction marks along information
+
+         }).fail(function(){
+             return;
+     });
+     */
+
+    //return;
+    // simulate progress
+    $('#code_auth').hide();
+    $('#auth_code').val("");
+    // change attraction marks along information
+}
+
 
 function resize_tourism_course(){
     initRatio = getDevicePixelRatio();
@@ -99,5 +163,5 @@ function resize_tourism_course(){
 
     var content_margin=(document.body.clientWidth-width)/2;
     $('#back_img').css({position:'fixed',left: content_margin+10});
-    $('#buy_course_dialog').css({width:map_width *0.9});
+    //$('#buy_course_dialog').css({width:map_width *0.9});
 }

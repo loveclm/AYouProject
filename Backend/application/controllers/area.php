@@ -71,6 +71,7 @@ class Area extends BaseController
             $this->loadViews("area-add", $this->global, NULL, NULL);
         }
     }
+
     /**
      * This function is used to load the edit form
      */
@@ -90,8 +91,75 @@ class Area extends BaseController
         }
     }
 
+    /**
+     * This function used to load the first screen of the course
+     */
+    public function course()
+    {
+        $this->global['pageTitle'] = '旅游线路管理';
+        $this->global['courseList'] = $this->area_model->getCourses();
+        $this->global['searchName'] = '';
+        $this->global['searchStatus'] = 0;
+        $this->loadViews("course", $this->global, NULL , NULL);
+    }
 
+    /**
+     * This function is used to load the add Course form
+     */
+    function addCourse()
+    {
+        if($this->isAdmin() == TRUE)
+        {
+            $this->loadThis();
+        }
+        else
+        {
 
+            $this->global['pageTitle'] = '新增旅游线路';
+            $this->global['areaList'] =$this->area_model->getAreas();
+            $this->loadViews("course-add", $this->global, NULL, NULL);
+        }
+    }
+
+    /**
+     * This function is used to load the user list
+     */
+    function courselisting($name, $status)
+    {
+        if($this->isAdmin() == TRUE)
+        {
+            $this->loadThis();
+        }
+        else
+        {
+            $this->global['pageTitle'] = '旅游线路管理';
+            $this->global['courseList'] =$this->area_model->getCourses($name, $status);
+            $this->global['searchName'] = $name;
+            $this->global['searchStatus'] = $status;
+
+            $this->loadViews("course", $this->global, NULL , NULL);
+        }
+    }
+
+    /**
+     * This function is used to load the edit form
+     */
+    function editcourse($id)
+    {
+        if($this->isAdmin() == TRUE)
+        {
+            $this->loadThis();
+        }
+        else
+        {
+
+            $this->global['pageTitle'] = '编辑旅游线路';
+            $this->global['areaList'] =$this->area_model->getAreas();
+            $this->global['course'] = $this->area_model->getAreaById($id);
+
+            $this->loadViews("course-add", $this->global, NULL, NULL);
+        }
+    }
 
 
     function pageNotFound()

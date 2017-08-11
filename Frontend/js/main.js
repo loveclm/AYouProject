@@ -221,6 +221,8 @@ function confirm_verify_phone(){
 
     bPhoneverified = 1;
     $('#phone_verify').hide();
+    $('#phone_number').val("");
+    $('#verify_code').val("");
     // store phone verification state
     localStorage.setItem('phone_verified', bPhoneverified);
 
@@ -239,6 +241,7 @@ function confirm_verify_phone(){
 
 function OnCancelauthcodeVerify(){
     $('#code_auth').hide();
+    $('#auth_code').val("");
 
     //downloading needed data
 }
@@ -247,7 +250,7 @@ function OnConfirmauthCode(){
     /*  validate authorization code
     **  If authorization code don't exist in the order lists of backend, verification is fail.
      */
-    var auth_code = $('auth_code').val();
+    var auth_code = $('#auth_code').val();
     if(auth_code == "")
     {
         alert('请输入授权码');
@@ -274,6 +277,8 @@ function OnConfirmauthCode(){
     //return;
     // simulate progress
     $('#code_auth').hide();
+    $('#auth_code').val("");
+
     // change attraction marks along information
 }
 

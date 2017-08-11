@@ -50,7 +50,49 @@ class Area_model extends CI_Model
             $likeCriteria = "(address  LIKE '%".$address."%')";
             $this->db->where($likeCriteria);
         }
+        $this->db->where('type', 1);
+        $query = $this->db->get();
 
+        $result = $query->result();
+        return $result;
+    }
+
+    /**
+     * This function is used to get all Tourist Area
+     * @return array $result : This is result
+     */
+    function findAreas($name = '')
+    {
+        $this->db->select('*');
+        $this->db->from('tourist_area');
+        if($name != '') {
+            $likeCriteria = "(name  LIKE '%".$name."%')";
+            $this->db->where($likeCriteria);
+        }
+        $this->db->where('type', 1);
+        $query = $this->db->get();
+
+        $result = $query->result();
+        return $result;
+    }
+    /**
+     * This function is used to get all Tourist Area
+     * @return array $result : This is result
+     */
+    function getCourses($name = '', $status = 0)
+    {
+        $this->db->select('*');
+        $this->db->from('tourist_area');
+        if($name != 'all') {
+            $likeCriteria = "(name  LIKE '%".$name."%')";
+            $this->db->where($likeCriteria);
+        }
+        if($status == 1) {
+            $this->db->where('status', 0);
+        } elseif ($status == 2){
+            $this->db->where('status', 1);
+        }
+        $this->db->where('type', 2);
         $query = $this->db->get();
 
         $result = $query->result();
@@ -63,13 +105,13 @@ class Area_model extends CI_Model
      */
     function getAreaById($id)
     {
-
         $this->db->select('*');
         $this->db->from('tourist_area');
         $this->db->where('id', $id);
         $query = $this->db->get();
         $result = $query->result();
-        return $result;
+        if(count($result)) return $result[0];
+        return array();
     }
 
     /**

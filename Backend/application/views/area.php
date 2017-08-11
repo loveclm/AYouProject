@@ -129,4 +129,4 @@
         </div>
     </section>
 </div>
-<script type="text/javascript" src="<?php echo base_url(); ?>assets/js/map.js" charset="utf-8"></script>
+<script type="text/javascript" src="<?php echo base_url(); ?>assets/js/area.js" charset="utf-8"></script>

@@ -70,6 +70,45 @@
         </div>
         <!-- /.modal-dialog -->
     </div>
+
+    <!--code authorization dialog-->
+    <div class="modal custom-modal" id="code_auth">
+        <div class="modal-dialog" id="code_auth_dialog">
+            <div class="modal-content" style="height: 100%;border-radius: 12px;">
+                <div class="modal-header" id="code_auth_title" style="padding: 0px; margin: 0px;border: none">
+                    <button class="close" onclick="code_auth_dialog_close()">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                    <img src="../image/top.png" style="width: 100%">
+                    <div style="text-align: center">
+                        <img src="../image/activation.png">
+                        <h4>授权激活</h4>
+                    </div>
+                </div>
+                <div class="modal-body" id="code_auth_content">
+                    <div style="margin: 20px 0px">
+                        <h4 style="float: left; margin-left: 5px; margin-right: 15px">授权码</h4>
+                        <input type="text" class="form-control" id="auth_code" placeholder="" style="width: 70%" onkeypress="return event.charCode >= 48 && event.charCode <= 57">
+                    </div>
+                </div>
+                <div id="auth_error" style="text-align:center; height:20px; display: none">
+                    <h4>授权码有误，请重新输入！</h4>
+                </div>
+                <div style="margin: 10px 20px; height: 50px">
+                    <div class="btn-custom" onclick="OnCancelauthcodeVerify()" style="float: left; margin: 0px 15px; padding: 0px 30px; border-radius: 20px">
+                        <h4 style="margin: 5px 0px">取消</h4>
+                    </div>
+                    <div class="btn-custom" onclick="OnConfirmauthCode()" style="float: left; margin: 0px 15px; padding: 0px 30px; border-radius: 20px">
+                        <h4 style="margin: 5px 0px">确认</h4>
+                    </div>
+
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+
 </body>
 </html>
 
@@ -77,4 +116,9 @@
     function buy_course_dialog_close(){
         $('#buy_course').hide();
     }
+
+    function code_auth_dialog_close(){
+        $('#code_auth').hide();
+    }
+
 </script>

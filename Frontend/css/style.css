@@ -1,6 +1,6 @@
 html, body{
     padding: 0px;
-    background: #ffffff;
+    background: grey;
 }
 
 .header{
@@ -134,7 +134,7 @@ html, body{
 #buy_course_dialog{
     margin: auto;
     top: 20%;
-    width: 90%;
+    width: 300px;
 }
 #buy_course_dialog .modal-content{
     height: 100%;
