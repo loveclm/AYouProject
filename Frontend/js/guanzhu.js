@@ -14,23 +14,23 @@ function guanzhuSettings(){
     // implement the process for 关注
 
     // if 关注 is successful then jump to success page
-    window.location.href = '../views/guanzhu_success.html';
+    window.location.href = '../views/guanzhu_success.php';
 }
 
 function showMainpage(){
-    window.location.href = '../index.html';
+    window.location.href = '../index.php';
 }
 
 function resize_guanzhu(){
     initRatio = getDevicePixelRatio();
     var ratio = getDevicePixelRatio()/initRatio;
-    var width = window.innerWidth
+    var width = document.body.clientWidth
         || document.documentElement.clientWidth
-        || document.body.clientWidth;
+        || window.innerWidth;
 
-    var height = window.innerHeight
+    var height = document.body.clientHeight
         || document.documentElement.clientHeight
-        || document.body.clientHeight;
+        || window.innerHeight;
     var scale = Math.min(width/640,height/1010) * ratio;
 
     width = 640*scale;

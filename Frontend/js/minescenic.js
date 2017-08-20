@@ -38,7 +38,7 @@ function display_minescenic_data(){
         tmp_content_html="";
         tmp_content_html += '<div class="order '+state_class_List[minescenic_List[i]['state']-1] +'">';
         tmp_content_html += '<div class="order_body" onclick="showScenicArea('+ i +')">';
-        tmp_content_html += '   <img src="'+minescenic_List[i]['image_url']+'">';
+        tmp_content_html += '   <img src="'+minescenic_List[i]['image']+'">';
         tmp_content_html += '   <div class="scenic_content">';
         if(minescenic_List[i]['state'] == 1)
             tmp_content_html += '      <h5 style="position: absolute; color: red; right: 20px">'+state_string_List[minescenic_List[i]['state']-1]+'</h5>';
@@ -88,7 +88,7 @@ function pay_for_Order(index) {
     };
 
     localStorage.setObject('payment_data', payment_data);
-    window.location.href = '../views/purchase.html';
+    window.location.href = '../views/purchase.php';
 }
 
 function purchase_again_Order(index) {
@@ -98,18 +98,18 @@ function purchase_again_Order(index) {
 function showScenicArea(index){
     localStorage.setItem('cur_scenic_id', minescenic_List[index]['id']);
 
-    window.location.href = '../index.html';
+    window.location.href = '../index.php';
 }
 function resize_minesceniclist(){
     initRatio = getDevicePixelRatio();
     var ratio = getDevicePixelRatio()/initRatio;
-    var width = window.innerWidth
+    var width = document.body.clientWidth
         || document.documentElement.clientWidth
-        || document.body.clientWidth;
+        || window.innerWidth;
 
-    var height = window.innerHeight
+    var height = document.body.clientHeight
         || document.documentElement.clientHeight
-        || document.body.clientHeight;
+        || window.innerHeight;
     var scale = Math.min(width/640,height/1010) * ratio;
 
     width = 640*scale;

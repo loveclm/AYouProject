@@ -37,7 +37,7 @@ function getMyScenicAreasFromServer(){
             name:'鹤山古劳水乡',
             cost: '30.00',
             discount_rate:0.6,
-            image_url:'../image/tmp_order.png',
+            image:'../resource/image/tmp_order.png',
             order_time:'2017-08-07 14:30:09',
             state:1,             // 1: using, 2: expired
             type: 1              // 1: all paid, 2: part paid
@@ -47,7 +47,7 @@ function getMyScenicAreasFromServer(){
             name:'十里环水乡风景长廊',
             cost: '50.00',
             discount_rate:0.7,
-            image_url:'../image/tmp_order.png',
+            image:'../resource/image/tmp_order.png',
             order_time:'2017-08-05 10:30:09',
             state:1,
             type: 2              // 1: all paid, 2: part paid
@@ -57,7 +57,7 @@ function getMyScenicAreasFromServer(){
             name:'树下行人',
             cost: '15.00',
             discount_rate:0.9,
-            image_url:'../image/tmp_order.png',
+            image:'../resource/image/tmp_order.png',
             order_time:'2017-07-07 9:30:09',
             state:2,
             type: 1              // 1: all paid, 2: part paid
@@ -103,7 +103,7 @@ function getOrdersFromServer(){
         {
             id:'5897427848',
             name:'鹤山古劳水乡', //(course name or scenic area name, attraction name)
-            image:'../image/tmp_order.png',
+            image:'../resource/image/tmp_order.png',
             pay_method: 1,     // 1: online pay, 2: authorization code
             value:'30.00',     // authorization code or buy-money(ex. 30.00)
             cost: 42.00,       // real cost
@@ -117,7 +117,7 @@ function getOrdersFromServer(){
         {
             id:'5897427851',
             name:'王老吉凉茶博物馆', //(course name or scenic area name, attraction name)
-            image:'../image/tmp_order.png',
+            image:'../resource/image/tmp_order.png',
             pay_method: 2, // 1: online pay, 2: authorization code
             value:'4392862',     // authorization code or money(ex. 30.00)
             cost: 35.00,       // real cost
@@ -131,7 +131,7 @@ function getOrdersFromServer(){
         {
             id:'5897427852',
             name:'故宫', //(course name or scenic area name, attraction name)
-            image:'../image/tmp_order.png',
+            image:'../resource/image/tmp_order.png',
             pay_method: 1,           // 1: online pay, 2: authorization code
             value:'50.00',           // authorization code or money(ex. 30.00)
             cost: 63.00,       // real cost
@@ -145,7 +145,7 @@ function getOrdersFromServer(){
         {
             id:'5897427834',
             name:'树下行人', //(course name or scenic area name, attraction name)
-            image:'../image/tmp_order.png',
+            image:'../resource/image/tmp_order.png',
             pay_method: 1,      // 1: online pay, 2: authorization code
             value:'20.00',      // authorization code or money(ex. 30.00)
             cost: 31.00,       // real cost
@@ -159,7 +159,7 @@ function getOrdersFromServer(){
         {
             id:'5897427821',
             name:'故宫－长城－明十三陵－颐和园', //(course name or scenic area name, attraction name)
-            image:'../image/tmp_order.png',
+            image:'../resource/image/tmp_order.png',
             pay_method: 2, // 1: online pay, 2: authorization code
             value:'12452764',     // authorization code or money(ex. 30.00)
             cost: 250.00,       // real cost
@@ -173,7 +173,7 @@ function getOrdersFromServer(){
         {
             id:'5897427818',
             name:'东坡亭', //(course name or scenic area name, attraction name)
-            image:'../image/tmp_order.png',
+            image:'../resource/image/tmp_order.png',
             pay_method: 1, // 1: online pay, 2: authorization code
             value:'200.00',     // authorization code or money(ex. 30.00)
             cost: 250.00,       // real cost
@@ -275,7 +275,7 @@ function getTourismCoursesFromServer(){
         {
             id: '1',
             name:'故宫－圆明园－颐和园',
-            image:'../image/palace.png',
+            image:'resource/image/palace.png',
             cost:150,
             discount_rate:0.8,
             scenic_areas : [
@@ -299,7 +299,7 @@ function getTourismCoursesFromServer(){
         {
             id: '2',
             name : '故宫－长城－明十三陵－颐和园',
-            image:'../image/palace.png',
+            image:'resource/image/palace.png',
             cost : 200,
             discount_rate:0.8,
             scenic_areas : [
@@ -368,64 +368,64 @@ function getScenicareafromID(scenic_id){
         {
             id : '1',
             name :'王老吉凉茶博物馆',
-            position : {x:116.354,y:39.914585},
+            position : [116.402635,39.913155],
             cost : 10,
             discount_rate:0.8,
             buy_state : 1,
-            audio_files : ['audio/standard.mp3','audio/girl.mp3','audio/boy.mp3'],
-            image : 'image/tmp_order.png'
+            audio_files : ['resource/audio/standard.mp3','resource/audio/girl.mp3','resource/audio/boy.mp3'],
+            image : 'resource/image/tmp_order.png'
 
         },
         {
             id : '2',
             name :'胡蝶故居',
-            position : {x:116.354,y:39.914585},
+            position : [116.391541,39.92223931],
             cost : 20,
             discount_rate:0.8,
-            buy_state : 1, // 1: hear testing, 2:paid, 3:unpaid
-            audio_files : ['audio/standard.mp3','audio/girl.mp3','audio/boy.mp3'],
-            image : 'image/tmp_order.png'
+            buy_state : 2, // 1: hear testing, 2:paid, 3:unpaid
+            audio_files : ['resource/audio/standard.mp3','resource/audio/girl.mp3','resource/audio/boy.mp3'],
+            image : 'resource/image/tmp_order.png'
         },
         {
             id : '3',
             name :'李家成故居',
-            position : {x:116.364,y:39.914685},
+            position : [116.391541,39.913155],
             cost : 30,
             discount_rate:0.8,
-            buy_state : 1,
-            audio_files : ['audio/standard.mp3','audio/girl.mp3','audio/boy.mp3'],
-            image : 'image/tmp_order.png'
+            buy_state : 2,
+            audio_files : ['resource/audio/standard.mp3','resource/audio/girl.mp3','resource/audio/boy.mp3'],
+            image : 'resource/image/tmp_order.png'
         },
         {
             id : '4',
             name :'树下行人',
-            position : {x:116.324,y:39.915},
+            position : [116.402635,39.92223931],
             cost : 15,
             discount_rate:0.8,
-            buy_state : 1,
-            audio_files : ['audio/standard.mp3','audio/girl.mp3','audio/boy.mp3'],
-            image : 'image/tmp_order.png'
+            buy_state : 3,
+            audio_files : ['resource/audio/standard.mp3','resource/audio/girl.mp3','resource/audio/boy.mp3'],
+            image : 'resource/image/tmp_order.png'
         },
         {
             id : '5',
             name :'横海浪荷花世界',
-            position : {x:116.4,y:39.914885},
+            position : [116.396991, 39.91829],
             cost : 25,
             discount_rate:0.8,
-            buy_state : 1,
-            audio_files : ['audio/standard.mp3','audio/girl.mp3','audio/boy.mp3'],
-            image : 'image/tmp_order.png'
+            buy_state : 3,
+            audio_files : ['resource/audio/standard.mp3','resource/audio/girl.mp3','resource/audio/boy.mp3'],
+            image : 'resource/image/tmp_order.png'
         }
     ];
 
     scenic_area ={
         id: scenic_id,
         name : '故宫',
-        position : {x:116.404, y:39.915},
-        top_left : {x:116.304,y:39.914285},
-        bottom_right: {x:116.404,y:39.915285},
-        overlay:'image/overlay.png',
-        image:'image/palace.png',
+        position : [116.396991, 39.91829],
+        top_right : [116.402635,39.92223931],
+        bottom_left: [116.391541,39.913155],
+        overlay:'resource/image/overlay.png',
+        image:'resource/image/palace.png',
         zoom : 2,
         cost:100,
         discount_rate:0.8,

@@ -46,7 +46,7 @@ function display_tourism_data(){
         content_html += '<div class="tourismlist_item" id="tourism_item'+ (i+1) +'" onclick="showcourse('+i+')">';
         content_html += '<div  style="background-color:' + curColor + '; float:left">'+(i+1)+'</div>';
         content_html += '<h5 style="float: left; padding-left:10px;">'+ tourism_list[i]['name'] +'</h5>';
-        content_html += '<img src="../image/more.png" style="float:right; padding:10px"></div>';
+        content_html += '<img src="../resource/image/more.png" style="float:right; padding:10px"></div>';
     }
     $('#tourismlist-body').html(content_html);
 }
@@ -77,7 +77,7 @@ function  onlinePayment(index) {
     var real_cost = cur_tourism['cost'] * cur_tourism['discount_rate'];
 
     var payment_data = {
-        type : 1,      // 1: tourism course, 2: scenic area(all), 3: scenic area(part), 4: order, 5: attraction
+        type : 1,      // 1: tourism course, 2: scenic area,  3: attraction, 4: order
         id : cur_tourism['id'],
         name: cur_tourism['name'],
         image: cur_tourism['image'],
@@ -86,7 +86,7 @@ function  onlinePayment(index) {
     };
 
     localStorage.setObject('payment_data', payment_data);
-    window.location.href = '../views/purchase.html';
+    window.location.href = '../views/purchase.php';
 }
 
 function  buy_with_authCode(index){
@@ -142,13 +142,13 @@ function OnConfirmauthCode(){
 function resize_tourism_course(){
     initRatio = getDevicePixelRatio();
     var ratio = getDevicePixelRatio()/initRatio;
-    var width = window.innerWidth
+    var width = document.body.clientWidth
         || document.documentElement.clientWidth
-        || document.body.clientWidth;
+        || window.innerWidth;
 
-    var height = window.innerHeight
+    var height = document.body.clientHeight
         || document.documentElement.clientHeight
-        || document.body.clientHeight;
+        || window.innerHeight;
     var scale = Math.min(width/640,height/1010) * ratio;
 
     width = 640*scale;

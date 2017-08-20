@@ -4,8 +4,8 @@
 
 
 $(function(){
-    resize_buypage();
     display_data();
+    resize_buypage();
 });
 
 window.addEventListener('resize', function(event){
@@ -28,7 +28,7 @@ function display_data(){
 
     header_content_html = '<h3 style="text-align: center">';
     header_content_html += '   <a href="javascript:back()" style="float: left; position: fixed;left: 10px; top: 0px">';
-    header_content_html += '   <img src="../image/left_arrow.png" id="back_img"></a>';
+    header_content_html += '   <img src="../resource/image/left_arrow.png" id="back_img"></a>';
 
     switch (payment_data['type']){
         case 1:
@@ -41,7 +41,7 @@ function display_data(){
             header_content_html += '购买景点' + '</h3>';
             break;
         case 4:
-            header_content_html += '购买景区' + '</h3>';
+            header_content_html += '重新购买订单' + '</h3>';
             break;
     }
 
@@ -60,13 +60,13 @@ function display_data(){
 function resize_buypage(){
     initRatio = getDevicePixelRatio();
     var ratio = getDevicePixelRatio()/initRatio;
-    var width = window.innerWidth
+    var width = document.body.clientWidth
         || document.documentElement.clientWidth
-        || document.body.clientWidth;
+        || window.innerWidth;
 
-    var height = window.innerHeight
+    var height = document.body.clientHeight
         || document.documentElement.clientHeight
-        || document.body.clientHeight;
+        || window.innerHeight;
     var scale = Math.min(width/640,height/1010) * ratio;
 
     width = 640*scale;

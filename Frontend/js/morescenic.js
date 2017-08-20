@@ -29,7 +29,7 @@ function display_scenic_data(){
     for( var i = 0; i < scenic_list.length; i++){
         if(scenic_list[i]['name'].indexOf(filter_str) >= 0) {
             content_html += '<div class="scenic_item" id="scenic_item' + (i + 1) + '" onclick="selectScenicArea(' + i + ')">';
-            content_html += '<img src="../image/voice.png" style="float: left; height:100%">';
+            content_html += '<img src="../resource/image/voice.png" style="float: left; height:100%">';
             content_html += '<h5 style="float: left; padding-left: 15px; font-weight: bold">' + scenic_list[i]['name'] + '</h5></div>';
             // define eventListener
         }
@@ -41,7 +41,7 @@ function selectScenicArea(index){
     var new_scenic_id = scenic_list[index]['id'];
     localStorage.setItem('new_scenic_id', new_scenic_id);
 
-    window.location.href = '../index.html';
+    window.location.href = '../index.php';
 }
 
 function filter_scenic(search_text){
@@ -53,13 +53,13 @@ function filter_scenic(search_text){
 function resize_scenic(){
     initRatio = getDevicePixelRatio();
     var ratio = getDevicePixelRatio()/initRatio;
-    var width = window.innerWidth
+    var width = document.body.clientWidth
         || document.documentElement.clientWidth
-        || document.body.clientWidth;
+        || window.innerWidth;
 
-    var height = window.innerHeight
+    var height = document.body.clientHeight
         || document.documentElement.clientHeight
-        || document.body.clientHeight;
+        || window.innerHeight;
     var scale = Math.min(width/640,height/1010) * ratio;
 
     width = 640*scale;

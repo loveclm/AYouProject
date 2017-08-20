@@ -144,7 +144,7 @@ function pay_for_Order() {
     var real_cost = cur_order['cost'] * cur_order['discount_rate'];
 
     var payment_data = {
-        type : 4,      // 1: tourism course, 2: scenic area(all), 3: scenic area(part), 4: order, 5: attraction
+        type : 4,      // 1: tourism course, 2: scenic area,  3: attraction, 4: order
         id : cur_order['id'],
         name: cur_order['name'],
         image: cur_order['image'],
@@ -153,7 +153,7 @@ function pay_for_Order() {
     };
 
     localStorage.setObject('payment_data', payment_data);
-    window.location.href = '../views/purchase.html';
+    window.location.href = '../views/purchase.php';
 }
 
 function purchase_again_Order() {
@@ -161,24 +161,25 @@ function purchase_again_Order() {
 }
 
 function showMainpage(){
-    window.location.href = '../index.html';
+    window.location.href = '../index.php';
 }
 
 function resize_order_detail(){
     initRatio = getDevicePixelRatio();
     var ratio = getDevicePixelRatio()/initRatio;
-    var width = window.innerWidth
+    var width = document.body.clientWidth
         || document.documentElement.clientWidth
-        || document.body.clientWidth;
+        || window.innerWidth;
 
-    var height = window.innerHeight
+    var height = document.body.clientHeight
         || document.documentElement.clientHeight
-        || document.body.clientHeight;
+        || window.innerHeight;
     var scale = Math.min(width/640,height/1010) * ratio;
 
     width = 640*scale;
     $('#content').css({width:width, height:height});
     $('#app_header').css({width:width});
+    $('#app_footer').css({width:width});
 
     // resize map region
     var map_top = document.getElementById('app_header').clientHeight;
