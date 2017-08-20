@@ -24,7 +24,8 @@ function selectCourse(id) {
 function addAreaToCourse() {
 
     var areaName = $('#areatitle-' + currentSelectedArea).text();
-    $("#courseItems").append("<li class='custom-courseitem' onclick='selectedCourseItem(this)' data-id='" + currentSelectedArea+"'><div>" + areaName + "</div></li>");
+    $("#courseItems").append("<li class='custom-courseitem' onclick='selectedCourseItem(this)' " +
+        "data-id='" + currentSelectedArea+"'><div>" + areaName + "</div></li>");
 }
 
 //Select area in Course
@@ -161,13 +162,12 @@ function cancel(url) {
 function findAreaInList(url) {
     var strKey = $('#course-search').val();
     $.post(url + "api/Areas/find/" +strKey, function(result){
-
-        console.log(result);
         $("#courseList").empty();
         var areaList = result;
         for(var i = 0; i < areaList.length; i++ ){
             var area = areaList[i];
-            $("#courseList").append("<li class='custom-areaitem' id='areaitem-"+ area['id'] +"' onclick='selectCourse(" + area['id'] +");'>" +
+            $("#courseList").append("<li class='custom-areaitem' " +
+                "id='areaitem-"+ area['id'] +"' onclick='selectCourse(" + area['id'] +");'>" +
                 "<div id='areatitle-"+ area['id'] +"'>" + area['name'] + "</div></li>");
         }
 

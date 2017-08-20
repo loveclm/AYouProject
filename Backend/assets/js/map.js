@@ -5,12 +5,7 @@
 
 // variables for AMap
 var map = null; // AMap pointer
-var geolocation =  null;
-var walking = null;
-var timer = null;
 var state = 'new';
-var zoom = 17;
-
 // selected position
 var leftBottom = [];
 var rightTop = [];
@@ -23,6 +18,7 @@ var isFirst = true;
 
 //list for Attraction Mark
 var markList = [];
+var markerId = 100;
 
 /* function: initMap
     description: Init AMap using center position and add AMap.MouseTool plugin
@@ -82,10 +78,8 @@ $(document).ready(function(){
         });
 
         addPointFromArea(url);
-
     }
     else {
-
         // init AMap
         currentLocation = [116.403322, 39.900255];
         initMap(currentLocation);
@@ -265,7 +259,6 @@ $(document).ready(function(){
     }
 });
 
-var markerId = 100;
 function showAddPoint() {
 
     $('.point-add-view').show();
@@ -333,8 +326,8 @@ function addPointFromArea(url) {
                 "<input style='display: none;' value='" + pointImage +"'/>" +
                 "<input style='display: none;' value='" + pointAudio +"'/>" +
                 "<input style='display: none;' value='" + pointFree +"'/>" +
-                "<div class='col-sm-4' data-id='" + markerId +"' onclick='editPoint(this);'>编辑</div>" +
-                "<div class='col-sm-4' data-id='" + markerId +"' onclick='deletePoint(this);'>删除</div>" +
+                "<div class='col-sm-4' data-id='" + markerId +"' onclick='editPoint(this);'><a href='#'>编辑</a></div>" +
+                "<div class='col-sm-4' data-id='" + markerId +"' onclick='deletePoint(this);'><a href='#'>删除</a></div>" +
                 "</li>" );
         }
     });
@@ -458,26 +451,36 @@ function deletePoint(e) {
     $(e).parent().remove();
 }
 
-function addTouristArea() {
+function addTouristArea(url, isEdit) {
     var area = $("#areaname").val();
     var rate = $("#arearate").val();
     var overlay = $('#area-overlay').val();
 
+    if(area==''){
+        window.alert("Please enter area name.");
+        return;
+    }
+
     var info = {
         overay: overlay,
-        position: JSON.parse($('#area-position').val()),
+        position: $('#area-position').val()!=0?JSON.parse($('#area-position').val()):'',
         audio: ''
     };
 
     var touristArea = {
-        name: area, discount_rate: rate, address: '', status: 0,
-        type: 1, info: JSON.stringify(info), point_list: getAttractions()
+        name: area,
+        discount_rate: rate,
+        address: '',
+        status: 0,
+        type: 1,
+        info: JSON.stringify(info),
+        point_list: getAttractions()
     };
 
-    $.post("api/Areas/save", touristArea, function(result){
-        console.log(result);
+    $.post(url + "api/Areas/save", touristArea, function(result){
+
+        location.href = url + 'area';
     });
-    return;
 }
 
 function getAttractions() {
@@ -494,7 +497,15 @@ function getAttractions() {
         var pointImage = $(pointInfo[4]).val();
         var pointAudio = $(pointInfo[5]).val();
         var pointFree = $(pointInfo[6]).val();
-        var point = {name: pointName, description: pointDescription, price: pointPrice, image: pointImage, audio: pointAudio, trial: pointFree, position: pointPosition};
+        var point = {
+            name: pointName,
+            description: pointDescription,
+            price: pointPrice,
+            image: pointImage,
+            audio: pointAudio,
+            trial: pointFree,
+            position: pointPosition
+        };
         ret.push(point);
     }
     return JSON.stringify(ret);

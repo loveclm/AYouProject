@@ -12,6 +12,8 @@
     <link href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css" rel="stylesheet" type="text/css" />
     <!-- Theme style -->
     <link href="<?php echo base_url(); ?>assets/dist/css/AdminLTE.min.css" rel="stylesheet" type="text/css" />
+    <link href="<?php echo base_url(); ?>assets/plugins/datepicker/bootstrap-datepicker3.min.css" rel="stylesheet" type="text/css"/>
+
     <!-- AdminLTE Skins. Choose a skin from the css/skins 
          folder instead of downloading all of them to reduce the load. -->
     <link href="<?php echo base_url(); ?>assets/dist/css/skins/_all-skins.css" rel="stylesheet" type="text/css" />
@@ -105,7 +107,7 @@
               </a>
             </li>
             <li class="treeview">
-              <a href="#" >
+                <a href="<?php echo base_url(); ?>shop" >
                 <i class="fa fa-ticket"></i>
                 <span>商家管理</span>
               </a>
@@ -115,31 +117,31 @@
             {
             ?>
             <li class="treeview">
-              <a href="#" >
+                <a href="<?php echo base_url(); ?>qrmanage" >
                 <i class="fa fa-thumb-tack"></i>
                 <span>二维码管理</span>
               </a>
             </li>
             <li class="treeview">
-              <a href="#" >
+              <a href="<?php echo base_url(); ?>authmanage" >
                 <i class="fa fa-upload"></i>
                 <span>授权码管理</span>
               </a>
             </li>
                 <li class="treeview">
-              <a href="#" >
+                  <a href="<?php echo base_url(); ?>ordermanage" >
                 <i class="fa fa-upload"></i>
                 <span>订单管理</span>
               </a>
             </li>
                 <li class="treeview">
-              <a href="#" >
+                  <a href="<?php echo base_url(); ?>settlemanage" >
                 <i class="fa fa-upload"></i>
                 <span>结算管理</span>
               </a>
             </li>
                 <li class="treeview">
-              <a href="#" >
+                  <a href="<?php echo base_url(); ?>usermanage" >
                 <i class="fa fa-upload"></i>
                 <span>用户管理</span>
               </a>
@@ -152,12 +154,29 @@
             if($role == ROLE_ADMIN)
             {
             ?>
-            <li class="treeview">
-              <a href="<?php echo base_url(); ?>userListing">
-                <i class="fa fa-users"></i>
-                <span>系统管理</span>
-              </a>
-            </li>
+              <li class="treeview">
+                <a href="<?php echo base_url(); ?>userListing">
+                  <i class="fa fa-laptop"></i>
+                  <span>系统管理</span>
+                            <span class="pull-right-container">
+                                <i class="fa fa-angle-left pull-right"></i>
+                            </span>
+                </a>
+                <ul class="treeview-menu" style="display: none;">
+                  <li>
+                    <a href="<?php echo base_url(); ?>userListing">
+                      <i class="fa fa-users"></i>
+                      人员管理
+                    </a>
+                  </li>
+                  <li>
+                    <a href="<?php echo base_url(); ?>roleListing">
+                      <i class="fa fa-circle-o"></i>
+                      角色管理
+                    </a>
+                  </li>
+                </ul>
+              </li>
             <li class="treeview">
               <a href="#" >
                 <i class="fa fa-files-o"></i>

@@ -19,7 +19,7 @@
     background-color: red;
 }
 .area-result-view{
-    margin-top: 40px;
+    margin-top: 20px;
     text-align: center;
 }
 .area-result-view th {
@@ -31,7 +31,7 @@
 #pointList {
     list-style: none;
 }
-#custom-confirm-delete-view, #custom-confirm-deploy-view {
+#custom-confirm-delete-view, #custom-confirm-deploy-view, #custom-generate-auth-view, #custom-generate-auth-count-view, #custom-generate-qr-view {
     position: absolute;
     border: 1px solid;
     text-align: center;
@@ -51,6 +51,10 @@
     height: 100%;
     background-color: white;
     padding: 10px;
+}
+
+.form-control.date-picker{
+    width:30%;
 }
 
 #courseList ,#courseItems{
@@ -81,4 +85,7 @@
     width: 100%;
     background-color: #0099ff;
     color: white;
+}
+#custom-generate-qr-view {
+    padding: 5px;
 }

@@ -3,9 +3,9 @@
 /**
  * Class : Login (LoginController)
  * Login class to control to authenticate user credentials and starts user's session.
- * @author : Kishor Mali
- * @version : 1.1
- * @since : 15 November 2016
+ * @author : thejinhu
+ * @version : 1.0
+ * @since : 8 August 2017
  */
 class Error extends CI_Controller
 {
@@ -42,5 +42,9 @@ class Error extends CI_Controller
         }
     }
 }
+
+/* End of file error.php */
+/* Location: .application/controllers/error.php */
+
 
 ?>

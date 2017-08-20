@@ -45,10 +45,10 @@
                     <thead>
                     <tr style="background-color: lightslategrey;">
                         <th>旅游线路名称</th>
-                        <th width="100">具体线路</th>
-                        <th width="150">价格</th>
+                        <th width="">具体线路</th>
+                        <th width="100">价格</th>
                         <th width="100">状态</th>
-                        <th width="300">操作</th>
+                        <th width="200">操作</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -65,25 +65,25 @@
                         //}
                         ?>
                         <tr>
-                            <td><?php echo $course->name;?></td>
+                            <td><?php echo ($course->name);?></td>
                             <td><?php echo '';?></td>
                             <td><?php echo '';?></td>
                             <td><?php echo $course->status == 1 ? '已上架': '未上架'; ?></td>
                             <td>
-                                <a href="editcourse/<?php echo $course->id;?>">查看</a>
+                                <a href="editcourse/<?php echo $course->id;?>">查看 &nbsp;</a>
                                 <?php
                                 if($course->status == 0){
                                     ?>
-                                    <a onclick="deleteAreaConfirm(<?php echo $course->id;?>);">删除</a>
+                                    <a href="#" onclick="deleteAreaConfirm(<?php echo $course->id;?>);">删除 &nbsp;</a>
                                     <?php
                                 }
                                 if($course->status == 0){
                                     ?>
-                                    <a onclick="deployAreaConfirm(<?php echo $course->id;?>);">上架</a>
+                                    <a href="#" onclick="deployAreaConfirm(<?php echo $course->id;?>);">上架 &nbsp;</a>
                                     <?php
                                 }else {
                                     ?>
-                                    <a onclick="undeployAreaConfirm(<?php echo $course->id;?>);">下架</a>
+                                    <a href="#" onclick="undeployAreaConfirm(<?php echo $course->id;?>);">下架</a>
                                     <?php
                                 }
                                 ?>

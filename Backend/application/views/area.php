@@ -2,7 +2,7 @@
     <!-- Content Header (Page header) -->
     <section class="content-header">
         <h1>
-            景区管理
+            <a href="#" onclick="test_api();">景区管理</a>
         </h1>
     </section>
 
@@ -82,16 +82,16 @@
                                         <?php
                                         if($area->status == 0){
                                             ?>
-                                            <a onclick="deleteAreaConfirm(<?php echo $area->id;?>);">删除</a>
+                                            <a href="#" onclick="deleteAreaConfirm(<?php echo $area->id;?>);">删除</a>
                                         <?php
                                         }
                                         if($area->status == 0){
                                             ?>
-                                            <a onclick="deployAreaConfirm(<?php echo $area->id;?>);">上架</a>
+                                            <a href="#" onclick="deployAreaConfirm(<?php echo $area->id;?>);">上架</a>
                                             <?php
                                         }else {
                                             ?>
-                                            <a onclick="undeployAreaConfirm(<?php echo $area->id;?>);">下架</a>
+                                            <a href="#" onclick="undeployAreaConfirm(<?php echo $area->id;?>);">下架</a>
                                         <?php
                                         }
                                         ?>

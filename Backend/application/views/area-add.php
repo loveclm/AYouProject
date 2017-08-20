@@ -29,7 +29,7 @@
                     <div class="col-xs-6 col-sm-4 form-inline">
                         <div class="form-group area-add-view">
                             <label>上传录音：</label>
-                            <a class="btn btn-primary" href="<?php echo base_url(); ?>addarea">
+                            <a class="btn btn-primary" href="#<?/*php echo base_url().'addarea';*/ ?>" onclick="uploadPointAudio();">
                                 <span>上传录音</span>
                             </a>
                         </div>
@@ -54,16 +54,16 @@
                     <div class="col-sm-7">
                         <div id="custom-map-container" style="height: 600px;"></div>
                     </div>
-                    <div class="col-sm-3" style="border: 1px solid;height: 600px;">
+                    <div class="col-sm-3" style="display:<?php echo $isEdit=='0'?'none':'block'; ?>; border: 1px solid;height: 600px;">
 
                         <div class="point-list-view">
-                            <div class="form-group">
+                            <div class="form-group col-sm-6">
                                 <input id="upload-overlay" type="file" style="display: none;"/>
-                                <button type="button" onclick="uploadOverlay();">上传覆盖图</button>
+                                <button class="btn btn-primary" type="button" onclick="uploadOverlay();">上传覆盖图</button>
                                 <input id="area-overlay" value="<?php echo isset($area) ? ($areaInfo->overay) : '';?>" style="display: none;"/>
                             </div>
-                            <div class="form-group">
-                                <button type="button" onclick="showAddPoint();">标记景点</button>
+                            <div class="form-group col-sm-6">
+                                <button class="btn btn-primary" type="button" onclick="showAddPoint();">标记景点</button>
                             </div>
                             <div class="form-group">
                                 <ul id="pointList">
@@ -125,7 +125,9 @@
                 </div>
 
             </div>
-            <input type="button" class="btn btn-primary" onclick="addTouristArea(<?php echo isset($area)? $area->id: 0;?>);" value="Submit" />
+            <input type="button" class="btn btn-primary"
+                   onclick="addTouristArea('<?php echo base_url(); ?>', <?php echo isset($area)? $area->id: 0;?>);"
+                   value="保存" />
 
     </section>
 </div>

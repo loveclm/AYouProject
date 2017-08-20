@@ -44,7 +44,7 @@ $route['404_override'] = 'error';
 /*********** USER DEFINED ROUTES *******************/
 
 $route['loginMe'] = 'login/loginMe';
-$route['dashboard'] = 'user';
+
 $route['area'] = 'area';
 $route['addarea'] = 'area/addNew';
 $route['editarea/(:any)'] = 'area/edit/$1';
@@ -56,20 +56,46 @@ $route['addcourse'] = 'area/addCourse';
 $route['courseListing/(:any)/(:num)'] = "area/courselisting/$1/$2";
 $route['editcourse/(:any)'] = 'area/editcourse/$1';
 
-$route['logout'] = 'user/logout';
-$route['userListing'] = 'user/userListing';
-$route['userListing/(:num)'] = "user/userListing/$1";
-$route['addNew'] = "user/addNew";
+$route['shop'] = 'shop';
+$route['addshop'] = 'shop/addShop';
+$route['shopListing/(:any)/(:num)'] = "shop/shoplisting/$1/$2";
+$route['editshop/(:any)'] = 'shop/editshop/$1';
 
-$route['addNewUser'] = "user/addNewUser";
-$route['editOld'] = "user/editOld";
-$route['editOld/(:num)'] = "user/editOld/$1";
-$route['editUser'] = "user/editUser";
-$route['deleteUser'] = "user/deleteUser";
-$route['loadChangePass'] = "user/loadChangePass";
-$route['changePassword'] = "user/changePassword";
-$route['pageNotFound'] = "user/pageNotFound";
-$route['checkEmailExists'] = "user/checkEmailExists";
+$route['qrmanage'] = 'qrmanage';
+$route['qrListing/(:any)/(:num)'] = "qrmanage/qrlisting/$1/$2";
+
+$route['authmanage'] = 'authmanage';
+$route['authListing/(:num)/(:any)/(:num)'] = 'authmanage/listing/$1/$2/$3';
+$route['authDetail/(:num)/(:num)'] = 'authmanage/detail/$1/$2';
+$route['authOrderDetail/(:num)'] = 'authmanage/orderdetail/$1';
+$route['authAdd/(:num)/(:num)'] = 'authmanage/addmoney/$1/$2';
+
+$route['ordermanage'] = 'ordermanage';
+$route['buyListing/(:num)/(:any)/(:any)/(:any)/(:num)'] = 'ordermanage/buyListing/$1/$2/$3/$4/$5';
+$route['orderListing/(:num)/(:any)/(:any)/(:any)/(:num)'] = 'ordermanage/authListing/$1/$2/$3/$4/$5';
+
+$route['settlemanage'] = 'settlemanage';
+$route['settlebuyListing/(:num)/(:any)/(:any)/(:any)'] = 'settlemanage/buyListing/$1/$2/$3/$4';
+$route['settleorderListing/(:num)/(:any)/(:any)/(:any)'] = 'settlemanage/authListing/$1/$2/$3/$4';
+
+$route['usermanage'] = 'usermanage';
+$route['userCoListing/(:num)/(:any)'] = 'usermanage/userCollectListing/$1/$2';
+
+$route['logout'] = 'systemmanage/logout';
+$route['roleListing'] = 'systemmanage/roleListing';
+$route['userListing'] = 'systemmanage/userListing';
+$route['userListing/(:num)'] = "systemmanage/userListing/$1";
+$route['addNew'] = "systemmanage/addNew";
+
+$route['addNewUser'] = "systemmanage/addNewUser";
+$route['editOld'] = "systemmanage/editOld";
+$route['editOld/(:num)'] = "systemmanage/editOld/$1";
+$route['editUser'] = "systemmanage/editUser";
+$route['deleteUser'] = "systemmanage/deleteUser";
+$route['loadChangePass'] = "systemmanage/loadChangePass";
+$route['changePassword'] = "systemmanage/changePassword";
+$route['pageNotFound'] = "systemmanage/pageNotFound";
+$route['checkEmailExists'] = "systemmanage/checkEmailExists";
 
 $route['forgotPassword'] = "login/forgotPassword";
 $route['resetPasswordUser'] = "login/resetPasswordUser";

@@ -5,20 +5,6 @@
 
 jQuery(document).ready(function(){
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 	jQuery(document).on("click", ".deleteUser", function(){
 		var userId = $(this).data("userid"),
 			hitURL = baseURL + "deleteUser",
@@ -42,8 +28,6 @@ jQuery(document).ready(function(){
 			});
 		}
 	});
-	
-	
 	jQuery(document).on("click", ".searchList", function(){
 		
 	});

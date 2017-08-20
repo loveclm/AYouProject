@@ -3,11 +3,11 @@
 require APPPATH . '/libraries/BaseController.php';
 
 /**
- * Class : User (UserController)
- * User Class to control all user related operations.
- * @author : Kishor Mali
- * @version : 1.1
- * @since : 15 November 2016
+ * Class : Area (AreaController)
+ * Area Class to control all tourist area and course related operations.
+ * @author : thejinhu
+ * @version : 1.0
+ * @since : 8 August 2017
  */
 class Area extends BaseController
 {
@@ -66,8 +66,8 @@ class Area extends BaseController
         }
         else
         {
-
             $this->global['pageTitle'] = '新增景区';
+            $this->global['isEdit']='0';
             $this->loadViews("area-add", $this->global, NULL, NULL);
         }
     }
@@ -86,6 +86,7 @@ class Area extends BaseController
 
             $this->global['pageTitle'] = '编辑景区';
             $this->global['area'] = $this->area_model->getAreaById($id);
+            $this->global['isEdit']='1';
 
             $this->loadViews("area-add", $this->global, NULL, NULL);
         }
@@ -169,5 +170,9 @@ class Area extends BaseController
         $this->loadViews("404", $this->global, NULL, NULL);
     }
 }
+
+/* End of file area.php */
+/* Location: .application/controllers/area.php */
+
 
 ?>
