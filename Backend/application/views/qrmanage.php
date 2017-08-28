@@ -40,10 +40,10 @@
                     <thead>
                     <tr style="background-color: lightslategrey;">
                         <th>商家名称</th>
-                        <th width="100">类型</th>
-                        <th width="150">名称</th>
+                        <th width="150">类型</th>
+                        <th width="">名称</th>
                         <th width="150">新增时间</th>
-                        <th width="300">操作</th>
+                        <th width="100">操作</th>
                     </tr>
                     </thead>
                     <tbody>

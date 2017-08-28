@@ -16,7 +16,7 @@
             <li class="<?php echo $showList == '1' ? '' : 'active'; ?>">
                 <a data-toggle="tab" href="#tab_content2"
                    aria-expanded="<?php echo $showList == '1' ? false : true; ?>"
-                   onclick="searchAuthOrder('<?php echo base_url(); ?>');">线上购买订单结算</a>
+                   onclick="searchAuthOrder('<?php echo base_url(); ?>');">后付款授权码结算</a>
             </li>
         </ul>
 
@@ -72,10 +72,10 @@
                                 <tr style="background-color: lightslategrey;">
                                     <th width="150">年月份</th>
                                     <th width="150">商家账号</th>
-                                    <th width="150">商家名称</th>
-                                    <th width="">结算金额（元）</th>
-                                    <th width="">平台提成（元）</th>
-                                    <th width="">实际结算金额（元)</th>
+                                    <th width="">商家名称</th>
+                                    <th width="150">结算金额(元)</th>
+                                    <th width="150">平台提成(元)</th>
+                                    <th width="150">实际结算金额(元)</th>
                                     <th width="100">状态</th>
                                     <th width="150">操作</th>
                                 </tr>

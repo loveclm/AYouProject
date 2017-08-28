@@ -15,14 +15,14 @@ window.addEventListener('resize', function(event){
 });
 
 function back(){
-    localStorage.removeItem('cur_tourism_id');
-    localStorage.removeItem('cur_tourism_cost');
+    sessionStorage.removeItem('cur_tourism_id');
+    sessionStorage.removeItem('cur_tourism_cost');
 
     history.back();
 }
 
 function loadTourismsFromLocalstorage(){
-    tourism_list = localStorage.getObject('tourism_courses');
+    tourism_list = sessionStorage.getObject('tourism_courses');
     if(tourism_list === null)
         getTourismCoursesFromServer();
     else
@@ -32,7 +32,9 @@ function loadTourismsFromLocalstorage(){
 function display_tourism_data(){
     //------- show the tourism list
     // show the header information
-    $('#tourismlist-header').find('h4').html('旅游线路 (共'+ tourism_list.length+'条线路)');
+    var cnt = 0;
+    if( tourism_list != null) cnt = tourism_list.length;
+    $('#tourismlist-header').find('h4').html('旅游线路 (共'+ cnt+'条线路)');
     // show individual tourism data
     var content_html = "";
     var curColor;
@@ -77,7 +79,7 @@ function  onlinePayment(index) {
     var real_cost = cur_tourism['cost'] * cur_tourism['discount_rate'];
 
     var payment_data = {
-        type : 1,      // 1: tourism course, 2: scenic area,  3: attraction, 4: order
+        type : 1,      // 1: tourism course, 2: scenic area,  3: attraction, 4: authorize code
         id : cur_tourism['id'],
         name: cur_tourism['name'],
         image: cur_tourism['image'],
@@ -85,8 +87,8 @@ function  onlinePayment(index) {
         real_cost: real_cost
     };
 
-    localStorage.setObject('payment_data', payment_data);
-    window.location.href = '../views/purchase.php';
+    sessionStorage.setObject('payment_data', payment_data);
+    window.location.href = '../views/purchase.html';
 }
 
 function  buy_with_authCode(index){
@@ -116,26 +118,29 @@ function OnConfirmauthCode(){
 
     // send ajax request and receive ajax response and so process with the result of the backend
     // If verification is fail, maintain old state.
-    /*
-     $.ajax({
-         type: 'GET',
-         url: 'http://server/backend/dbmanage.php', //rest API url
-         dataType: 'json',
-         data: {func: 'function_name', info: res}, // set function name and parameters
-         }).success(function(data){
-             $('#code_auth').hide();
-             // change attraction marks along information
 
-         }).fail(function(){
-             return;
-     });
-     */
-
-    //return;
-    // simulate progress
-    $('#code_auth').hide();
-    $('#auth_code').val("");
-    // change attraction marks along information
+    var phone_num = localStorage.getItem('phone_number');
+    if(phone_num == "") return;
+    // send the order information to back-end
+    $.ajax({
+        type: 'POST',
+        url: SERVER_URL + 'api/Areas/setAreaBuyOrder',
+        dataType: 'json',
+        // username:'admin',
+        // password:'1234',
+        data: {'phone' : phone_num, 'id':"", 'type': 4, 'cost': auth_code},
+        success: function (data) {
+            if (data.status == false) {
+                alert('订单失败。授权码错了。');
+                return;
+            }
+            $('#code_auth').hide();
+            $('#auth_code').val("");
+            //alert('订单成功。');
+        },
+        error: function (data) {
+        }
+    });
 }
 
 
@@ -151,7 +156,7 @@ function resize_tourism_course(){
         || window.innerHeight;
     var scale = Math.min(width/640,height/1010) * ratio;
 
-    width = 640*scale;
+    //width = 640*scale;
     $('#content').css({width:width, height:height});
     $('#app_header').css({width:width});
 

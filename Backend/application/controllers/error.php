@@ -7,7 +7,7 @@
  * @version : 1.0
  * @since : 8 August 2017
  */
-class Error extends CI_Controller
+class error extends CI_Controller
 {
     /**
      * This is default constructor of the class

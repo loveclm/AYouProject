@@ -15,7 +15,7 @@ window.addEventListener('resize', function(event){
 });
 
 function loadmyScenicData(){
-    minescenic_List = localStorage.getObject('my_scenic_areas')
+    minescenic_List = sessionStorage.getObject('my_scenic_areas')
     if(minescenic_List == null)
         getMyScenicAreasFromServer();
     else
@@ -66,11 +66,11 @@ function display_minescenic_data(){
                 content_html_expired += tmp_content_html;
                 break;
         }
-
-        $('#tab_all').html(content_html_all);
-        $('#tab_using').html(content_html_using);
-        $('#tab_expired').html(content_html_expired);
     }
+
+    $('#tab_all').html(content_html_all);
+    $('#tab_using').html(content_html_using);
+    $('#tab_expired').html(content_html_expired);
 }
 
 function pay_for_Order(index) {
@@ -87,8 +87,8 @@ function pay_for_Order(index) {
         real_cost: real_cost
     };
 
-    localStorage.setObject('payment_data', payment_data);
-    window.location.href = '../views/purchase.php';
+    sessionStorage.setObject('payment_data', payment_data);
+    window.location.href = '../views/purchase.html';
 }
 
 function purchase_again_Order(index) {
@@ -96,7 +96,15 @@ function purchase_again_Order(index) {
 }
 
 function showScenicArea(index){
-    localStorage.setItem('cur_scenic_id', minescenic_List[index]['id']);
+    sessionStorage.setItem('new_scenic_id', minescenic_List[index]['id']);
+
+    var new_scenic_id = minescenic_List[index]['id'];
+    var geo_scenic_id = sessionStorage.getItem('geo_scenic_id');
+    if( geo_scenic_id == new_scenic_id){
+        sessionStorage.setItem('movable', 1);
+    }else{
+        sessionStorage.setItem('movable', 0);
+    }
 
     window.location.href = '../index.php';
 }
@@ -112,7 +120,7 @@ function resize_minesceniclist(){
         || window.innerHeight;
     var scale = Math.min(width/640,height/1010) * ratio;
 
-    width = 640*scale;
+    //width = 640*scale;
     $('#content').css({width:width, height:height});
     $('#app_header').css({width:width});
 
@@ -133,10 +141,10 @@ function resize_minesceniclist(){
     $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
         var index = $(e.target).closest('li').index();
 
-        localStorage.setItem('scenic_tab_index', index);
+        sessionStorage.setItem('scenic_tab_index', index);
     });
 
-    var index = localStorage.getItem('scenic_tab_index');
+    var index = sessionStorage.getItem('scenic_tab_index');
     if( index != null)
         $('.nav-tabs li:eq('+index+') a').tab('show');
 }

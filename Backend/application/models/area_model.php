@@ -1,6 +1,6 @@
-<?php if(!defined('BASEPATH')) exit('No direct script access allowed');
+<?php if (!defined('BASEPATH')) exit('No direct script access allowed');
 
-class Area_model extends CI_Model
+class area_model extends CI_Model
 {
     /**
      * This function is used to get all Tourist Area
@@ -10,17 +10,17 @@ class Area_model extends CI_Model
     {
         $this->db->select('*');
         $this->db->from('tourist_area');
-        if($name != 'all') {
-            $likeCriteria = "(name  LIKE '%".$name."%')";
+        if ($name != 'all') {
+            $likeCriteria = "(name  LIKE '%" . $name . "%')";
             $this->db->where($likeCriteria);
         }
-        if($status == 1) {
+        if ($status == 1) {
             $this->db->where('status', 0);
-        } elseif ($status == 2){
+        } elseif ($status == 2) {
             $this->db->where('status', 1);
         }
-        if($address != 'all') {
-            $likeCriteria = "(address  LIKE '%".$address."%')";
+        if ($address != 'all') {
+            $likeCriteria = "(address  LIKE '%" . $address . "%')";
             $this->db->where($likeCriteria);
         }
         $this->db->where('type', 1);
@@ -38,8 +38,8 @@ class Area_model extends CI_Model
     {
         $this->db->select('*');
         $this->db->from('tourist_area');
-        if($name != '') {
-            $likeCriteria = "(name  LIKE '%".$name."%')";
+        if ($name != '') {
+            $likeCriteria = "(name  LIKE '%" . $name . "%')";
             $this->db->where($likeCriteria);
         }
         $this->db->where('type', 1);
@@ -74,13 +74,13 @@ class Area_model extends CI_Model
     {
         $this->db->select('*');
         $this->db->from('tourist_area');
-        if($name != 'all') {
-            $likeCriteria = "(name  LIKE '%".$name."%')";
+        if ($name != 'all') {
+            $likeCriteria = "(name  LIKE '%" . $name . "%')";
             $this->db->where($likeCriteria);
         }
-        if($status == 1) {
+        if ($status == 1) {
             $this->db->where('status', 0);
-        } elseif ($status == 2){
+        } elseif ($status == 2) {
             $this->db->where('status', 1);
         }
         $this->db->where('type', 2);
@@ -101,7 +101,23 @@ class Area_model extends CI_Model
         $this->db->where('id', $id);
         $query = $this->db->get();
         $result = $query->result();
-        if(count($result)) return $result[0];
+        if (count($result)) return $result[0];
+        return array();
+    }
+
+    /**
+     * This function is used to get Tourist Area by id
+     * @return array $result : This is result
+     */
+    function getAreaByAuthId($authid)
+    {
+        $this->db->select('*');
+        $this->db->from('tbl_authcode as au');
+        $this->db->join('tourist_area as ta', 'au.targetid = ta.id');
+        $this->db->where('au.id', $authid);
+        $query = $this->db->get();
+        $result = $query->result();
+        if (count($result)) return $result[0];
         return array();
     }
 
@@ -128,7 +144,7 @@ class Area_model extends CI_Model
     function addAttraction($pointInfo)
     {
         $this->db->trans_start();
-        $this->db->insert('tourist_attraction', $pointInfo);
+        $this->db->insert('tourist_area', $pointInfo);
 
         $insert_id = $this->db->insert_id();
 
@@ -136,7 +152,6 @@ class Area_model extends CI_Model
 
         return $insert_id;
     }
-
 
 
     /**

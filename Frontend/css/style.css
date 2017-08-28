@@ -90,6 +90,11 @@ html, body{
     background-size: contain;
 }
 
+#btn-position{
+    background: url('../resource/image/home_position_on.png') no-repeat;
+    background-size: contain;
+}
+
 .custom-modal{
     margin: 0px;
     background: rgba(0, 0, 0, 0);

@@ -2,7 +2,7 @@
     <!-- Content Header (Page header) -->
     <section class="content-header">
         <h1>
-            结算列表
+            用户列表
         </h1>
     </section>
     <section class="container content">
@@ -50,29 +50,36 @@
                         <?php
 
                         $Count = count($userList);
-                        $sumBuy = $sumAuth = $Auth = $Buy = 0;
-                        for ($i = 0; $i < $Count; $i++) {
-                            $item = $userList[$i];
-                            $id = $item->userId;
-                            $Buy = $this->collection_model->getBuyOrderPaid($id);
-                            $Auth = $this->collection_model->getAuthOrderPaid($id);
-                            $sumBuy += $Buy;
-                            $sumAuth += $Auth;
-                            ?>
-                            <tr>
-                                <td><?php echo $i + 1; ?></td>
-                                <td><?php echo $item->mobile; ?></td>
-                                <td><?php echo $Buy; ?></td>
-                                <td><?php echo $Auth; ?></td>
-                                <td><?php echo $Buy + $Auth; ?></td>
-                            </tr>
-                        <?php } ?>
+                        $sumPaid = $sumBuy = $sumAuth = $Auth = $Buy = 0;
+                        if($userList!='') {
+                            for ($i = 0; $i < $Count; $i++) {
+                                $item = $userList[$i];
+                                $mobile = $item->mobile;
+                                $Buy = $this->collection_model->getBuyOrderPaid($mobile);
+                                $sumBuy += $Buy;
+                                $Auth = $this->collection_model->getAuthOrderPaid($mobile);
+                                $sumAuth += $Auth;
+                                $Paid = $this->order_model->getMyOrderInfos($mobile);
+                                $Paid = $Paid == '-1' ? '0' : $Paid['total_price'];
+                                $sumPaid += $Paid;
+                                ?>
+                                <tr>
+                                    <td><?php echo $i + 1; ?></td>
+                                    <td><?php echo $item->mobile; ?></td>
+                                    <td><?php echo $Buy; ?></td>
+                                    <td><?php echo $Auth; ?></td>
+                                    <td><?php echo $Paid; ?></td>
+                                </tr>
+                                <?php
+                            }
+                        }
+                        ?>
                         <tr style="background: #fd8f23;">
                             <td>合计</td>
                             <td>---</td>
                             <td><?php echo $sumBuy; ?></td>
                             <td><?php echo $sumAuth; ?></td>
-                            <td><?php echo $sumBuy + $sumAuth; ?></td>
+                            <td><?php echo $sumPaid; ?></td>
                         </tr>
                         </tbody>
                     </table>

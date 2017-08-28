@@ -9,7 +9,7 @@ require APPPATH . '/libraries/BaseController.php';
  * @version : 1.0
  * @since : 12 August 2017
  */
-class Authmanage extends BaseController
+class authmanage extends BaseController
 {
     /**
      * This is default constructor of the class

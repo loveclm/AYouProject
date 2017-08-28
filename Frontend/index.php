@@ -46,6 +46,7 @@
         <div class="btn-right" id="btn-scenic" onclick="showMineScenicAreas()"></div>
         <div class="btn-right" id="btn-commentary"></div>
         <div class="btn-right" id="btn-automatic"></div>
+        <div class="btn-right" id="btn-position"></div>
 
         <!--phone number authorization dialog-->
         <div class="modal custom-modal" id="login">
@@ -222,7 +223,7 @@
 
 <script type="text/javascript">
     var cur_menu_index = 0;
-    var cur_voice_type = 0;
+    var cur_voice_type = 1;
 
     function menuClicked(index) {
         // show the details along with menu item
@@ -249,7 +250,7 @@
         {
             case 1:  // click 旅游线路 menu item
                 $('#menu-detail').hide();
-                window.location.href = "views/tourismcourse.php";
+                window.location.href = "views/tourismcourse.html";
                 //clearMenuSelection();
                 break;
             case 2:  // click 景点列表 menu item
@@ -275,6 +276,7 @@
 
                 $('#detail_content_data').html(content_html);
                 $('#detail_content_search').html('');
+
                 // show previous state
                 if(cur_voice_type != 0)
                     $('#voiceType'+cur_voice_type).css({color:'#24c6d3'});
@@ -282,7 +284,7 @@
                 break;
             case 4:  // click 更多景区 menu item
                 $('#menu-detail').hide();
-                window.location.href = "views/morescenic.php";
+                window.location.href = "views/morescenic.html";
                 //clearMenuSelection();
                 break
         }
@@ -295,7 +297,7 @@
             $('#voiceType'+cur_voice_type).css({color:'#000000'});
         }
 
-        cur_voice_type = index;
+        cur_voice_type = index
         $('#voiceType'+index).css({color:'#24c6d3'});
     }
 
@@ -332,7 +334,7 @@
             verifyPhone();
             return;
         }
-        window.location.href = 'views/guanzhu.php';
+        window.location.href = 'views/guanzhu.html';
     }
 
     function showOrderList(){
@@ -341,7 +343,7 @@
             verifyPhone();
             return;
         }
-        window.location.href = 'views/order.php';
+        window.location.href = 'views/order.html';
     }
 
     function showMineScenicAreas(){
@@ -350,7 +352,7 @@
             verifyPhone();
             return;
         }
-        window.location.href = 'views/minescenic.php';
+        window.location.href = 'views/minescenic.html';
     }
 
     function showhelp(){

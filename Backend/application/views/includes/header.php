@@ -76,10 +76,10 @@
                   <!-- Menu Footer-->
                   <li class="user-footer">
                     <div class="pull-left">
-                      <a href="<?php echo base_url(); ?>loadChangePass" class="btn btn-default btn-flat"><i class="fa fa-key"></i> Change Password</a>
+                      <a href="<?php echo base_url(); ?>loadChangePass" class="btn btn-default btn-flat"><i class="fa fa-key"></i>修改密码</a>
                     </div>
                     <div class="pull-right">
-                      <a href="<?php echo base_url(); ?>logout" class="btn btn-default btn-flat"><i class="fa fa-sign-out"></i> Sign out</a>
+                      <a href="<?php echo base_url(); ?>logout" class="btn btn-default btn-flat"><i class="fa fa-sign-out"></i>登出</a>
                     </div>
                   </li>
                 </ul>
@@ -87,6 +87,9 @@
             </ul>
           </div>
         </nav>
+        <?php
+        $menu_acc = isset($menu_access)?json_decode($menu_access):'';
+        ?>
       </header>
       <!-- Left side column. contains the logo and sidebar -->
       <aside class="main-sidebar">
@@ -95,18 +98,18 @@
           <!-- sidebar menu: : style can be found in sidebar.less -->
           <ul class="sidebar-menu">
             <li class="header"></li>
-            <li class="treeview">
+            <li class="treeview" style="<?php echo (($menu_acc!='')?($menu_acc->p_10=='1'?'':'display:none;'):'display:none'); ?>">
               <a href="<?php echo base_url(); ?>area">
                 <i class="fa fa-dashboard"></i> <span>景区管理</span></i>
               </a>
             </li>
-            <li class="treeview">
+            <li class="treeview" style="<?php echo (($menu_acc!='')?($menu_acc->p_20=='1'?'':'display:none;'):'display:none'); ?>">
               <a href="<?php echo base_url(); ?>course" >
                 <i class="fa fa-plane"></i>
                 <span>旅游线路管理</span>
               </a>
             </li>
-            <li class="treeview">
+            <li class="treeview" style="<?php echo (($menu_acc!='')?($menu_acc->p_30=='1'?'':'display:none;'):'display:none'); ?>">
                 <a href="<?php echo base_url(); ?>shop" >
                 <i class="fa fa-ticket"></i>
                 <span>商家管理</span>
@@ -122,25 +125,25 @@
                 <span>二维码管理</span>
               </a>
             </li>
-            <li class="treeview">
+            <li class="treeview" style="<?php echo (($menu_acc!='')?($menu_acc->p_40=='1'?'':'display:none;'):'display:none'); ?>">
               <a href="<?php echo base_url(); ?>authmanage" >
                 <i class="fa fa-upload"></i>
                 <span>授权码管理</span>
               </a>
             </li>
-                <li class="treeview">
+                <li class="treeview" style="<?php echo (($menu_acc!='')?($menu_acc->p_50=='1'?'':'display:none;'):'display:none'); ?>">
                   <a href="<?php echo base_url(); ?>ordermanage" >
                 <i class="fa fa-upload"></i>
                 <span>订单管理</span>
               </a>
             </li>
-                <li class="treeview">
+                <li class="treeview" style="<?php echo (($menu_acc!='')?($menu_acc->p_61=='1'?'':'display:none;'):'display:none'); ?>">
                   <a href="<?php echo base_url(); ?>settlemanage" >
                 <i class="fa fa-upload"></i>
                 <span>结算管理</span>
               </a>
             </li>
-                <li class="treeview">
+                <li class="treeview" style="<?php echo (($menu_acc!='')?($menu_acc->p_70=='1'?'':'display:none;'):'display:none'); ?>">
                   <a href="<?php echo base_url(); ?>usermanage" >
                 <i class="fa fa-upload"></i>
                 <span>用户管理</span>
@@ -163,7 +166,7 @@
                             </span>
                 </a>
                 <ul class="treeview-menu" style="display: none;">
-                  <li>
+                  <li style="<?php echo (($menu_acc!='')?($menu_acc->p_80=='1'?'':'display:none;'):'display:none'); ?>">
                     <a href="<?php echo base_url(); ?>userListing">
                       <i class="fa fa-users"></i>
                       人员管理
@@ -177,8 +180,8 @@
                   </li>
                 </ul>
               </li>
-            <li class="treeview">
-              <a href="#" >
+            <li class="treeview" style="<?php echo (($menu_acc!='')?($menu_acc->p_90=='1'?'':'display:none;'):'display:none'); ?>">
+              <a href="<?php echo base_url(); ?>changePassword" >
                 <i class="fa fa-files-o"></i>
                 <span>修改密码</span>
               </a>

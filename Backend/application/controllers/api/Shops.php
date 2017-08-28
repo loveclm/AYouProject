@@ -63,31 +63,34 @@ class Shops extends REST_Controller
         $authInfo = $this->post();
 
         $date = new DateTime();
-        $init['code'] =$this->auth_model->getOrderCount($authInfo['shopid']) + 1;
-        $init['num']= $this->auth_model->getCount()+1;
+        $init['code'] = $this->auth_model->getOrderCount($authInfo['shopid']) + 1;
+        $init['num'] = $this->auth_model->getCount() + 1;
         $authItem = array(
             "shopid" => $authInfo['shopid'],
             "type" => $authInfo['type'],
             "targetid" => $authInfo['targetid'],
             "status" => $authInfo['status'],
-            "money" => '0',
+            "price" => '0',
+            "codecount" => $authInfo['codecount'],
             "created_time" => $date->format('Y-m-d H:i:s')
         );
         $authid = $this->shop_model->addAuth($authItem);
-        for ($i = 0; $i < $authInfo['count']; $i++) {
+        for ($i = 0; $i < $authInfo['codecount']; $i++) {
             $date = new DateTime();
             $authOrderItem = array(
                 "authid" => sprintf("%d", $authid),
-                "number" => sprintf("%'.02d%'.08d", '12', $init['num'] + $i),
-                "userid" => '1',
+                "value" => sprintf("%'.02d%'.08d", '12', $init['num'] + $i),
+                "userphone" => '0',
+                "areaid" => $authInfo['targetid'],
                 "status" => '0',
                 "code" => sprintf("%'.03d%'.03d%'.05d", $authInfo['shopid'], $authInfo['targetid'], $init['code'] + $i),
-                "ordered_time" => $date->format('Y-m-d H:i:s')
+                "ordered_time" => $date->format('Y-m-d H:i:s'),
+                "ordertype" => '2'
             );
 
             $this->shop_model->addAuthOrder($authOrderItem);
         }
-        $this->response(array('status' => true, 'message' => sprintf('Authcode #%d has been created.', $authInfo['count'])), 200);
+        $this->response(array('status' => true, 'message' => sprintf('Authcode #%d has been created.', $authInfo['codecount'])), 200);
     }
 
     public function generateQR_post($id = NULL)

@@ -5,32 +5,39 @@
 
 // variables for AMap
 var map = null; // AMap pointer
+var imageLayer = null;
 var infoWindow = null; // property window
 
 // variables for current location
 var geolocation =  null;
 var location_mark = null;
 var location_circle = null;
-
 var timer = null;
 
 var state = 'new';
-var zoom = 17;
 
 // current position
 var currentLocation = [116.396991, 39.91829];
 var prevLocation = [];
 var bcurAudioplaying = 0;
+
 //list for Attraction Mark
 var markList = [];
 var polyline = null;
-var tmp_pos=[];
+
 /* function: initMap
     param: center // center position of current map view
- */
+*/
 function initMap() {
+    if(timer != null) clearInterval(timer);
+
     // loading gaode map( center = IP location)
-    setOverlay();
+    map = new AMap.Map('custom-map-container', {
+        resizeEnable: true,
+        zoom: 15,
+        scrollWheel: true
+    });
+
     //add control bar (+/-)
     map.addControl(new AMap.ToolBar({
         liteStyle: true
@@ -38,7 +45,7 @@ function initMap() {
 
     infoWindow = new AMap.InfoWindow({isCustom:true, offset: new AMap.Pixel(16, -30)});
 
-    // locate with GeoLocation
+    // add plugin to get current GPS location
     map.plugin('AMap.Geolocation', function() {
         geolocation = new AMap.Geolocation({
             enableHighAccuracy: true,//是否使用高精度定位，默认:true
@@ -48,29 +55,107 @@ function initMap() {
         });
         //map.addControl(geolocation);
         geolocation.getCurrentPosition();
-        AMap.event.addListener(geolocation, 'complete', onComplete);//返回定位信息
-        AMap.event.addListener(geolocation, 'error', onError);      //返回定位出错信息
+        AMap.event.addListener(geolocation, 'complete', getLocationCompleted);//返回定位信息
     });
 
-    showAttractionInfos();
+    // show mark and circle in current location
+    location_circle = new AMap.Circle({
+        map: map,
+        center: currentLocation,          //设置线覆盖物路径
+        radius: 20,
+        strokeColor: "#818de9", //边框线颜色
+        strokeOpacity: 0.7,       //边框线透明度
+        strokeWeight: 1,        //边框线宽
+        fillColor: "#818de9", //填充色
+        fillOpacity: 0.35//填充透明度
+    });
+    location_circle.setMap(map);
 
-    if(timer != null) clearInterval(timer);
-    timer = setInterval(OnTimer, 5000);
+    location_mark = new AMap.Marker({
+        map: map,
+        position: currentLocation,
+        icon: "resource/image/location.png",
+        offset: new AMap.Pixel(-9, -8),
+        autoRotation: true
+    });
+    location_mark.setMap(map);
+
+    // get current location using GPS
+    timer = setInterval(function () {
+        if(bMovable) {      // in the case showing the scenic area along current location
+            geolocation.getCurrentPosition();
+            /*
+            var dx = (cur_scenic_data.attractions[0].position[0] - cur_scenic_data.attractions[4].position[0])/30;
+            var dy = (cur_scenic_data.attractions[0].position[1] - cur_scenic_data.attractions[4].position[1])/30;
+            tmp_pos = [currentLocation[0]+dx, currentLocation[1]+dy];
+            onComplete();
+            */
+        }else{          // if not then don't check current location and show current scenic area
+            if(cur_scenic_data == null) return;
+            if(prevLocation != cur_scenic_data.position)  map.setCenter(cur_scenic_data.position);
+            prevLocation = cur_scenic_data.position;
+        }
+    }, 5000);
+
+    checkCurrentLocation(currentLocation);
 }
-// get current location using GPS
-function  OnTimer() {
-    geolocation.getCurrentPosition();
-    /*
-    var dx = (cur_scenic_data.attractions[0].position[0] - cur_scenic_data.attractions[4].position[0])/30;
-    var dy = (cur_scenic_data.attractions[0].position[1] - cur_scenic_data.attractions[4].position[1])/30;
-    tmp_pos = [currentLocation[0]+dx, currentLocation[1]+dy];
-    onComplete();
-    */
+
+// show overlay image of the current scenic area
+function  setOverlay() {
+    if( cur_scenic_data == null ) return;
+    if(imageLayer != null) imageLayer.setMap(null);
+
+    imageLayer = new AMap.ImageLayer({
+        url: cur_scenic_data.overlay,
+        bounds: new AMap.Bounds(
+            cur_scenic_data.bottom_left,   //左下角
+            cur_scenic_data.top_right    //右上角
+        ),
+        zooms: [15, 18]
+    });
+
+    imageLayer.setMap(map);
 }
 
 // show the informations of the attractions and current location
 function  showAttractionInfos() {
-    addMarker();
+    // delete old informations from the map
+    //clearAllMarker();
+
+    // add the marks of the scenic area's attractions and the mark for current location
+    markList = [];
+    if(cur_scenic_data == null) return;
+
+    for (var i = 0, marker; i < cur_scenic_data.attractions.length; i++) {
+        // if phone is verified, show the proper mark along purchased state, but if not then show with unpaid state
+        var img_url = 'resource/image/unpaid.png';
+        if(bPhoneverified == 1){
+            switch (cur_scenic_data.attractions[i].buy_state)
+            {
+                case 1:
+                    img_url = 'resource/image/test.png';
+                    break;
+                case 2:
+                    img_url = 'resource/image/paid.png';
+                    break;
+            }
+        }else{
+            if(cur_scenic_data.attractions[i].buy_state == 1) {
+                img_url = 'resource/image/test.png';
+            }
+        }
+
+        marker = new AMap.Marker({
+            map: map,
+            icon: img_url,
+            offset: new AMap.Pixel(-15, -15),
+            position: cur_scenic_data.attractions[i].position
+        });
+        marker.setMap(map);
+        marker.on('click', markerClick);
+
+        markList.push(marker);
+    }
 
     // show mark and circle in current location
     location_circle = new AMap.Circle({
@@ -94,8 +179,9 @@ function  showAttractionInfos() {
     });
     location_mark.setMap(map);
 }
+
 //解析定位结果
-function onComplete(data) {
+function getLocationCompleted(data) {
     var cur_pos = [data.position.getLng(), data.position.getLat()];
     // move location mark and circle to new location
     // when set first location, set mark location with current location
@@ -124,6 +210,7 @@ function onComplete(data) {
     currentLocation = cur_pos;
     // control map view to show the current location
     map.setCenter(currentLocation);
+
     // search a attraction near 20 meters and if exists then check options and play the attraction's audio
     for( var i = 0; i < markList.length; i++){
         if(location_circle.contains(markList[i].getPosition())){
@@ -133,85 +220,9 @@ function onComplete(data) {
             break;
         }
     }
-}
-//解析定位错误信息
-function onError(data) {
 
-    //document.getElementById('tip').innerHTML = '定位失败';
-}
-
-function  setOverlay() {
-    // if scenic information exists then show overlay image and if not then don't show
-    if(cur_scenic_data == null || cur_scenic_data.length == 0 ) {
-        map = new AMap.Map('custom-map-container', {
-            resizeEnable: true,
-            zoom: 15,
-            scrollWheel: true
-        });
-
-    }
-    else {
-        var imageLayer = new AMap.ImageLayer({
-            url: cur_scenic_data.overlay,
-            bounds: new AMap.Bounds(
-                cur_scenic_data.bottom_left,   //左下角
-                cur_scenic_data.top_right    //右上角
-            ),
-            zooms: [15, 18]
-        });
-
-        map = new AMap.Map('custom-map-container', {
-            resizeEnable: true,
-            center: cur_scenic_data.position,
-            zoom: 15,
-            layers: [
-                new AMap.TileLayer(),
-                imageLayer
-            ]
-        });
-    }
-}
-
-// 实例化点标记
-function addMarker() {
-    // delete old informations from the map
-    clearAllMarker();
-    // set the map center along current scenic area or current location
-
-    // add the marks of the scenic area's attractions and the mark for current location
-    markList = [];
-    if(cur_scenic_data == null) return;
-
-    for (var i = 0, marker; i < cur_scenic_data.attractions.length; i++) {
-        // if phone is verified, show the proper mark along purchased state, but if not then show with unpaid state
-        var img_url = 'resource/image/unpaid.png';
-        if(bPhoneverified == 1){
-            switch (cur_scenic_data.attractions[i].buy_state)
-            {
-                case 1:
-                    img_url = 'resource/image/test.png';
-                    break;
-                case 2:
-                    img_url = 'resource/image/paid.png';
-                    break;
-            }
-        }else{
-            if(cur_scenic_data.attractions[i].buy_state == 1) {
-                img_url = 'resource/image/test.png';
-            }
-        }
-        marker = new AMap.Marker({
-            map: map,
-            icon: img_url,
-            offset: new AMap.Pixel(-15, -15),
-            position: cur_scenic_data.attractions[i].position
-        });
-        marker.setMap(map);
-        marker.on('click', markerClick);
-
-        markList.push(marker);
-    }
-    //listener define
+    // get scenic area id from current position
+    checkCurrentLocation(currentLocation);
 }
 
 function markerClick(e) {
@@ -231,7 +242,7 @@ function markerClick(e) {
         }
         if(cur_scenic_data.attractions[i].buy_state == 3) {
             bAllpaid = 0;
-            total_cost += cur_scenic_data.attractions[i].cost; //* cur_scenic_data.attractions[i].discount_rate;
+            total_cost += parseFloat( cur_scenic_data.attractions[i].cost); //* cur_scenic_data.attractions[i].discount_rate;
         }
     }
 
@@ -290,49 +301,49 @@ function processInfoEvents(index, data) {
             break;
         case 2:
             // jump guide route page
-            localStorage.setObject('start_pos',currentLocation);
-            localStorage.setObject('end_pos', cur_scenic_data.attractions[data].position);
+            sessionStorage.setObject('start_pos',currentLocation);
+            sessionStorage.setObject('end_pos', cur_scenic_data.attractions[data].position);
 
             closeInfoWindow();
-            window.location.href = "views/guide_route.php";
+            window.location.href = "views/guide_route.html";
             break;
         case 3:
             // buy attraction
-            real_cost = cur_scenic_data.attractions[data].cost * cur_scenic_data.attractions[data].discount_rate;
+            real_cost = parseFloat(cur_scenic_data.attractions[data].cost) * parseFloat(cur_scenic_data.attractions[data].discount_rate);
             payment_data = {
-                type : 3,      // 1: tourism course, 2: scenic area,  3: attraction, 4: order
+                type : 3,      // 1: tourism course, 2: scenic area,  3: attraction, 4: authorize code
                 id : cur_scenic_data.attractions[data].id,
                 name: cur_scenic_data.attractions[data].name,
-                image: '../' + cur_scenic_data.attractions[data].image,
+                image: cur_scenic_data.attractions[data].image,
                 cost: cur_scenic_data.attractions[data].cost,
                 real_cost: real_cost
             };
-            localStorage.setObject('payment_data', payment_data);
+            sessionStorage.setObject('payment_data', payment_data);
 
             closeInfoWindow();
-            window.location.href = 'views/purchase.php';
+            window.location.href = 'views/purchase.html';
             break;
         case 4:
             // buy scenic area
             for( var i = 0; i < cur_scenic_data.attractions.length; i++)
             {
                 if(cur_scenic_data.attractions[i].buy_state == 3){
-                    cost += cur_scenic_data.attractions[i].cost;
-                    real_cost += cur_scenic_data.attractions[i].cost * cur_scenic_data.attractions[i].discount_rate;
+                    cost += parseFloat(cur_scenic_data.attractions[i].cost);
+                    real_cost += parseFloat( cur_scenic_data.attractions[i].cost) * parseFloat( cur_scenic_data.attractions[i].discount_rate);
                 }
             }
             payment_data = {
-                type : 2,      // 1: tourism course, 2: scenic area,  3: attraction, 4: order
+                type : 2,      // 1: tourism course, 2: scenic area,  3: attraction, 4: authorize code
                 id : cur_scenic_data.id,
                 name: cur_scenic_data.name,
-                image: '../' + cur_scenic_data.image,
+                image: cur_scenic_data.image,
                 cost: cost,
                 real_cost: real_cost
             };
-            localStorage.setObject('payment_data', payment_data);
+            sessionStorage.setObject('payment_data', payment_data);
 
             closeInfoWindow();
-            window.location.href = 'views/purchase.php';
+            window.location.href = 'views/purchase.html';
             break;
         case 5:
             // verify authorization code
@@ -388,7 +399,10 @@ function closeInfoWindow() {
 }
 
 function  clearAllMarker() {
- return;
+    location_circle.setMap(null);
+    location_mark.setMap(null);
+
+    return;
     if(markList.length > 0){
         var marker = null;
         for( marker in markList){

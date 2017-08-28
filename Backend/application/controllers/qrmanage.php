@@ -9,7 +9,7 @@ require APPPATH . '/libraries/BaseController.php';
  * @version : 1.0
  * @since : 12 August 2017
  */
-class Qrmanage extends BaseController
+class qrmanage extends BaseController
 {
     /**
      * This is default constructor of the class
@@ -83,7 +83,17 @@ class Qrmanage extends BaseController
         foreach ($qrDBList as $list){
             $areaid = $list->targetid;
             $areaInfo = $this->area_model->getAreaById($areaid);
-
+            if(isset($areaInfo)) {
+                if ($areaInfo->type == '2') {
+                    $courseName = '';
+                    $areas = json_decode($areaInfo->point_list);
+                    foreach ($areas as $areaItem) {
+                        if ($courseName == '') $courseName = $areaItem->name;
+                        else $courseName = $courseName . ' - ' . $areaItem->name;
+                    }
+                    $areaInfo->name = $courseName;
+                }
+            }
             $info = array('target'=>$areaInfo->name,
                 'shop'=>$list->name, 'type' => $list->type == '1' ? '景区':'旅游线路',
                 'time'=>$list->created_time,

@@ -36,14 +36,15 @@ $(function(){
         panel: "app_footer"
     });
 
-    start_pos = localStorage.getObject('start_pos');
-    end_pos = localStorage.getObject('end_pos');
+    start_pos = sessionStorage.getObject('start_pos');
+    end_pos = sessionStorage.getObject('end_pos');
     walkPathPlanning();
 });
 
 function  walkPathPlanning() {
     //根据起终点坐标规划步行路线
     if(state == 0) return;
+    map.clearMap();
     $('#walk_button').html('<img src="../resource/image/map_walk.png">');
     $('#car_button').html('<img src="../resource/image/map_car_n.png">');
     $('#app_footer').html('&nbspjust a moment ...');
@@ -53,6 +54,7 @@ function  walkPathPlanning() {
 function drivePathPlanning() {
     //根据起终点坐标规划骑行路线
     if( state == 1) return;
+    map.clearMap();
     $('#walk_button').html('<img src="../resource/image/map_walk_n.png">');
     $('#car_button').html('<img src="../resource/image/map_car.png">');
     $('#app_footer').html('&nbspjust a moment ...');
@@ -73,7 +75,7 @@ function resize_route() {
         || window.innerHeight;
     var scale = Math.min(width/640,height/1010) * ratio;
 
-    width = 640*scale;
+    //width = 640*scale;
     $('#content').css({width:width, height:height});
     $('#app_header').css({width:width});
     $('#app_footer').css({width:width});

@@ -28,8 +28,6 @@ function searchQR(url) {
     location.href = url + 'qrListing/' + name+ '/' + status;
 }
 
-
-
 //check if string is number string
 function isNumeric(value) {
     return /^\d+$/.test(value);
@@ -46,9 +44,10 @@ function invalidAccount(account) {
 function processShop(url, id) {
 
     var name = $("#shopname").val();
-    var rate = $("#shoprate").val();
+    var rate = ($("#shoprate").val());
     var account = $("#shopid").val();
     var password = $("#shoppassword").val();
+    var address = $("#cityName").val();
     var type = $('#shoptype :selected').val();
 
     if(name.length > 10){
@@ -65,13 +64,13 @@ function processShop(url, id) {
     var reqUrl = '';
     if(parseInt(id) != 0){
         shopInfo = {
-            id: parseInt(id), name: name, phonenumber: account, password: password, address_1: '', address_2: '', type: type, order_division_rate: rate, status: 0
+            id: parseInt(id), name: name, phonenumber: account, password: password, address_1: address, address_2: address, type: type, discount_rate: rate, status: 0
         };
         reqUrl = url + "api/Shops/save/" + id;
     }
     else {
         shopInfo = {
-            name: name, phonenumber: account, password: password, address_1: '', address_2: '', type: type, order_division_rate: rate, status: 0
+            name: name, phonenumber: account, password: password, address_1: address, address_2: address, type: type, discount_rate: rate, status: 0
         };
         reqUrl = url + "api/Shops/save";
     }
@@ -191,7 +190,7 @@ function generateAuth(url, confirm) {
 
 function showQR(url, id) {
     $('#custom-generate-qr-view').show();
-    $('#qr-view').qrcode({   text	: ''  });
+    $('#qr-view').qrcode({   text	: 'http://116.196.83.125/tour'+'?shopid='+id  });
 }
 
 function generateAuthFinal(url, confirm) {
@@ -205,7 +204,7 @@ function generateAuthFinal(url, confirm) {
 
     if(codeType == 'qr'){
 
-        var data = 'http://weixin.qq.com';
+        var data = 'http://116.196.83.125/tour';
         var authInfo = {
             shopid: shopid,
             type: type,
@@ -218,7 +217,7 @@ function generateAuthFinal(url, confirm) {
             $('#custom-generate-qr-view').show();
             $('#custom-generate-auth-view').hide();
 
-            $('#qr-view').qrcode({   text	: data  });
+            $('#qr-view').qrcode({   text	: data +'?shopid='+shopid });
 
             //location.href = url + 'shop';
         });
@@ -232,12 +231,11 @@ function generateAuthFinal(url, confirm) {
                     status: 0,
                     type: type,
                     targetid: target,
-                    count: authCount
+                    codecount: authCount
                 };
 
                 $.post(url + "api/Shops/generateAuth", authInfo, function(result){
                     console.log(result);
-                    window.alert(result);
                     location.href = url + 'shop';
                 });
             }

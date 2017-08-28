@@ -1,6 +1,6 @@
 <?php if(!defined('BASEPATH')) exit('No direct script access allowed');
 
-class User_model extends CI_Model
+class user_model extends CI_Model
 {
     /**
      * This function is used to get the user listing count
@@ -34,7 +34,7 @@ class User_model extends CI_Model
      */
     function userListing($searchText = '', $page, $segment)
     {
-        $this->db->select('BaseTbl.userId, BaseTbl.email, BaseTbl.name, BaseTbl.mobile, Role.role');
+        $this->db->select('BaseTbl.userId, BaseTbl.email, BaseTbl.name, BaseTbl.mobile, Role.role, BaseTbl.createdDtm');
         $this->db->from('tbl_users as BaseTbl');
         $this->db->join('tbl_roles as Role', 'Role.roleId = BaseTbl.roleId','left');
         if(!empty($searchText)) {
@@ -51,14 +51,31 @@ class User_model extends CI_Model
         $result = $query->result();        
         return $result;
     }
-    
+
+    /**
+     * This function is used to get the user listing count
+     * @param string $searchText : This is optional search text
+     * @param number $page : This is pagination offset
+     * @param number $segment : This is pagination limit
+     * @return array $result : This is result
+     */
+    function roleListing()
+    {
+        $this->db->select('*');
+        $this->db->from('tbl_roles');
+        $query = $this->db->get();
+
+        $result = $query->result();
+        return $result;
+    }
+
     /**
      * This function is used to get the user roles information
      * @return array $result : This is result of the query
      */
     function getUserRoles()
     {
-        $this->db->select('roleId, role');
+        $this->db->select('*');
         $this->db->from('tbl_roles');
         $this->db->where('roleId !=', 1);
         $query = $this->db->get();
@@ -86,7 +103,6 @@ class User_model extends CI_Model
         return $query->result();
     }
     
-    
     /**
      * This function is used to add new user to system
      * @return number $insert_id : This is last inserted id
@@ -102,7 +118,7 @@ class User_model extends CI_Model
         
         return $insert_id;
     }
-    
+
     /**
      * This function used to get user information by id
      * @param number $userId : This is user id
@@ -119,7 +135,86 @@ class User_model extends CI_Model
         
         return $query->result();
     }
-    
+
+    /**
+     * This function is used to add new user to system
+     * @return number $insert_id : This is last inserted id
+     */
+    function addNewRole($name)
+    {
+        $result= count($this->roleListing());
+        if($result>=10) {
+            return '0';
+        }
+        else {
+            $item=[
+                'role'=>$name
+            ];
+            $this->db->trans_start();
+            $this->db->insert('tbl_roles', $item);
+
+            $insert_id = $this->db->insert_id();
+
+            $this->db->trans_complete();
+        }
+        return $insert_id;
+    }
+
+    /**
+     * This function used to get user information by id
+     * @param number $userId : This is user id
+     * @return array $result : This is user information
+     */
+    function findRole($name)
+    {
+        $this->db->select('*');
+        $this->db->from('tbl_roles');
+        $this->db->where('role', $name);
+        $query = $this->db->get();
+
+        return $query->result();
+    }
+
+    /**
+     * This function used to get user information by id
+     * @param number $userId : This is user id
+     * @return array $result : This is user information
+     */
+    function getRoleById($id)
+    {
+        $this->db->select('*');
+        $this->db->from('tbl_roles');
+        $this->db->where('roleId', $id);
+        $query = $this->db->get();
+
+        return $query->result();
+    }
+
+    /**
+     * This function is used to update the user information
+     * @param array $userInfo : This is users updated information
+     * @param number $userId : This is user id
+     */
+    function updateRole($roleInfo, $roleId)
+    {
+        $this->db->where('roleId', $roleId);
+        $this->db->update('tbl_roles', $roleInfo);
+
+        return TRUE;
+    }
+
+    /**
+     * This function is used to delete the user information
+     * @param number $userId : This is user id
+     * @return boolean $result : TRUE / FALSE
+     */
+    function deleteRole($roleId)
+    {
+        if ($roleId == '1') return false;
+        $this->db->where('roleId', $roleId);
+        $this->db->delete('tbl_roles');
+        return true;
+    }
     
     /**
      * This function is used to update the user information
@@ -133,9 +228,7 @@ class User_model extends CI_Model
         
         return TRUE;
     }
-    
-    
-    
+
     /**
      * This function is used to delete the user information
      * @param number $userId : This is user id
@@ -148,7 +241,6 @@ class User_model extends CI_Model
         
         return $this->db->affected_rows();
     }
-
 
     /**
      * This function is used to match users password for change password

@@ -15,13 +15,13 @@ window.addEventListener('resize', function(event){
 });
 
 function back(){
-    localStorage.removeItem('cur_order');
+    sessionStorage.removeItem('cur_order');
     history.back();
 }
 
 function display_order_detail_data(){
     //loading the information of the selected order
-    order_detail = localStorage.getObject('cur_order');
+    order_detail = sessionStorage.getObject('cur_order');
     if(order_detail == null){
         $('#container').html("");
         $('#app_footer').html("");
@@ -144,7 +144,7 @@ function pay_for_Order() {
     var real_cost = cur_order['cost'] * cur_order['discount_rate'];
 
     var payment_data = {
-        type : 4,      // 1: tourism course, 2: scenic area,  3: attraction, 4: order
+        type : 4,      // 1: tourism course, 2: scenic area,  3: attraction, 4: authorize code
         id : cur_order['id'],
         name: cur_order['name'],
         image: cur_order['image'],
@@ -152,8 +152,8 @@ function pay_for_Order() {
         real_cost: real_cost
     };
 
-    localStorage.setObject('payment_data', payment_data);
-    window.location.href = '../views/purchase.php';
+    sessionStorage.setObject('payment_data', payment_data);
+    window.location.href = '../views/purchase.html';
 }
 
 function purchase_again_Order() {
@@ -176,7 +176,7 @@ function resize_order_detail(){
         || window.innerHeight;
     var scale = Math.min(width/640,height/1010) * ratio;
 
-    width = 640*scale;
+    //width = 640*scale;
     $('#content').css({width:width, height:height});
     $('#app_header').css({width:width});
     $('#app_footer').css({width:width});

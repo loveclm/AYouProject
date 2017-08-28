@@ -61,7 +61,7 @@
                             <ul id="courseItems">
                                 <?php
                                 if(isset($course)){
-                                    $itemList = json_decode($course->info);
+                                    $itemList = json_decode($course->point_list);
                                     $itemCount = count($itemList);
                                     for($i = 0; $i < $itemCount; $i++) {
                                         $item = $itemList[$i];

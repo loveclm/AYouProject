@@ -9,7 +9,6 @@
     <section class="content">
         <input id="custom-base-url" value="<?php echo base_url(); ?>" style="display: none;"/>
         <?php
-            //var_dump($area);
             if(isset($area)){
                 $areaInfo = json_decode($area->info);
                 //var_dump(json_encode($areaInfo->position));
@@ -29,26 +28,29 @@
                     <div class="col-xs-6 col-sm-4 form-inline">
                         <div class="form-group area-add-view">
                             <label>上传录音：</label>
-                            <a class="btn btn-primary" href="#<?/*php echo base_url().'addarea';*/ ?>" onclick="uploadPointAudio();">
+                            <a class="btn btn-primary" href="#" onclick="uploadAreaAudio()">
                                 <span>上传录音</span>
                             </a>
+                            <input id="upload-area-audio" type="file" style="display: none"></input>
+                            <label id="area-audio-file"><?php echo isset($areaInfo) ? $areaInfo->audio : '';?></label>
                         </div>
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-xs-6 col-sm-4 form-inline">
+                </div>
+            </div>
+            <div class="container">
+                <div class="row">
+                    <div class="form-inline">
                         <div class="form-group area-add-view">
                             <label for="exampleInputName2">景区折扣比率:</label>
                             <input type="text" class="form-control" id="arearate" value="<?php echo isset($area) ? $area->discount_rate : '';?>">
                             <label">%</label>
                         </div>
                     </div>
-                </div>
-            </div>
-            <div class="container">
-                <div class="row">
-                    <div>
-                        <input id="cityName" type="text" placeholder="输入您要定位的地址" />
+                    <div class="form-group">
+                        <label for="exampleInputName2">景区折扣比率:</label>
+                        <input id="cityName" type="text" placeholder="输入您要定位的地址" value="<?php echo isset($area) ? ($area->address) : '';?>"/>
                         <input id="area-position" style="display: none;" value="<?php echo isset($area) ? json_encode($areaInfo->position) : '';?>" />
                     </div>
                     <div class="col-sm-7">
@@ -66,9 +68,9 @@
                                 <button class="btn btn-primary" type="button" onclick="showAddPoint();">标记景点</button>
                             </div>
                             <div class="form-group">
-                                <ul id="pointList">
+                                <div id="pointList">
 
-                                </ul>
+                                </div>
                             </div>
                         </div>
 
@@ -97,12 +99,13 @@
                             </div>
 
                             <div class="form-group">
-                                <input id="upload-point-audio" type="file" style="display: none;">
-                                <input id="pointaudio" value="" style="display: none;"/>
                                 <label>上传录音：</label>
                                 <a class="btn btn-primary" onclick="uploadPointAudio();">
                                     <span>上传录音</span>
                                 </a>
+                                <input id="upload-point-audio" type="file" style="display: none;">
+                                <label id="pointaudio" value="" style="display: none"></label>
+                                <label id="pointaudio_view" value="" style=""></label>
                             </div>
 
                             <div class="form-group">

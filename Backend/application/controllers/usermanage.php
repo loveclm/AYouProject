@@ -9,7 +9,7 @@ require APPPATH . '/libraries/BaseController.php';
  * @version : 1.0
  * @since : 12 August 2017
  */
-class Usermanage extends BaseController
+class usermanage extends BaseController
 {
     /**
      * This is default constructor of the class
@@ -18,6 +18,8 @@ class Usermanage extends BaseController
     {
         parent::__construct();
         $this->load->model('collection_model');
+        $this->load->model('order_model');
+        $this->load->model('area_model');
         $this->isLoggedIn();
     }
 
@@ -37,7 +39,7 @@ class Usermanage extends BaseController
         if ($this->isAdmin() == TRUE) {
             $this->loadThis();
         } else {
-            $this->global['pageTitle'] = '订单管理';
+            $this->global['pageTitle'] = '用户管理';
             if ($name == 'ALL') $name = '';
             $this->global['userList'] = $this->collection_model->getUserLists($searchType, $name);
             $this->global['searchType'] = $searchType;

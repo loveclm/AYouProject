@@ -34,16 +34,18 @@ class BaseController extends CI_Controller {
 		$isLoggedIn = $this->session->userdata ( 'isLoggedIn' );
 		
 		if (! isset ( $isLoggedIn ) || $isLoggedIn != TRUE) {
-			redirect ( 'login' );
+			redirect ( 'login_controller' );
 		} else {
 			$this->role = $this->session->userdata ( 'role' );
 			$this->vendorId = $this->session->userdata ( 'userId' );
 			$this->name = $this->session->userdata ( 'name' );
 			$this->roleText = $this->session->userdata ( 'roleText' );
+			$this->permission = $this->session->userdata ( 'permission' );
 			
 			$this->global ['name'] = $this->name;
 			$this->global ['role'] = $this->role;
 			$this->global ['role_text'] = $this->roleText;
+			$this->global ['menu_access'] = $this->permission;
 		}
 	}
 	
@@ -86,7 +88,7 @@ class BaseController extends CI_Controller {
 	function logout() {
 		$this->session->sess_destroy ();
 		
-		redirect ( 'login' );
+		redirect ( 'login_controller' );
 	}
 
 	/**

@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html>
 <head lang="en">
     <title>A游不错</title>
@@ -30,6 +29,7 @@
             padding: 0px 10px;
             background-color: #24c6d3;
             color: #ffffff;
+            cursor: pointer;
         }
         .footer div:active{
             float: right;
@@ -46,7 +46,7 @@
         }
     </style>
 
-    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script type="text/javascript" src="../js/plugins/jquery.min.js"></script>
     <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="../js/global.js"></script>
     <script type="text/javascript" src="../js/purchase.js"></script>
@@ -57,7 +57,7 @@
     <div class="header" id="app_header">
         <h3 style="text-align: center">
             <a href="javascript:back()" style="float: left; position: fixed;left: 10px; top: 0px">
-                <img src="../image/left_arrow.png" id="back_img">
+                <img src="../resource/image/left_arrow.png" id="back_img">
             </a>
             购买景区
         </h3>
@@ -65,7 +65,7 @@
     <div id="container"  style="background-color: #f6f6f6">
         <div class="order order_using">
             <div class="order_body">
-                <img src="../image/tmp_order.png">
+                <img src="../resource/image/tmp_order.png">
                 <div>
                     <h5>鹤山古劳水乡</h5>
                     <h5 style="color: red">¥30.00</h5>
@@ -74,21 +74,21 @@
         </div>
         <div class="order_detail">
             <div style="display: none">
-                <img src="../image/payment_icon1.png" style="float: left; width: 25px; margin: 7px">
+                <img src="../resource/image/payment_icon1.png" style="float: left; width: 25px; margin: 7px">
                 <h5 style="float: left; margin-top: 13px">支付宝</h5>
-                <img src="../image/payment_choose_n.png" style="float: right; margin-top: 12px">
+                <img src="../resource/image/payment_choose_n.png" style="float: right; margin-top: 12px">
             </div>
             <div>
-                <img src="../image/payment_icon2.png" style="float: left; width: 25px; margin: 7px">
+                <img src="../resource/image/payment_icon2.png" style="float: left; width: 25px; margin: 7px">
                 <h5 style="float: left; margin-top: 13px">微信</h5>
-                <img src="../image/payment_choose.png" style="float: right; margin-top: 12px">
+                <img src="../resource/image/payment_choose.png" style="float: right; margin-top: 12px">
             </div>
         </div>
     </div>
     <div class="footer" id="app_footer">
         <h5 style="padding-right: 0px;">支付金额 :</h5>
         <h5 id="real_price" style="color: red">¥19.00</h5>
-        <div><h5>开始导游</h5></div>
+        <div onclick="OnPay()"><h5>开始导游</h5></div>
     </div>
 </div>
 </body>

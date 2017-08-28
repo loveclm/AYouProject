@@ -62,21 +62,76 @@ function searchArea(url) {
     location.href = url + 'area/listing/' + name + '/' + address + '/' + status;
 }
 
-function test_api() {
+function test_api11() {
     var posi = [116.404845, 39.898345];
     var id = '21';
-    var phone = '9890098988';
+    var phone = '24562456245';
     $.ajax({
         type: 'POST',
-        url: 'http://192.168.2.18/api/Areas/getAllAreaInfos',
+        url: 'http://admin:1234@116.196.83.125/backend/api/Areas/getAreaInfoById',
         dataType: 'json',
         username: 'admin',
         password: '1234',
         data: {
-            //'pos' : posi
-
+            'pos' : posi,
             'id': id,
             'phone': phone
+        },
+        success: function (data, textStatus, jqXHR) {
+            console.log(data);
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            // Handle errors here
+            console.log('ERRORS: ' + textStatus);
+            // STOP LOADING SPINNER
+        }
+    });
+}
+
+function test_api33() {
+    var posi = [116.404845, 39.898345];
+    var id = '';
+    var phone = '24562456245';
+    var cost = '00402700012';
+    var type = '4';
+    $.ajax({
+        type: 'POST',
+        url: 'http://116.196.83.125/backend/api/Areas/setAreaBuyOrder',
+        dataType: 'json',
+        username: 'admin',
+        password: '1234',
+        data: {
+            'id' : id,
+            'phone': phone,
+            'cost': cost,
+            'type': type
+        },
+        success: function (data, textStatus, jqXHR) {
+            console.log(data);
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            // Handle errors here
+            console.log('ERRORS: ' + textStatus);
+            // STOP LOADING SPINNER
+        }
+    });
+}
+
+function test_api() {
+    var posi = [116.404845, 39.898345];
+    var id = '';
+    var phone = '24562456245';
+    var cost = '00402700012';
+    var type = '4';
+    var code = 'CODE';
+    $.ajax({
+        type: 'GET',
+        url: 'http://116.196.83.125/test/example/jsapi.php',
+        dataType: 'json',
+        username: 'admin',
+        password: '1234',
+        data: {
+            'code' : code
         },
         success: function (data, textStatus, jqXHR) {
             console.log(data);

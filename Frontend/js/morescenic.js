@@ -15,9 +15,9 @@ window.addEventListener('resize', function(event){
 });
 
 function loadScenicAreas(){
-    scenic_list = localStorage.getObject('scenic_areas');
+    scenic_list = sessionStorage.getObject('scenic_areas');
     if(scenic_list === null)
-        getScenicAreasFromServer();
+        getAllScenicAreasFromServer();
     else
         display_scenic_data();
 }
@@ -39,8 +39,14 @@ function display_scenic_data(){
 
 function selectScenicArea(index){
     var new_scenic_id = scenic_list[index]['id'];
-    localStorage.setItem('new_scenic_id', new_scenic_id);
+    sessionStorage.setItem('new_scenic_id', new_scenic_id);
 
+    var geo_scenic_id = sessionStorage.getItem('geo_scenic_id');
+    if( geo_scenic_id == new_scenic_id){
+        sessionStorage.setItem('movable', 1);
+    }else{
+        sessionStorage.setItem('movable', 0);
+    }
     window.location.href = '../index.php';
 }
 
@@ -62,7 +68,7 @@ function resize_scenic(){
         || window.innerHeight;
     var scale = Math.min(width/640,height/1010) * ratio;
 
-    width = 640*scale;
+    //width = 640*scale;
     $('#content').css({width:width, height:height});
     $('#app_header').css({width:width});
 

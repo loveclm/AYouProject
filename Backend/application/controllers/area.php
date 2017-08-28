@@ -9,7 +9,7 @@ require APPPATH . '/libraries/BaseController.php';
  * @version : 1.0
  * @since : 8 August 2017
  */
-class Area extends BaseController
+class area extends BaseController
 {
     /**
      * This is default constructor of the class
@@ -165,7 +165,7 @@ class Area extends BaseController
 
     function pageNotFound()
     {
-        $this->global['pageTitle'] = 'CodeInsect : 404 - Page Not Found';
+        $this->global['pageTitle'] = '404 - Page Not Found';
 
         $this->loadViews("404", $this->global, NULL, NULL);
     }

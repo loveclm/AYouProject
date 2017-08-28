@@ -1,36 +1,288 @@
 /**
  * Created by Administrator on 8/9/2017.
  */
+var SERVER_URL = "http://192.168.2.18/";
+//var run_mode = "SIMULATE_MODE";   // This means system runs with simulate mode
+var run_mode = "REALTIME_MODE";   // This means system runs with real time mode
+
+// check current location
+function checkCurrentLocation(pos){
+    $.ajax({
+        type: 'POST',
+        url: SERVER_URL + 'api/Areas/getAreaIdByPosition',
+        dataType: 'json',
+        // username:'admin',
+        // password:'1234',
+        data: {'pos':pos},
+        success: function (data) {
+            if(run_mode == "SIMULATE_MODE"){
+                new_scenic_id = 1;
+            }else{
+                if (data.status == false) return;
+                // in the case that current scenic area exists, compare new scenic id with current scenic id
+                if(cur_scenic_data != null) {
+                    if ((cur_scenic_data.id == data.id)) return;
+                }
+
+                new_scenic_id = data['id'];
+            }
+
+            bMovable = 1;
+            sessionStorage.setItem('new_scenic_id', new_scenic_id);
+            sessionStorage.setItem('movable', bMovable);
+            sessionStorage.setItem('geo_scenic_id', new_scenic_id);
+            getScenicareafromID(new_scenic_id);
+        },
+        error: function (data) {
+
+        }
+    });
+}
+
+// downloading the detail information of the scenic area from scenic id
+function getScenicareafromID(scenic_id){
+    // initializing current scenic area information
+    sessionStorage.removeItem('cur_scenic_area');
+    cur_scenic_data = null;
+
+    // check validation of the scenic id
+    if(scenic_id <= 0)  return;
+
+    $.ajax({
+        type: 'POST',
+        url: SERVER_URL + 'api/Areas/getAreaInfoById',
+        dataType: 'json',
+        // username:'admin',
+        // password:'1234',
+        data: {'id': scenic_id, 'phone':phone_num},
+        success: function (data) {
+            if( run_mode == "SIMULATE_MODE") {
+                // simulate data
+                cur_scenic_data = simulate_CurrentScenicArea();
+                cur_scenic_data.id = scenic_id;
+            }else {
+                if (data.status == false) return;
+                cur_scenic_data = data['CurArea'];
+            }
+
+            new_scenic_id = "";
+            sessionStorage.setObject('cur_scenic_area', cur_scenic_data);
+            sessionStorage.setItem('new_scenic_id', '');
+            showScenicareaInformation();
+        },
+        error: function (data) {
+
+        }
+    });
+}
 
 //downloading the information of my scenic areas
 function getMyScenicAreasFromServer(){
     //initilizing my scenic area information
-    localStorage.removeItem('my_scenic_areas');
+    sessionStorage.removeItem('my_scenic_areas');
     minescenic_List = null;
+    var phone_num = localStorage.getItem('phone_number');
 
-    var tmp_sceniclist = [];
-    /*
-     $.ajax({
-         type: 'GET',
-         url: 'http://server/backend/dbmanage.php', //rest API url
-         dataType: 'json',
-         data: {func: 'function_name', info: res}, // set function name and parameters
-         }).success(function(data){
-             // configuring scenic data from received data
+    $.ajax({
+        type: 'POST',
+        url: SERVER_URL + 'api/Areas/getMyAreaInfos',
+        dataType: 'json',
+        // username:'admin',
+        // password:'1234',
+        data: {'phone' : phone_num},
+        success: function (data) {
+            if( run_mode == "SIMULATE_MODE") {
+                // simulate data
+                minescenic_List = simulate_MyScenicAreas();
+            }else {
+                if (data.status == false) return;
+                // configure my scenic areas
+                minescenic_List = data['MyAreas'];
+            }
 
-             minescenic_List = tmp_attractionlist;
+            sessionStorage.setObject('my_scenic_areas', minescenic_List);
+            display_minescenic_data();
+        },
+        error: function (data) {
 
-             localStorage.setObject('my_scenic_areas', minescenic_List);
-             display_minescenic_data();
-         }).fail(function(){
-             return;
-     });
-     */
+        }
+    });
+}
 
-    //return;
-    // simulate my scenic areas ( if don't use simulation method, write return statement above)
+// downloading the information of all the scenic areas
+function getAllScenicAreasFromServer(){
+    //initilizing all scenic area information
+    sessionStorage.removeItem('scenic_areas');
+    scenic_list = null;
+    var phone_num = localStorage.getItem('phone_number');
+
+    $.ajax({
+        type: 'POST',
+        url: SERVER_URL + 'api/Areas/getAllAreaInfos',
+        dataType: 'json',
+        // username:'admin',
+        // password:'1234',
+        data: {'phone' : phone_num},
+        success: function (data) {
+            if( run_mode == "SIMULATE_MODE") {
+                // simulate data
+                scenic_list = simulate_AllScenicAreas();
+            }else {
+                if (data.status == false) return;
+                // configuring all scenic data from received data
+                scenic_list = data['Areas'];
+            }
+            sessionStorage.setObject('scenic_areas', scenic_list);
+            display_scenic_data();
+        },
+        error: function (data) {
+
+        }
+    });
+}
+
+// downloading the information of all the orders
+function getMyOrdersFromServer(){
+    //initilizing all orders' information
+    sessionStorage.removeItem('cur_orders');
+    order_List = null;
+    var phone_num = localStorage.getItem('phone_number');
+
+    $.ajax({
+        type: 'POST',
+        url: SERVER_URL + 'api/Areas/getMyOrderInfos',
+        dataType: 'json',
+        // username:'admin',
+        // password:'1234',
+        data: {'phone' : phone_num},
+        success: function (data) {
+            if( run_mode == "SIMULATE_MODE") {
+                // simulate data
+                order_List = simulate_MyOrderList();
+            }else {
+                if (data.status == false) return;
+                order_List = data['Orders'];
+            }
+            sessionStorage.setObject('cur_orders', order_List);
+            display_order_data();
+        },
+        error: function (data) {
+
+        }
+    });
+}
+
+// downloading the information of all the tourism courses
+function getTourismCoursesFromServer(){
+    //initilizing the information of tourism courses
+    sessionStorage.removeItem('tourism_courses');
+    tourism_list = null;
+    var phone_num = localStorage.getItem('phone_number');
+
+    $.ajax({
+        type: 'POST',
+        url: SERVER_URL + 'api/Areas/getAllCourseInfos',
+        dataType: 'json',
+        // username:'admin',
+        // password:'1234',
+        data: {'phone' : phone_num},
+        success: function (data) {
+            if( run_mode == "SIMULATE_MODE") {
+                // simulate data
+                tourism_list = simulate_tourismCourseList();
+            }else {
+                if (data.status == false) return;
+                tourism_list = data['Courses'];
+            }
+            sessionStorage.setObject('tourism_courses', tourism_list);
+            display_tourism_data();
+        },
+        error: function (data) {
+
+        }
+    });
+}
+
+// simulate scenic data ( use in the simulation method)
+function simulate_CurrentScenicArea(){
+    var scenic_area = [];
+    var tmp_attractionlist =[
+        {
+            id : '1',
+            name :'王老吉凉茶博物馆',
+            position : [116.402635,39.913155],
+            cost : 10,
+            discount_rate:0.8,
+            buy_state : 1,
+            audio_files : ['resource/audio/standard.mp3','resource/audio/girl.mp3','resource/audio/boy.mp3'],
+            image : 'resource/image/tmp_order.png'
+
+        },
+        {
+            id : '2',
+            name :'胡蝶故居',
+            position : [116.391541,39.92223931],
+            cost : 20,
+            discount_rate:0.8,
+            buy_state : 2, // 1: hear testing, 2:paid, 3:unpaid
+            audio_files : ['resource/audio/1.mp3','resource/audio/girl.mp3','resource/audio/boy.mp3'],
+            image : 'resource/image/tmp_order.png'
+        },
+        {
+            id : '3',
+            name :'李家成故居',
+            position : [116.391541,39.913155],
+            cost : 30,
+            discount_rate:0.8,
+            buy_state : 2,
+            audio_files : ['resource/audio/2.wav','resource/audio/girl.mp3','resource/audio/boy.mp3'],
+            image : 'resource/image/tmp_order.png'
+        },
+        {
+            id : '4',
+            name :'树下行人',
+            position : [116.402635,39.92223931],
+            cost : 15,
+            discount_rate:0.8,
+            buy_state : 3,
+            audio_files : ['resource/audio/3.wav','resource/audio/girl.mp3','resource/audio/boy.mp3'],
+            image : 'resource/image/tmp_order.png'
+        },
+        {
+            id : '5',
+            name :'横海浪荷花世界',
+            position : [116.396991, 39.91829],
+            cost : 25,
+            discount_rate:0.8,
+            buy_state : 3,
+            audio_files : ['resource/audio/4.wav','resource/audio/girl.mp3','resource/audio/boy.mp3'],
+            image : 'resource/image/tmp_order.png'
+        }
+    ];
+
+    scenic_area ={
+        id: '1',
+        name : '故宫',
+        position : [116.396991, 39.91829],
+        top_right : [116.402635,39.92223931],
+        bottom_left: [116.391541,39.913155],
+        overlay:'resource/image/overlay.png',
+        image:'resource/image/palace.png',
+        zoom : 2,
+        cost:100,
+        discount_rate:0.8,
+        attractionCnt:5,
+        attractions : tmp_attractionlist
+    };
+
+    return scenic_area;
+}
+
+// simulate my scenic areas ( use in the simulation method)
+function  simulate_MyScenicAreas() {
     // Important: Only using state and  expried state exists
     // variable "type" can be deleted.
+    var tmp_sceniclist = [];
     tmp_sceniclist =[
         {
             id:'5897427848',
@@ -64,164 +316,19 @@ function getMyScenicAreasFromServer(){
         }
     ];
 
-    minescenic_List = tmp_sceniclist;
-    localStorage.setObject('my_scenic_areas', minescenic_List);
-    display_minescenic_data();
+    return tmp_sceniclist;
 }
 
-// downloading the information of all the orders
-function getOrdersFromServer(){
-    //initilizing all orders' information
-    localStorage.removeItem('cur_orders');
-    order_List = null;
-
-    var tmp_orderlist = [];
-    /*
-     $.ajax({
-         type: 'GET',
-         url: 'http://server/backend/dbmanage.php', //rest API url
-         dataType: 'json',
-         data: {func: 'function_name', info: res}, // set function name and parameters
-         }).success(function(data){
-             // configuring scenic data from received data
-
-             cur_orders = tmp_attractionlist;
-
-             localStorage.setObject('scenic_areas', scenic_list);
-             display_order_data();
-         }).fail(function(){
-             return;
-     });
-     */
-
-    //return;
-
-    // simulate orders ( if don't use simulation method, write return statement above)
-    // main is that data processing is accomplish in server and only use them in app
-    // so, should use any method?
-    tmp_orderlist =[
-        {
-            id:'5897427848',
-            name:'鹤山古劳水乡', //(course name or scenic area name, attraction name)
-            image:'../resource/image/tmp_order.png',
-            pay_method: 1,     // 1: online pay, 2: authorization code
-            value:'30.00',     // authorization code or buy-money(ex. 30.00)
-            cost: 42.00,       // real cost
-            discount_rate:0.7,
-            order_time:'2017.08.05 13:00:00',
-            paid_time:'2017.08.05 13:00:00',
-            expiration_date:'2017.08.05-2017.08.20',
-            cancelled_time:'',
-            state : 1   // 1: using, 2: unpaid, 3: cancelled, 4:expired
-        },
-        {
-            id:'5897427851',
-            name:'王老吉凉茶博物馆', //(course name or scenic area name, attraction name)
-            image:'../resource/image/tmp_order.png',
-            pay_method: 2, // 1: online pay, 2: authorization code
-            value:'4392862',     // authorization code or money(ex. 30.00)
-            cost: 35.00,       // real cost
-            discount_rate:0.9,
-            order_time:'2017.08.07 15:34:00',
-            paid_time:'2017.08.07 16:35:00',
-            expiration_date:'2017.08.07-2017.08.22',
-            cancelled_time:'',
-            state : 1   // 1: using, 2: unpaid, 3: cancelled, 4:expired
-        },
-        {
-            id:'5897427852',
-            name:'故宫', //(course name or scenic area name, attraction name)
-            image:'../resource/image/tmp_order.png',
-            pay_method: 1,           // 1: online pay, 2: authorization code
-            value:'50.00',           // authorization code or money(ex. 30.00)
-            cost: 63.00,       // real cost
-            discount_rate:0.79,
-            order_time:'2017.08.06 13:00:00',
-            paid_time:'',
-            expiration_date:'',
-            cancelled_time:'',
-            state : 2   // 1: using, 2: unpaid, 3: cancelled, 4:expired
-        },
-        {
-            id:'5897427834',
-            name:'树下行人', //(course name or scenic area name, attraction name)
-            image:'../resource/image/tmp_order.png',
-            pay_method: 1,      // 1: online pay, 2: authorization code
-            value:'20.00',      // authorization code or money(ex. 30.00)
-            cost: 31.00,       // real cost
-            discount_rate:0.83,
-            order_time:'2017.08.05 13:00:00',
-            paid_time:'',
-            expiration_date:'',
-            cancelled_time:'2017.08.07 19:12:00',
-            state : 3   // 1: using, 2: unpaid, 3: cancelled, 4:expired
-        },
-        {
-            id:'5897427821',
-            name:'故宫－长城－明十三陵－颐和园', //(course name or scenic area name, attraction name)
-            image:'../resource/image/tmp_order.png',
-            pay_method: 2, // 1: online pay, 2: authorization code
-            value:'12452764',     // authorization code or money(ex. 30.00)
-            cost: 250.00,       // real cost
-            discount_rate:0.93,
-            order_time:'2017.07.05 15:35:00',
-            paid_time:'2017.07.06 11:20:00',
-            expiration_date:'2017.07.06-2017.07.26',
-            cancelled_time:'',
-            state : 4   // 1: using, 2: unpaid, 3: cancelled, 4:expired
-        },
-        {
-            id:'5897427818',
-            name:'东坡亭', //(course name or scenic area name, attraction name)
-            image:'../resource/image/tmp_order.png',
-            pay_method: 1, // 1: online pay, 2: authorization code
-            value:'200.00',     // authorization code or money(ex. 30.00)
-            cost: 250.00,       // real cost
-            discount_rate:0.91,
-            order_time:'2016.05.05 17:05:00',
-            paid_time:'2016.05.09 08:30:00',
-            expiration_date:'2017.05.05-2017.05.25',
-            cancelled_time:'',
-            state : 4   // 1: using, 2: unpaid, 3: cancelled, 4:expired
-        }
-    ];
-    order_List = tmp_orderlist;
-    localStorage.setObject('cur_orders', order_List);
-
-    display_order_data();
-}
-
-// downloading the information of all the scenic areas
-function getScenicAreasFromServer(){
-    //initilizing all scenic area information
-    localStorage.removeItem('scenic_areas');
-    scenic_list = null;
-
+// simulate scenic areas ( if don't use simulation method, write return statement above)
+function simulate_AllScenicAreas(){
     var tmp_sceniclist = [];
-    /*
-     $.ajax({
-         type: 'GET',
-         url: 'http://server/backend/dbmanage.php', //rest API url
-         dataType: 'json',
-         data: {func: 'function_name', info: res}, // set function name and parameters
-         }).success(function(data){
-             // configuring scenic data from received data
-
-             cur_scenic_data = tmp_attractionlist;
-
-             localStorage.setObject('scenic_areas', scenic_list);
-             display_scenic_data();
-         }).fail(function(){
-             return;
-     });
-     */
-
-    //return;
-
-    // simulate scenic areas ( if don't use simulation method, write return statement above)
     tmp_sceniclist = [
         {
-            id : '1',
+          id:'1',
+          name:'故宫'
+        },
+        {
+            id : '5',
             name : '王老吉凉茶博物馆'
         },
         {
@@ -237,45 +344,118 @@ function getScenicAreasFromServer(){
             name : '树下行人'
         }
     ];
-    scenic_list = tmp_sceniclist;
-    localStorage.setObject('scenic_areas', scenic_list);
-
-    display_scenic_data();
+    return tmp_sceniclist;
 }
 
-// downloading the information of all the tourism courses
-function getTourismCoursesFromServer(){
-    //initilizing the information of tourism courses
-    localStorage.removeItem('tourism_courses');
-    tourism_list = null;
+// simulate orders ( use in the simulation method)
+function  simulate_MyOrderList() {
+    // main is that data processing is accomplish in server and only use them in app
+    // so, should use any method?
+    var tmp_orderlist = [];
+    tmp_orderlist =[
+        {
+            id:'5897427848',
+            name:'鹤山古劳水乡', //(course name or scenic area name, attraction name)
+            image:'../resource/image/tmp_order.png',
+            pay_method: 1,     // 1: online pay, 2: authorization code
+            value:'30.00',     // authorization code or buy-money(ex. 30.00)
+            cost: 42.00,       // real cost
+            discount_rate:0.7,
+            order_time:'2017.08.05 13:00:00',
+            paid_time:'2017.08.05 13:00:00',
+            expiration_date:'2017.08.05-2017.08.20',
+            cancelled_time:'',
+            state : 1,   // 1: using, 2: unpaid, 3: cancelled, 4:expired
+            order_kind : 1     // 1: tourism course, 2: scenic area, 3: attraction
+        },
+        {
+            id:'5897427851',
+            name:'王老吉凉茶博物馆', //(course name or scenic area name, attraction name)
+            image:'../resource/image/tmp_order.png',
+            pay_method: 2, // 1: online pay, 2: authorization code
+            value:'4392862',     // authorization code or money(ex. 30.00)
+            cost: 35.00,       // real cost
+            discount_rate:0.9,
+            order_time:'2017.08.07 15:34:00',
+            paid_time:'2017.08.07 16:35:00',
+            expiration_date:'2017.08.07-2017.08.22',
+            cancelled_time:'',
+            state : 1,  // 1: using, 2: unpaid, 3: cancelled, 4:expired
+            order_kind : 2     // 1: tourism course, 2: scenic area, 3: attraction
+        },
+        {
+            id:'5897427852',
+            name:'故宫', //(course name or scenic area name, attraction name)
+            image:'../resource/image/tmp_order.png',
+            pay_method: 1,           // 1: online pay, 2: authorization code
+            value:'50.00',           // authorization code or money(ex. 30.00)
+            cost: 63.00,       // real cost
+            discount_rate:0.79,
+            order_time:'2017.08.06 13:00:00',
+            paid_time:'',
+            expiration_date:'',
+            cancelled_time:'',
+            state : 2,   // 1: using, 2: unpaid, 3: cancelled, 4:expired
+            order_kind : 2     // 1: tourism course, 2: scenic area, 3: attraction
+        },
+        {
+            id:'5897427834',
+            name:'树下行人', //(course name or scenic area name, attraction name)
+            image:'../resource/image/tmp_order.png',
+            pay_method: 1,      // 1: online pay, 2: authorization code
+            value:'20.00',      // authorization code or money(ex. 30.00)
+            cost: 31.00,       // real cost
+            discount_rate:0.83,
+            order_time:'2017.08.05 13:00:00',
+            paid_time:'',
+            expiration_date:'',
+            cancelled_time:'2017.08.07 19:12:00',
+            state : 3,  // 1: using, 2: unpaid, 3: cancelled, 4:expired
+            order_kind : 2     // 1: tourism course, 2: scenic area, 3: attraction
+        },
+        {
+            id:'5897427821',
+            name:'故宫－长城－明十三陵－颐和园', //(course name or scenic area name, attraction name)
+            image:'../resource/image/tmp_order.png',
+            pay_method: 2, // 1: online pay, 2: authorization code
+            value:'12452764',     // authorization code or money(ex. 30.00)
+            cost: 250.00,       // real cost
+            discount_rate:0.93,
+            order_time:'2017.07.05 15:35:00',
+            paid_time:'2017.07.06 11:20:00',
+            expiration_date:'2017.07.06-2017.07.26',
+            cancelled_time:'',
+            state : 4,   // 1: using, 2: unpaid, 3: cancelled, 4:expired
+            order_kind : 3     // 1: tourism course, 2: scenic area, 3: attraction
+        },
+        {
+            id:'5897427818',
+            name:'东坡亭', //(course name or scenic area name, attraction name)
+            image:'../resource/image/tmp_order.png',
+            pay_method: 1, // 1: online pay, 2: authorization code
+            value:'200.00',     // authorization code or money(ex. 30.00)
+            cost: 250.00,       // real cost
+            discount_rate:0.91,
+            order_time:'2016.05.05 17:05:00',
+            paid_time:'2016.05.09 08:30:00',
+            expiration_date:'2017.05.05-2017.05.25',
+            cancelled_time:'',
+            state : 4,   // 1: using, 2: unpaid, 3: cancelled, 4:expired
+            order_kind : 3     // 1: tourism course, 2: scenic area, 3: attraction
+        }
+    ];
 
+    return tmp_orderlist;
+}
+
+// simulate tourism courses data ( use in the simulation method)
+function simulate_tourismCourseList(){
     var tmp_tourismlist = [];
-    /*
-     $.ajax({
-     type: 'GET',
-     url: 'http://server/backend/dbmanage.php', //rest API url
-     dataType: 'json',
-     data: {func: 'function_name', info: res}, // set function name and parameters
-     }).success(function(data){
-         // configuring scenic data from received data
-
-         tourism_list = tmp_tourismlist;
-
-         localStorage.setObject('tourism_courses', tourism_list);
-         display_tourism_data();
-     }).fail(function(){
-         return;
-     });
-     */
-
-    //return;
-
-    // simulate tourism courses data ( if don't use simulation method, write return statement above)
     tmp_tourismlist = [
         {
             id: '1',
             name:'故宫－圆明园－颐和园',
-            image:'resource/image/palace.png',
+            image:'../resource/image/palace.png',
             cost:150,
             discount_rate:0.8,
             scenic_areas : [
@@ -299,7 +479,7 @@ function getTourismCoursesFromServer(){
         {
             id: '2',
             name : '故宫－长城－明十三陵－颐和园',
-            image:'resource/image/palace.png',
+            image:'../resource/image/palace.png',
             cost : 200,
             discount_rate:0.8,
             scenic_areas : [
@@ -327,142 +507,7 @@ function getTourismCoursesFromServer(){
         }
     ];
 
-    tourism_list = tmp_tourismlist;
-    localStorage.setObject('tourism_courses', tourism_list);
-
-    display_tourism_data();
-}
-
-// downloading the detail information of the scenic area from scenic id
-function getScenicareafromID(scenic_id){
-    // initializing current scenic area information
-    localStorage.removeItem('cur_scenic_area');
-    cur_scenic_data = null;
-
-    // check validation of the scenic id
-    if(scenic_id <= 0)  return;
-
-    var scenic_area = [];
-    /*
-     $.ajax({
-     type: 'GET',
-     url: 'http://server/backend/dbmanage.php', //rest API url
-     dataType: 'json',
-     data: {func: 'function_name', info: res}, // set function name and parameters
-     }).success(function(data){
-         // configuring scenic data from received data
-
-         cur_scenic_data = tmp_attractionlist;
-
-         localStorage.setObject('cur_scenic_area', cur_scenic_data);
-         initialize();
-     }).fail(function(){
-     return;
-     });
-     */
-
-    //return;
-
-    // simulate scenic data ( if don't use simulation method, write return statement above)
-    var tmp_attractionlist =[
-        {
-            id : '1',
-            name :'王老吉凉茶博物馆',
-            position : [116.402635,39.913155],
-            cost : 10,
-            discount_rate:0.8,
-            buy_state : 1,
-            audio_files : ['resource/audio/standard.mp3','resource/audio/girl.mp3','resource/audio/boy.mp3'],
-            image : 'resource/image/tmp_order.png'
-
-        },
-        {
-            id : '2',
-            name :'胡蝶故居',
-            position : [116.391541,39.92223931],
-            cost : 20,
-            discount_rate:0.8,
-            buy_state : 2, // 1: hear testing, 2:paid, 3:unpaid
-            audio_files : ['resource/audio/standard.mp3','resource/audio/girl.mp3','resource/audio/boy.mp3'],
-            image : 'resource/image/tmp_order.png'
-        },
-        {
-            id : '3',
-            name :'李家成故居',
-            position : [116.391541,39.913155],
-            cost : 30,
-            discount_rate:0.8,
-            buy_state : 2,
-            audio_files : ['resource/audio/standard.mp3','resource/audio/girl.mp3','resource/audio/boy.mp3'],
-            image : 'resource/image/tmp_order.png'
-        },
-        {
-            id : '4',
-            name :'树下行人',
-            position : [116.402635,39.92223931],
-            cost : 15,
-            discount_rate:0.8,
-            buy_state : 3,
-            audio_files : ['resource/audio/standard.mp3','resource/audio/girl.mp3','resource/audio/boy.mp3'],
-            image : 'resource/image/tmp_order.png'
-        },
-        {
-            id : '5',
-            name :'横海浪荷花世界',
-            position : [116.396991, 39.91829],
-            cost : 25,
-            discount_rate:0.8,
-            buy_state : 3,
-            audio_files : ['resource/audio/standard.mp3','resource/audio/girl.mp3','resource/audio/boy.mp3'],
-            image : 'resource/image/tmp_order.png'
-        }
-    ];
-
-    scenic_area ={
-        id: scenic_id,
-        name : '故宫',
-        position : [116.396991, 39.91829],
-        top_right : [116.402635,39.92223931],
-        bottom_left: [116.391541,39.913155],
-        overlay:'resource/image/overlay.png',
-        image:'resource/image/palace.png',
-        zoom : 2,
-        cost:100,
-        discount_rate:0.8,
-        attractionCnt:5,
-        attractions : tmp_attractionlist
-    };
-
-    cur_scenic_data = scenic_area;
-    localStorage.setObject('cur_scenic_area', cur_scenic_data);
-
-    scenic_area = localStorage.getObject('cur_scenic_area');
-    initialize();
-}
-
-function getScenicareafromPosition(){
-    // Here, receive the scenic area id that exists in current position from backend server
-    var scenic_id = 0;
-    /*
-     $.ajax({
-     type: 'GET',
-     url: 'http://server/backend/dbmanage.php', //rest API url
-     dataType: 'json',
-     data: {func: 'function_name', info: res}, // set function name and parameters
-     }).success(function(data){
-        // get scenic id from received data
-
-        getScenicareafromID(scenic_id);
-     }).fail(function(){
-        return;
-     });
-     */
-
-    //return;
-
-    //simulate scenic id ( if don't use simulation method, write return statement above)
-    scenic_id = 1;
-    getScenicareafromID(scenic_id);
+    return tmp_tourismlist;
 }
 
 // calculate expiration date and expired date from any time
@@ -507,7 +552,6 @@ function getDevicePixelRatio() {
 Storage.prototype.setObject = function(key, value) {
     this.setItem(key, JSON.stringify(value));
 }
-
 Storage.prototype.getObject = function(key) {
     var val = this.getItem(key);
     if(val == "" || val == null) return null;

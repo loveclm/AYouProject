@@ -52,10 +52,10 @@
                         <tr style="background-color: lightslategrey;">
                             <th>景区名称</th>
                             <th width="100">景点个数</th>
-                            <th width="150">景区总价格（元）</th>
+                            <th width="150">景区总价格(元)</th>
                             <th>所属地区</th>
                             <th width="100">状态</th>
-                            <th width="300">操作</th>
+                            <th width="150">操作</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -66,15 +66,11 @@
                                 $area = $areaList[$i];
                                 $points = json_decode($areaList[$i]->point_list);
                                 $pointCount = count($points);
-                                $price = 0;
-                                for ($k = 0; $k < $pointCount; $k++){
-                                    $price = $price + intval($points[$k]->price);
-                                }
                                 ?>
                                 <tr>
                                     <td><?php echo $area->name;?></td>
                                     <td><?php echo $pointCount;?></td>
-                                    <td><?php echo $price;?></td>
+                                    <td><?php echo $area->price;?></td>
                                     <td><?php echo $area->address;?></td>
                                     <td><?php echo $area->status == 1 ? '已上架': '未上架'; ?></td>
                                     <td>

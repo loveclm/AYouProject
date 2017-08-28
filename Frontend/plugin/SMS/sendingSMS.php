@@ -35,10 +35,10 @@ if (! empty($_POST)) {
     } else {
         $destination = null;
     }
-    $ss = '授权验证111';
+
     // Check if message is posted
     if (! empty($_POST['message'])) {
-        $message =$sms_code ;'Welcome to visit tourism site. Please use verification code<'.$sms_code.'>. Tourism Company';
+        $message = 'Welcome to visit tourism site. Please use verification code<'.$sms_code.'>. Tourism Company';
     } else {
         $message = null;
     }
@@ -77,7 +77,6 @@ if (! empty($_POST)) {
 
         // Send the message to the destination(s)
         $sms->setTest(false);
-        $sms->setReplacechars(true);
         $sms->sendSms($message);
 
         // Output the response to the browser
@@ -86,7 +85,6 @@ if (! empty($_POST)) {
         $data['type'] = $sms->getResponseCode();
         $data['err'] = $sms->getResponseMessage();
         $data['code'] = $sms_code;
-        $data['message'] = $_POST['message'];
         echo json_encode($data);
         // There is no destination or message posted, we realy need those two to work.
     } else {

@@ -1,44 +1,43 @@
 <?php if (!defined('BASEPATH')) exit('No direct script access allowed');
 
-class Order_model extends CI_Model
+class order_model extends CI_Model
 {
-
     /**
      * This function is used to get all Tourist Area
      * @return array $result : This is result
      */
     function getBuyOrders($searchType, $name, $stDate, $enDate, $status)
-    {
-        $this->db->select('bu.id as id, bu.number as number, usr.mobile as mobile, trp.price as price,' .
-            'tra.name as tour_area, trp.name as tour_point, sh.name as shop_name, bu.status as status, bu.ordered_time as ordered_time');
-        $this->db->from('buy_order as bu');
-        $this->db->join('tbl_users as usr', 'bu.userid = usr.userid');
-        $this->db->join('tourist_attraction as trp', 'bu.attractionid = trp.id');
-        $this->db->join('tourist_area as tra', 'trp.areaid = tra.id');
-        $this->db->join('shop as sh', 'bu.shopid = sh.id');
+    {//id, number, mobile, price, tour_area, tour_point, shop_name, status, ordered_time
+        $this->db->select('od.id as id, od.value as number, od.userphone as mobile, od.code as price,' .
+            'ta.name as tour_area, ta.point_list as point_list, od.attractionid as tour_point, od.authid as shop_name, ' .
+            'od.status as status, ta.type as type, od.ordered_time as ordered_time');
+        $this->db->from('tbl_order as od');
+        $this->db->join('tourist_area as ta', 'od.areaid = ta.id');
         switch ($searchType) {
             case '0':
-                $likeCriteria = "(bu.number  LIKE '%" . $name . "%')";
+                $likeCriteria = "(od.value  LIKE '%" . $name . "%')";
                 break;
             case '1':
-                $likeCriteria = "(usr.mobile  LIKE '%" . $name . "%')";
+                $likeCriteria = "(od.userphone  LIKE '%" . $name . "%')";
                 break;
             case '2':
-                $likeCriteria = "(tra.name  LIKE '%" . $name . "%')";
+                $likeCriteria = "(ta.name  LIKE '%" . $name . "%')";
                 break;
             case '3':
-                $likeCriteria = "(trp.name  LIKE '%" . $name . "%')";
+                //$likeCriteria = "(trp.name  LIKE '%" . $name . "%')";
                 break;
         }
         $this->db->where($likeCriteria);
-        if ($stDate != '') $this->db->where("date(bu.ordered_time) >= '" . date($stDate)."'");
-        if ($enDate != '') $this->db->where("date(bu.ordered_time) <= '" . date($enDate)."'");
+        if ($stDate != '') $this->db->where("date(od.ordered_time) >= '" . date($stDate) . "'");
+        if ($enDate != '') $this->db->where("date(od.ordered_time) <= '" . date($enDate) . "'");
 
-        if ($status != '0') $this->db->where('bu.status',$status);
-        $this->db->order_by('bu.ordered_time','desc');
+        if ($status != '0') $this->db->where('od.status', $status);
+        $this->db->where("(od.ordertype)",'1');
+        $this->db->order_by('od.ordered_time', 'desc');
 
         $query = $this->db->get();
         $result = $query->result();
+
         return $result;
     }
 
@@ -48,30 +47,31 @@ class Order_model extends CI_Model
      */
     function getOrders($searchType, $name, $stDate, $enDate, $status)
     {
-        $this->db->select('au.id as id, au.number as number, usr.mobile as mobile, au.code as price,' .
-            'tra.name as tour_area, tra.address as tour_point, sh.name as shop_name, au.status as status, au.ordered_time as ordered_time');
-        $this->db->from('auth_order as au');
-        $this->db->join('authcode as ac', 'au.authid = ac.id');
-        $this->db->join('tbl_users as usr', 'au.userid = usr.userid');
-        $this->db->join('tourist_area as tra', 'ac.targetid = tra.id');
-        $this->db->join('shop as sh', 'ac.shopid = sh.id');
+        $this->db->select('od.id as id, od.value as number, od.userphone as mobile, od.code as price,' .
+            'ta.name as tour_area, ta.point_list as point_list, ta.type as tour_point, ' .
+            'au.shopid as shop_name, ta.type as type, od.status as status, od.ordered_time as ordered_time');
+        $this->db->from('tbl_order as od');
+        $this->db->join('tbl_authcode as au', 'od.authid = au.id');
+        $this->db->join('tourist_area as ta', 'au.targetid = ta.id');
         switch ($searchType) {
             case '0':
-                $likeCriteria = "(au.number  LIKE '%" . $name . "%')";
+                $likeCriteria = "(od.value  LIKE '%" . $name . "%')";
                 break;
             case '1':
-                $likeCriteria = "(usr.mobile  LIKE '%" . $name . "%')";
+                $likeCriteria = "(od.userphone  LIKE '%" . $name . "%')";
                 break;
             case '2':
-                $likeCriteria = "(tra.name  LIKE '%" . $name . "%')";
+                $likeCriteria = "(ta.name  LIKE '%" . $name . "%')";
                 break;
         }
         $this->db->where($likeCriteria);
-        if ($stDate != '') $this->db->where("date(au.ordered_time) >= '" . date($stDate)."'");
-        if ($enDate != '') $this->db->where("date(au.ordered_time) <= '" . date($enDate)."'");
+        if ($stDate != '') $this->db->where("date(od.ordered_time) >= '" . date($stDate) . "'");
+        if ($enDate != '') $this->db->where("date(od.ordered_time) <= '" . date($enDate) . "'");
 
-        if ($status != '0') $this->db->where('au.status',$status);
-        $this->db->order_by('au.ordered_time','desc');
+        if ($status != '0') $this->db->where('od.status', $status);
+        $this->db->where("(od.userphone)<>'0'");
+        $this->db->where("(od.ordertype)",'2');
+        $this->db->order_by('od.ordered_time', 'desc');
 
         $query = $this->db->get();
         $result = $query->result();
@@ -81,141 +81,170 @@ class Order_model extends CI_Model
     /**
      * This function is used to get all Tourist Area
      * @return array $result : This is result
+     * $type==1: scenic area,   $type==2: course
      */
-    function getOrderTotal($id)
+    function getAreaCountByShopId($id, $type)
     {
-        $this->db->select('*');
-        $this->db->from('auth_order');
-        $this->db->where('authid', $id);
-        $qresult = $this->db->count_all_results();
-        return $qresult;
-    }
-
-    /**
-     * This function is used to get all Tourist Area
-     * @return array $result : This is result
-     */
-    function getOrderCount($id)
-    {
-        $this->db->select('*');
-        $this->db->from('authcode');
+        $this->db->select('targetid');
+        $this->db->from('tbl_authcode');
         $this->db->where('shopid', $id);
+        $this->db->where('type', $type);
+        $qresult = $this->db->count_all_results();
+        return $qresult;
+    }
+
+    /**
+     * This function is used to get all Tourist Area
+     * @return array $result : This is result
+     */
+    function getOrdersByUser($phone)
+    {
+        $this->db->select('*');
+        $this->db->from('tbl_order');
+        $this->db->where('userphone', $phone);
+        $this->db->order_by('authid');
+        $this->db->order_by('areaid');
+
         $query = $this->db->get();
-        $qresult = $query->result();
-        $result = 0;
-        if (count($qresult) > 0) {
-            foreach ($qresult as $item) {
-                $result += $this->getOrderTotal($item->id);
+        $result = $query->result();
+        return $result;
+    }
+
+    /**
+     * This function is used to get all Tourist Area
+     * @return array $result : This is result
+     */
+    function getOrderCountByUser($phone)
+    {
+        $this->db->select('*');
+        $this->db->from('tbl_order');
+        $this->db->where('userphone', $phone);
+        $qresult = $this->db->count_all_results();
+        return $qresult;
+    }
+
+    public function getMyOrderInfos($mobile)
+    {
+        $orders = $this->getOrdersByUser($mobile);
+        if (count($orders) == 0) {
+            return '-1';
+        } else {
+            $i = 0;
+            $total_price = 0;
+            $Auths = array();
+            foreach ($orders as $item) {
+                $i++;
+                if ($item->ordertype == '2') { // auth order
+                    $areaitem = $this->area_model->getAreaByAuthId($item->authid);
+                    $area_info = json_decode($areaitem->info);
+                    array_push(
+                        $Auths,
+                        array(
+                            'id' => $item->value,
+                            'name' => $areaitem->name,
+                            'image' => base_url() . 'uploads/' . $area_info->overay,
+                            'pay_method' => 2,
+                            'value' => $item->code,
+                            'cost' => $areaitem->price,
+                            'discount_rate' => $areaitem->discount_rate,
+                            'order_time' => $item->ordered_time,
+                            'paid_time' => $item->paid_time,
+                            'expiration_time' => date_format(date_create($item->ordered_time), "Y.m.d") .
+                                ' - ' . date_format(date_create($item->expiration_time), "Y.m.d"),
+                            'canceled_time' => $item->canceled_time,
+                            'state' => $item->status
+                        )
+                    );
+                    $total_price += ($areaitem->price * $areaitem->discount_rate);
+                } else if ($item->attractionid == '0') { //buy course or area suoyou
+                    $areaitem = $this->area_model->getAreaById($item->areaid);
+                    $attritem = json_decode($areaitem->point_list);
+                    $area_info = json_decode($areaitem->info);
+                    array_push(
+                        $Auths,
+                        array(
+                            'id' => $item->value,
+                            'name' => $areaitem->name,
+                            'image' => base_url() . 'uploads/' . $area_info->overay,
+                            'pay_method' => 1,
+                            'value' => $item->code,
+                            'cost' => $areaitem->price,
+                            'discount_rate' => $areaitem->discount_rate,
+                            'order_time' => $item->ordered_time,
+                            'paid_time' => $item->paid_time,
+                            'expiration_time' => date_format(date_create($item->ordered_time), "Y.m.d") .
+                                ' - ' . date_format(date_create($item->expiration_time), "Y.m.d"),
+                            'canceled_time' => $item->canceled_time,
+                            'state' => $item->status
+                        )
+                    );
+                    $total_price += $item->code;
+                } else { //buy attraction
+                    $areaitem = $this->area_model->getAreaById($item->areaid);
+                    $attritem = json_decode($areaitem->point_list);
+                    $attr_id = explode('_', $item->attractionid);
+                    $attritem = $attritem[$attr_id[1] - 1];
+                    array_push(
+                        $Auths,
+                        array(
+                            'id' => $item->value,
+                            'name' => $attritem->name,
+                            'image' => base_url() . 'uploads/' . $attritem->image,
+                            'pay_method' => 1,
+                            'value' => $item->code,
+                            'cost' => $attritem->price,
+                            'discount_rate' => $attritem->discount_rate,
+                            'order_time' => $item->ordered_time,
+                            'paid_time' => $item->paid_time,
+                            'expiration_time' => date_format(date_create($item->ordered_time), "Y.m.d") .
+                                ' - ' . date_format(date_create($item->expiration_time), "Y.m.d"),
+                            'canceled_time' => $item->canceled_time,
+                            'state' => $item->status
+                        )
+                    );
+                    $total_price += $item->code;
+                }
             }
+            $result['Auths'] = $Auths;
+            $result['total_price'] = $total_price;
+            return $result;
         }
-        return $result;
-    }
-
-    /**
-     * This function is used to get all Tourist Area
-     * @return array $result : This is result
-     */
-    function getCount()
-    {
-        $this->db->select('*');
-        $this->db->from('auth_order');
-        $qresult = $this->db->count_all_results();
-        return $qresult;
-    }
-
-    /**
-     * This function is used to get all Tourist Area
-     * @return array $result : This is result
-     */
-    function getOrderUsed($id)
-    {
-        $this->db->select('*');
-        $this->db->from('auth_order');
-        $this->db->where('authid', $id);
-        $this->db->where('status', '1');
-        $qresult = $this->db->count_all_results();
-        return $qresult;
-    }
-
-    /**
-     * This function is used to get all Tourist Area
-     * @return array $result : This is result
-     */
-    function getAuthOrders($id, $status)
-    {
-        $this->db->select('id, code, status, ordered_time');
-        $this->db->from('auth_order');
-        $this->db->where('authid', $id);
-        if ($status == '1')
-            $this->db->where('status', $status);
-        else if ($status != '0')
-            $this->db->where("status <> '1'");
-        $query = $this->db->get();
-
-        $result = $query->result();
-        return $result;
-    }
-
-    /**
-     * This function is used to get all Tourist Area
-     * @return array $result : This is result
-     */
-    function getAuthOrder($id)
-    {
-        $this->db->select('au.number, au.code, usr.mobile, au.ordered_time, au.status');
-        $this->db->from('auth_order as au');
-        $this->db->join('tbl_users as usr', 'au.userid = usr.userid');
-        $this->db->where('au.id', $id);
-        $query = $this->db->get();
-        $result = $query->result();
-        return $result['0'];
-    }
-
-    /**
-     * This function is used to get all Tourist Area
-     * @return array $result : This is result
-     */
-    function updateMoney($id, $money)
-    {
-        $this->db->select('*');
-        $this->db->from('authcode');
-        $this->db->where('id', $id);
-        $query = $this->db->get();
-        $result = $query->result();
-        if (count($result) == 0) return FALSE;
-        $authInfo = $result['0'];
-        $authInfo->money = $money;
-        $this->db->select('*');
-        $this->db->where('id', $id);
-        $this->db->update('authcode', $authInfo);
-        return TRUE;
     }
 
     /**
      * This function is used to add new shop to system
      * @return number $insert_id : This is last inserted id
      */
-    function addAuth($authInfo)
+    function addBuyOrder($OrderInfo)
     {
         $this->db->trans_start();
-        $this->db->insert('authcode', $authInfo);
+        $this->db->insert('tbl_order', $OrderInfo);
         $insert_id = $this->db->insert_id();
         $this->db->trans_complete();
         return $insert_id;
     }
 
     /**
-     * This function is used to get init of AuthCode
-     * @return int count($result) + 1 : This is init
+     * This function is used to add new shop to system
+     * @return number $insert_id : This is last inserted id
      */
-    function getAuthInit($authInfo)
+    function addAuthOrder($authInfo)
     {
         $this->db->select('*');
-        $this->db->from('authcode');
-        $this->db->where('shopid', $authInfo['shopid']);
-        $this->db->where('targetid', $authInfo['targetid']);
-        $result = $this->db->count_all_results();
-        return $result + 1;
+        $this->db->from('tbl_order');
+        $this->db->where('code', $authInfo['code']);
+        $this->db->where('ordertype', '2');
+        $query = $this->db->get();
+        $result = $query->result();
+        if (count($result) == 0) return FALSE;
+        $OrderInfo = $result['0'];
+        $OrderInfo->userphone = $authInfo['userphone'];
+        $OrderInfo->status = '2';
+        $OrderInfo->paid_time = $authInfo['paid_time'];
+        $this->db->select('*');
+        $this->db->where('id', $OrderInfo->id);
+        $this->db->update('tbl_order', $OrderInfo);
+        return TRUE;
     }
 }
 

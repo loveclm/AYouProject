@@ -15,9 +15,9 @@ window.addEventListener('resize', function(event){
 
 function loadOrderData(){
 
-    order_List = localStorage.getObject('cur_orders');
+    order_List = sessionStorage.getObject('cur_orders');
     if(order_List === null)
-        getOrdersFromServer();
+        getMyOrdersFromServer();
     else
         display_order_data();
 }
@@ -48,23 +48,23 @@ function display_order_data(){
         tmp_content_html += '       <h5>'+order_List[i]['name']+'</h5>';
 
         if(order_List[i]['pay_method'] == 1)
-            tmp_content_html += '   <h5 style="color: red">¥' +order_List[i]['value']+ '</h5>';
+            tmp_content_html += '   <h5 style="color: red">¥' + parseFloat( order_List[i]['value']).toFixed(2)+ '</h5>';
         else
-            tmp_content_html += '   <h5>授权码 : ' +order_List[i]['value']+ '</h5>';
+            tmp_content_html += '   <h5>授权码 : ' + order_List[i]['value']+ '</h5>';
 
         tmp_content_html += '</div></div>';
 
-        if(order_List[i]['state'] != 1){
+        if(order_List[i]['state'] != "1"){
             tmp_content_html += '<div class="order_footer">';
 
             switch(order_List[i]['state'])
             {
-                case 2:
+                case "2":
                     tmp_content_html +='    <div onclick="cancelOrder('+i+')"><h5>取消订单</h5></div>';
                     tmp_content_html +='    <div onclick="pay_for_Order('+i+')"><h5>付款</h5></div>';
                     break;
-                case 3:
-                case 4:
+                case "3":
+                case "4":
                     tmp_content_html +='    <div onclick="purchase_again_Order('+i+')"><h5>重新购买</h5></div>';
                     break;
             }
@@ -75,30 +75,29 @@ function display_order_data(){
         content_html_all += tmp_content_html;
         switch (order_List[i]['state'])
         {
-            case 2:
+            case "2":
                 content_html_unpaid += tmp_content_html;
                 break;
-            case 3:
+            case "3":
                 content_html_cancelled += tmp_content_html;
                 break;
-            case 4:
+            case "4":
                 content_html_expired += tmp_content_html;
                 break;
         }
-
-        $('#tab_all').html(content_html_all);
-        $('#tab_unpaid').html(content_html_unpaid);
-        $('#tab_cancelled').html(content_html_cancelled);
-        $('#tab_expired').html(content_html_expired);
     }
+    $('#tab_all').html(content_html_all);
+    $('#tab_unpaid').html(content_html_unpaid);
+    $('#tab_cancelled').html(content_html_cancelled);
+    $('#tab_expired').html(content_html_expired);
 
     $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
         var index = $(e.target).closest('li').index();
 
-        localStorage.setItem('order_tab_index', index);
+        sessionStorage.setItem('order_tab_index', index);
     });
 
-    var index = localStorage.getItem('order_tab_index');
+    var index = sessionStorage.getItem('order_tab_index');
     if( index != null)
         $('.nav-tabs li:eq('+index+') a').tab('show');
 }
@@ -132,7 +131,7 @@ function pay_for_Order(index) {
     var real_cost = cur_order['cost'] * cur_order['discount_rate'];
 
     var payment_data = {
-        type : 4,      // 1: tourism course, 2: scenic area,  3: attraction, 4: order
+        type : cur_order['order_kind'],      // 1: tourism course, 2: scenic area,  3: attraction, 4: authorize code
         id : cur_order['id'],
         name: cur_order['name'],
         image: cur_order['image'],
@@ -140,8 +139,8 @@ function pay_for_Order(index) {
         real_cost: real_cost
     };
 
-    localStorage.setObject('payment_data', payment_data);
-    window.location.href = '../views/purchase.php';
+    sessionStorage.setObject('payment_data', payment_data);
+    window.location.href = '../views/purchase.html';
 }
 
 function purchase_again_Order(index) {
@@ -151,9 +150,9 @@ function purchase_again_Order(index) {
 function showOrderDetailInfo(index)
 {
     var cur_order = order_List[index];
-    localStorage.setObject('cur_order', cur_order);
+    sessionStorage.setObject('cur_order', cur_order);
 
-    window.location.href = '../views/order_detail.php';
+    window.location.href = '../views/order_detail.html';
 }
 
 function resize_orderlist(){
@@ -168,7 +167,7 @@ function resize_orderlist(){
         || window.innerHeight;
     var scale = Math.min(width/640,height/1010) * ratio;
 
-    width = 640*scale;
+    //width = 640*scale;
     $('#content').css({width:width, height:height});
     $('#app_header').css({width:width});
 

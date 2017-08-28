@@ -83,15 +83,18 @@ function processCourse(url, id) {
 
     var touristArea = '';
     var reqUrl = '';
+    var info={
+        overay:'capture.jpg',
+    };
     if(parseInt(id) != 0){
         touristArea = {
-            id: parseInt(id), name: area, discount_rate: rate, address: '', status: 0, type: 2, info: getAreas()
+            id: parseInt(id), name: area, discount_rate: rate, address: '', status: 0, type: 2, info:JSON.stringify(info), point_list: getAreas()
         };
         reqUrl = url + "api/Areas/save/" + id;
     }
     else {
         touristArea = {
-            name: area, discount_rate: rate, address: '', status: 0, type: 2, info: getAreas()
+            name: area, discount_rate: rate, address: '', status: 0, type: 2, info:JSON.stringify(info), point_list: getAreas()
         };
         reqUrl = url + "api/Areas/save";
     }

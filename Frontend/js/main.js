@@ -1,7 +1,6 @@
 /**
  * Created by Administrator on 8/4/2017.
  */
-
 var initRatio;
 var bCommentaryState = 0;
 var bAutomaticState = 0;
@@ -12,9 +11,9 @@ var phone_num = "";
 var sms_code = "";
 
 var new_scenic_id = "";
-var cur_scenic_data = null;
 
-var attraction_list = [];
+var bMovable = 1;
+var cur_scenic_data = null;
 
 window.addEventListener('resize', function(event){
     resize();
@@ -26,7 +25,6 @@ $(document).ready(function(){
         document.body.innerHTML = '<div style="position: relative">Can not show web page in current browser.</div>';
         return;
     }
-
     // resize client region
     resize();
 
@@ -49,8 +47,9 @@ $(document).ready(function(){
             $('#btn-commentary').css({'background':'url(\'resource/image/home_commentary_on.png\') no-repeat', 'background-size':'contain'});
             showNotification('已开启景区讲解');
         }
+
         bCommentaryState = 1 - bCommentaryState;
-        localStorage.setItem('explain_check', bCommentaryState);
+        sessionStorage.setItem('explain_check', bCommentaryState);
 
     });
 
@@ -65,23 +64,70 @@ $(document).ready(function(){
             showNotification('已开启景区讲解');
             $('#btn-automatic').css({'background':'url(\'resource/image/home_automatic_on.png\') no-repeat', 'background-size':'contain'});
         }
+
         bAutomaticState = 1 - bAutomaticState;
-        localStorage.setItem('auto_explain_check', bAutomaticState);
+        sessionStorage.setItem('auto_explain_check', bAutomaticState);
     });
 
+    // change auto playing state with button click event
+    $('#btn-position').click(function(){
+        if(bMovable == 0)
+        {
+            $('#btn-position').css({'background':'url(\'resource/image/home_position_off.png\') no-repeat', 'background-size':'contain'});
+        }else
+        {
+            $('#btn-position').css({'background':'url(\'resource/image/home_position_on.png\') no-repeat', 'background-size':'contain'});
+        }
+
+        bMovable = 1 - bMovable;
+        sessionStorage.setItem('movable', bMovable);
+    });
 });
 
+// loading  the data from local storage
+function loadDataFormStorage(){
+    initialize();
+
+    bPhoneverified = parseInt(sessionStorage.getItem('phone_verified'));
+    if(bPhoneverified == 0)
+        localStorage.setItem('phone_number', "");
+    else
+        phone_num = localStorage.getItem('phone_number');
+
+    // loading information related with attraction explain
+    bCommentaryState = parseInt(sessionStorage.getItem('explain_check'));
+    bAutomaticState = parseInt(sessionStorage.getItem('auto_explain_check'));
+    bMovable = parseInt(sessionStorage.getItem('movable'));
+
+    // loading information of the current scenic area
+    new_scenic_id = sessionStorage.getItem('new_scenic_id');
+    if(new_scenic_id != "") {
+        showScenicareaInformation();
+    } else{
+        cur_scenic_data = sessionStorage.getObject('cur_scenic_area');
+        if(cur_scenic_data === null) return;
+
+        // displaying the information of current scenic area in the Map
+        showScenicareaInformation();
+    }
+}
+
+// showing the information of current scenic area
 function showScenicareaInformation(){
-    /*  programming stage
-    **   show gaoMap along a location
-    **   add overlay image in gaoMap
-    **   show all the attraction marks
-    **   must consider the phone verification information
-     */
-    initMap();
+    bMovable = parseInt(sessionStorage.getItem('movable'));
+    if( new_scenic_id != "") {
+        sessionStorage.setItem('new_scenic_id', '');
+        getScenicareafromID(new_scenic_id);
+    }else {
+        map.clearMap();
+        setOverlay();           // add overlay image in gaoMap
+        showAttractionInfos();  // show all the attraction marks
+    }
 }
 
 function initialize(){
+    initializeStorage();
+
     if(bCommentaryState == 0)
         $('#btn-commentary').css({'background':'url(\'resource/image/home_commentary_on.png\') no-repeat', 'background-size':'contain'});
     else
@@ -92,70 +138,36 @@ function initialize(){
     else
         $('#btn-automatic').css({'background':'url(\'resource/image/home_automatic_off.png\') no-repeat', 'background-size':'contain'});
 
-    showScenicareaInformation();
+    if(bMovable == 0)
+        $('#btn-position').css({'background':'url(\'resource/image/home_position_off.png\') no-repeat', 'background-size':'contain'});
+    else
+        $('#btn-position').css({'background':'url(\'resource/image/home_position_on.png\') no-repeat', 'background-size':'contain'});
+    // loading gaode map
+    initMap();
 }
 
 function initializeStorage(){
     // if value is null then initialize value
-    if(localStorage.getItem('phone_verified') === null)
-        localStorage.setItem('phone_verified', 0);
+    if(sessionStorage.getItem('phone_verified') === null)
+        sessionStorage.setItem('phone_verified', 0);
 
-    if(localStorage.getItem('explain_check') === null)
-        localStorage.setItem('explain_check', 0);
+    if(sessionStorage.getItem('explain_check') === null)
+        sessionStorage.setItem('explain_check', 0);
 
-    if(localStorage.getItem('auto_explain_check') === null)
-        localStorage.setItem('auto_explain_check', 0);
+    if(sessionStorage.getItem('auto_explain_check') === null)
+        sessionStorage.setItem('auto_explain_check', 0);
+
+    if(sessionStorage.getItem('movable') === null)
+        sessionStorage.setItem('movable', 1);
 
     // current verified phone number
     if(localStorage.getItem('phone_number') === null)
         localStorage.setItem('phone_number', "");
 
     // new scenic area id : this area is the scenic area that exchange with current scenic area
-    if(localStorage.getItem('new_scenic_id') === null)
-        localStorage.setItem('new_scenic_id', "");
+    if(sessionStorage.getItem('new_scenic_id') === null)
+        sessionStorage.setItem('new_scenic_id', "");
     // current scenic area
-}
-
-function loadDataFormStorage(){
-    initializeStorage();
-
-    bPhoneverified = parseInt(localStorage.getItem('phone_verified'));
-    if(bPhoneverified == 0)
-        localStorage.setItem('phone_number', "");
-    else
-        phone_num = localStorage.getItem('phone_number');
-
-    // loading information related with attraction explain
-    bCommentaryState = parseInt(localStorage.getItem('explain_check'));
-    bAutomaticState = parseInt(localStorage.getItem('auto_explain_check'));
-
-    // loading information of the current scenic area
-    new_scenic_id = localStorage.getItem('new_scenic_id');
-    if(new_scenic_id != "") {
-        // downloading scenic area information along scenic id
-        if(new_scenic_id != -1) {
-            getScenicareafromID(new_scenic_id);
-        }
-        else{
-            localStorage.removeItem('cur_scenic_area');
-            cur_scenic_data = null;
-            initialize();
-        }
-
-        //initializing new scenic area information
-        localStorage.setItem('new_scenic_id', "");
-    }
-    else{
-        cur_scenic_data = localStorage.getObject('cur_scenic_area');
-
-        if(cur_scenic_data === null){
-            //downloading scenic area information along current position
-            getScenicareafromPosition();
-        }else
-        {
-            initialize();
-        }
-    }
 }
 
 function showNotification(data){
@@ -168,7 +180,7 @@ function showNotification(data){
 function start_explain(index) {
     // play audio with the setted music type
     var music = document.getElementById('music'); // id for audio element
-    $("#audioSource").attr("src", cur_scenic_data.attractions[index].audio_files[cur_voice_type]).detach().appendTo("#music");
+    $("#audioSource").attr("src", cur_scenic_data.attractions[index].audio_files[cur_voice_type-1]).detach().appendTo("#music");
 
     music.load();
     start_explain_control("play");
@@ -186,7 +198,6 @@ function start_explain_control(data) {
         //music.pause();
     }
 }
-
 
 function verifyAuthorizationCode(){
     $('#login').hide();
@@ -222,17 +233,17 @@ function sendSMSToPhone(){
     $('#loading').css({display:'block'});
     $.ajax({
         type: 'POST',
-        url: 'plugin/SMS/sendingSMS.php', //rest API url
+        url: 'plugin/SMS/SendTemplateSMS.php', //rest API url
         dataType: 'json',
-        data: { destination: '+86' + phone_num, sender: 'Tourism company', reference:'', message: '验证码'}, // set function name and parameters
+        data: {'phone_num':  phone_num}, // set function name and parameters
         success: function(data){
             // get SMS code from received data
             $('#loading').css({display:'none'});
-            if(data['type'] != "01") {
-                sms_code = "";
-                alert(data['err']);
-            }else{
+            if(data['result'] == "success") {
                 sms_code = data['code'];
+            }else{
+                sms_code = "";
+                alert(data['error']);
             }
         },
         fail: function(){
@@ -246,7 +257,7 @@ function sendSMSToPhone(){
 function confirm_verify_phone(){
     if(sms_code == "")
     {
-        alert('输入手机号。');
+        alert('请确认您正确输入手机号码并重新发送请求。再次击点"获取验证码"。');
         return;
     }
     // verify SMS code accuracy
@@ -257,11 +268,13 @@ function confirm_verify_phone(){
     }
 
     bPhoneverified = 1;
+    // store phone verification state
+    sessionStorage.setItem('phone_verified', bPhoneverified);
+    localStorage.setItem('phone_number', phone_num);
+
     $('#phone_verify').hide();
     $('#phone_number').val("");
     $('#verify_code').val("");
-    // store phone verification state
-    localStorage.setItem('phone_verified', bPhoneverified);
 
     // If for verifying authorization code verify phone then show authorization code verifying dialog,
     // If else downloading needed infos of the current scenic area, attraction of the current scenic area and so on.
@@ -271,9 +284,9 @@ function confirm_verify_phone(){
         $('#code_auth').show();
     }else{
         // change attraction marks along information
-        showAttractionInfos();
+        if(cur_scenic_data != null)
+            getScenicareafromID(cur_scenic_data.id);
     }
-
 }
 
 function OnCancelauthcodeVerify(){
@@ -288,37 +301,50 @@ function OnConfirmauthCode(){
     var auth_code = $('#auth_code').val();
     if(auth_code == "")
     {
-        alert('请输入授权码');
+        alert('请输入授权码。');
         return;
     }
 
-    // send ajax request and receive ajax response and so process with the result of the backend
-    // If verification is fail, maintain old state.
-    /*
-     $.ajax({
-         type: 'GET',
-         url: 'http://server/backend/dbmanage.php', //rest API url
-         dataType: 'json',
-         data: {func: 'function_name', info: res}, // set function name and parameters
-         }).success(function(data){
-             $('#code_auth').hide();
-             // change attraction marks along information
+    var payment_data = [];
+    payment_data['id'] = "none";
+    payment_data['type'] = 4;
+    payment_data['real_cost'] = auth_code;
 
-         }).fail(function(){
-             return;
-     });
-     */
+    // send the order information to back-end
+    $.ajax({
+        type: 'POST',
+        url: SERVER_URL + 'api/Areas/getAllCourseInfos',
+        dataType: 'json',
+        // username:'admin',
+        // password:'1234',
+        data: {'phone' : phone_num, 'id':payment_data['id'], 'type':payment_data['type'], 'cost':payment_data['real_cost']},
+        success: function (data) {
+            if (data.status == false) {
+                alert('订单失败。授权码错了。');
+                return;
+            }
+            $('#code_auth').hide();
+            $('#auth_code').val("");
 
-    //return;
-    // simulate progress
-    $('#code_auth').hide();
-    $('#auth_code').val("");
+            if(cur_scenic_data != null)
+                getScenicareafromID(cur_scenic_data.id);
 
-    // change attraction marks along information
-    showAttractionInfos();
+            alert('订单成功。');
+        },
+        error: function (data) {
+            alert('订单失败。');
+        }
+    });
+
+    // $('#code_auth').hide();
+    // $('#auth_code').val("");
+    //
+    // // change attraction marks along information
+    // if(cur_scenic_data != null)
+    //     getScenicareafromID(cur_scenic_data.id);
 }
 
-function display_attraction_data(){
+function display_attraction_data() {
     //------- show the attraction list
     // show individual tourism data
     var content_html = '<div id="search_attraction">';
@@ -329,21 +355,10 @@ function display_attraction_data(){
     $('#detail_content_search').html(content_html);
 
     content_html = '<div id="attraction_list">';
-    for( var i = 0; i < cur_scenic_data['attractions'].length; i++){
+    if (cur_scenic_data != null) {
+        for (var i = 0; i < cur_scenic_data['attractions'].length; i++) {
 
-        content_html += '   <div class="attraction_item" id="attraction_item'+ (i+1) +'" onclick="selectAttraction('+ i +')">';
-        content_html += '   <img src="resource/image/attraction.png" style="float: left; height:100%">';
-        content_html += '   <h4 style="float: left; font-weight: bold; margin-top:5px; margin-left:10px ">'+ cur_scenic_data['attractions'][i]['name'] +'</h4></div>';
-    }
-    content_html += '</div>';
-    $('#detail_content_data').html(content_html);
-}
-
-function filter_attraction(search_text){
-    var content_html = '<div id="attraction_list">';
-    for( var i = 0; i < cur_scenic_data['attractions'].length; i++){
-        if(cur_scenic_data['attractions'][i]['name'].indexOf(search_text)>=0) {
-            content_html += '   <div class="attraction_item" id="attraction_item' + (i+1) +'" onclick="selectAttraction('+ i +')">';
+            content_html += '   <div class="attraction_item" id="attraction_item' + (i + 1) + '" onclick="selectAttraction(' + i + ')">';
             content_html += '   <img src="resource/image/attraction.png" style="float: left; height:100%">';
             content_html += '   <h4 style="float: left; font-weight: bold; margin-top:5px; margin-left:10px ">' + cur_scenic_data['attractions'][i]['name'] + '</h4></div>';
         }
@@ -352,8 +367,19 @@ function filter_attraction(search_text){
     $('#detail_content_data').html(content_html);
 }
 
-function selectAttraction(index){
-    // when user clicks attraction, must select the attraction mark
+function filter_attraction(search_text){
+    if(cur_scenic_data == null) return;
+
+    var content_html = '<div id="attraction_list">';
+    for( var i = 0; i < cur_scenic_data['attractions'].length; i++){
+        if(cur_scenic_data['attractions'][i]['name'].indexOf(search_text)>=0) {
+            content_html += '   <div class="attraction_item" id="attraction_item' + (i+1) +'" onclick="selectAttraction('+ i +')">';
+            content_html += '   <img src="resource/image/被你整晕了.png" style="float: left; height:100%">';
+            content_html += '   <h4 style="float: left; font-weight: bold; margin-top:5px; margin-left:10px ">' + cur_scenic_data['attractions'][i]['name'] + '</h4></div>';
+        }
+    }
+    content_html += '</div>';
+    $('#detail_content_data').html(content_html);
 }
 
 /*****************************************
@@ -405,17 +431,14 @@ function resize(){
     $('#btn-follow').css({display:'block', top:map_top + dh + delta, right:content_margin, width: btn_height, height: btn_height});
     $('#btn-order').css({display:'block', top:map_top + dh*2 + delta, right:content_margin, width: btn_height, height: btn_height});
     $('#btn-scenic').css({display:'block', top:map_top + dh*3 + delta, right:content_margin, width: btn_height, height: btn_height});
-    $('#btn-commentary').css({display:'block', bottom:map_bottom + dh + delta, right:content_margin, width: btn_height, height: btn_height});
-    $('#btn-automatic').css({display:'block', bottom:map_bottom + delta, right:content_margin, width: btn_height, height: btn_height});
+    $('#btn-commentary').css({display:'block', bottom:map_bottom + 2*dh + delta/2, right:content_margin, width: btn_height, height: btn_height});
+    $('#btn-automatic').css({display:'block', bottom:map_bottom + dh + delta/2, right:content_margin, width: btn_height, height: btn_height});
+    $('#btn-position').css({display:'block', bottom:map_bottom + delta, right:content_margin, width: btn_height, height: btn_height});
 
     //set margin of login modal dialog
-    var header_height = document.getElementById('app_header').clientHeight;
-
     $('.custom-modal').css({'margin-left':content_margin,'margin-right':content_margin});
 
     // set bottom of the menu detail dialog
     $('#menu-detail-dialog').css({bottom: map_bottom, width:map_width});
     $('#menu-detail').css({bottom:map_bottom});
-
-    var menu_detail_content_top = document.getElementById('menu-detail-content').clientTop;
 }

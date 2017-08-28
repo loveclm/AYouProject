@@ -38,12 +38,12 @@
 |
 */
 
-$route['default_controller'] = "login";
+$route['default_controller'] = "login_controller";
 $route['404_override'] = 'error';
 
 /*********** USER DEFINED ROUTES *******************/
 
-$route['loginMe'] = 'login/loginMe';
+$route['loginMe'] = 'login_controller/loginMe';
 
 $route['area'] = 'area';
 $route['addarea'] = 'area/addNew';
@@ -91,18 +91,20 @@ $route['addNewUser'] = "systemmanage/addNewUser";
 $route['editOld'] = "systemmanage/editOld";
 $route['editOld/(:num)'] = "systemmanage/editOld/$1";
 $route['editUser'] = "systemmanage/editUser";
-$route['deleteUser'] = "systemmanage/deleteUser";
+$route['deleteUser/(:num)'] = "systemmanage/deleteUser/$1";
+$route['deleteRole/(:num)'] = "systemmanage/deleteRole/$1";
 $route['loadChangePass'] = "systemmanage/loadChangePass";
 $route['changePassword'] = "systemmanage/changePassword";
+$route['updateUserPassword'] = "systemmanage/updateUserPassword";
 $route['pageNotFound'] = "systemmanage/pageNotFound";
 $route['checkEmailExists'] = "systemmanage/checkEmailExists";
 
-$route['forgotPassword'] = "login/forgotPassword";
-$route['resetPasswordUser'] = "login/resetPasswordUser";
-$route['resetPasswordConfirmUser'] = "login/resetPasswordConfirmUser";
-$route['resetPasswordConfirmUser/(:any)'] = "login/resetPasswordConfirmUser/$1";
-$route['resetPasswordConfirmUser/(:any)/(:any)'] = "login/resetPasswordConfirmUser/$1/$2";
-$route['createPasswordUser'] = "login/createPasswordUser";
+$route['forgotPassword'] = "login_controller/forgotPassword";
+$route['resetPasswordUser'] = "login_controller/resetPasswordUser";
+$route['resetPasswordConfirmUser'] = "login_controller/resetPasswordConfirmUser";
+$route['resetPasswordConfirmUser/(:any)'] = "login_controller/resetPasswordConfirmUser/$1";
+$route['resetPasswordConfirmUser/(:any)/(:any)'] = "login_controller/resetPasswordConfirmUser/$1/$2";
+$route['createPasswordUser'] = "login_controller/createPasswordUser";
 
 /* End of file routes.php */
 /* Location: ./application/config/routes.php */

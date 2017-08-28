@@ -55,22 +55,27 @@
                         <tbody>
                         <?php
                         if (!empty($userRecords)) {
+                            $i = 0;
                             foreach ($userRecords as $record) {
+                                $i++;
                                 ?>
                                 <tr>
-                                    <td><?php echo $record->userId ?></td>
+                                    <td><?php echo $i ?></td>
                                     <td><?php echo $record->name ?></td>
                                     <td><?php echo $record->email ?></td>
                                     <td><?php echo $record->role ?></td>
-                                    <td><?php echo $record->mobile ?></td>
+                                    <td><?php echo $record->createdDtm ?></td>
                                     <td class="text-center">
                                         <a href="<?php echo base_url() . 'editOld/' . $record->userId; ?>">
                                             编辑 &nbsp;
                                         </a>
-                                        <a href="#" data-userid="<?php echo $record->userId; ?>">
+                                        <a href="#"
+                                           data-userid="<?php echo $record->userId; ?>"
+                                           onclick="confirmDelete('<?php echo $record->userId; ?>')">
                                             删除 &nbsp;
                                         </a>
-                                        <a href="#" data-userid="<?php echo $record->userId; ?>">
+                                        <a href="#" data-userid="<?php echo $record->userId; ?>"
+                                           onclick="confirmPassword('<?php echo $record->userId; ?>')">
                                             重置密码 &nbsp;
                                         </a>
                                     </td>
@@ -81,10 +86,47 @@
                         ?>
                         </tbody>
                     </table>
-                    <div class="col-xs-12">
-                        <div class="clearfix">
-                            <?php echo $this->pagination->create_links(); ?>
+                    <div class="form-group">
+                        <div id="custom-confirm-delete-view" style="display:none;">
+                            <div class="form-group">
+                                <label>确定删除？</label>
+                            </div>
+                            <div class="form-group">
+                                <button onclick="$('#custom-confirm-delete-view').hide();">取消</button>
+                                <button onclick="deleteUser('<?php echo base_url(); ?>');">确定</button>
+                                <div id="userId" style="display: none;"></div>
+                            </div>
                         </div>
+                        <div id="custom-generate-auth-view" style="display:none;">
+                            <div class="form-group">
+                                <label>确定要重置密码？</label>
+                            </div>
+                            <div class="form-group">
+                                <button onclick="$('#custom-generate-auth-view').hide();">取消</button>
+                                <button onclick="showPassword();">确定</button>
+                            </div>
+                        </div>
+
+                        <div id="custom-generate-auth-count-view" style="display:none;">
+                            <div class="form-group form-inline">
+                                <label>&nbsp;&nbsp;*新密码 &nbsp;: </label>
+                                <input id="passwd" type="password"/>
+                            </div>
+                            <div class="form-group form-inline">
+                                <label>*确认密码 &nbsp;:</label>
+                                <input id="cpasswd" type="password"/>
+                            </div>
+                            <div class="form-group">
+                                <button onclick="$('#custom-generate-auth-count-view').hide();">取消</button>
+                                <button onclick="resetPassword('<?php echo base_url(); ?>', );">确认</button>
+                            </div>
+                            <div class="form-group alert-danger" id="alertpwd" style="display: none;"></div>
+                        </div>
+                        <div id="savingId" style="display: none;"></div>
+
+                    </div>
+                    <div class="clearfix">
+                        <?php echo $this->pagination->create_links(); ?>
                     </div>
                 </div>
             </div>
@@ -92,6 +134,7 @@
     </section>
 </div>
 <script type="text/javascript" src="<?php echo base_url(); ?>assets/js/common.js" charset="utf-8"></script>
+<script type="text/javascript" src="<?php echo base_url(); ?>assets/js/sysuser.js" charset="utf-8"></script>
 <script type="text/javascript">
     jQuery(document).ready(function () {
         $('.treeview-menu').show();

@@ -1,6 +1,6 @@
 <?php if (!defined('BASEPATH')) exit('No direct script access allowed');
 
-class Shop_model extends CI_Model
+class shop_model extends CI_Model
 {
 
     /**
@@ -111,7 +111,7 @@ class Shop_model extends CI_Model
     function addAuth($authInfo)
     {
         $this->db->trans_start();
-        $this->db->insert('authcode', $authInfo);
+        $this->db->insert('tbl_authcode', $authInfo);
         $insert_id = $this->db->insert_id();
         $this->db->trans_complete();
         return $insert_id;
@@ -120,7 +120,7 @@ class Shop_model extends CI_Model
     function addAuthOrder($authOrderInfo)
     {
         $this->db->trans_start();
-        $this->db->insert('auth_order', $authOrderInfo);
+        $this->db->insert('tbl_order', $authOrderInfo);
         $insert_id = $this->db->insert_id();
         $this->db->trans_complete();
         return $insert_id;

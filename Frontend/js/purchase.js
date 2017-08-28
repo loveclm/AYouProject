@@ -1,7 +1,7 @@
 /**
  * Created by Administrator on 8/11/2017.
  */
-
+var payment_data = null;
 
 $(function(){
     display_data();
@@ -13,13 +13,103 @@ window.addEventListener('resize', function(event){
 });
 
 function back(){
-    localStorage.removeItem('cur_order');
+    sessionStorage.removeItem('cur_order');
     history.back();
 }
 
+// send order to server and pay via weixin
+function OnPay() {
+    var phone_num = localStorage.getItem('phone_number');
+    if(phone_num == "") return;
+    // weixin payment
+    var buy_type = "";
+    switch (payment_data['type']){
+        case 1:
+            buy_type = '购买旅游线路';
+            break;
+        case 2:
+            buy_type = '购买景区';
+            break;
+        case 3:
+            buy_type = '购买景点';
+            break;
+    }
+    sendOrder();
+    // send payment request
+    // $.ajax({
+    //     type : 'GET',
+    //     url : '../plugin/payment.php',
+    //     dataType : 'json',
+    //     data : { 'cost': payment_data['real_cost'], 'type': buy_type, 'product': payment_data['name']},
+    //     success: function (data) {
+    //         if(data['result'] == 'success'){
+    //             callpay(data['parameters']);
+    //         }
+    //     },
+    //     error: function (data) {
+    //     }
+    // });
+}
+
+function sendOrder(){
+    // send the order information to back-end
+    var phone_num = localStorage.getItem('phone_number');
+    $.ajax({
+        type: 'POST',
+        url: SERVER_URL + 'api/Areas/setAreaBuyOrder',
+        dataType: 'json',
+        // username:'admin',
+        // password:'1234',
+        data: {'phone' : phone_num, 'id':payment_data['id'], 'type':payment_data['type'], 'cost':payment_data['real_cost']},
+        success: function (data) {
+            if (data.status == false) return;
+            history.back();
+        },
+        error: function (data) {
+        }
+    });
+}
+function jsapi_call(param) {
+    WeixinJSBridge.invoke(
+        'getBrandWCPayRequest',
+        param,
+        function(res){
+            WeixinJSBridge.log(res.err_msg);
+            //alert(res.err_code+res.err_desc+res.err_msg);
+            switch (res.err_msg){
+                case 'get_brand_wcpay_request:ok':
+                    sendOrder();
+                    break;
+                case 'get_brand_wcpay_request:cancel':
+                    //alert('cancel');
+                    break;
+                case 'get_brand_wcpay_request:fail':
+                    //alert('fail');
+                    break;
+            }
+        }
+    );
+}
+
+function callpay(param)
+{
+    if (typeof WeixinJSBridge == "undefined"){
+        if( document.addEventListener ){
+            document.addEventListener('WeixinJSBridgeReady', jsApiCall, false);
+        }else if (document.attachEvent){
+            document.attachEvent('WeixinJSBridgeReady', jsApiCall);
+            document.attachEvent('onWeixinJSBridgeReady', jsApiCall);
+        }
+    }else{
+        jsapi_call(param);
+    }
+}
+
+
+// loading payment page
 function display_data(){
     //loading the information of the selected order
-    var payment_data = localStorage.getObject('payment_data');
+    payment_data = sessionStorage.getObject('payment_data');
     if(payment_data == null){
         return;
     }
@@ -69,7 +159,7 @@ function resize_buypage(){
         || window.innerHeight;
     var scale = Math.min(width/640,height/1010) * ratio;
 
-    width = 640*scale;
+    //width = 640*scale;
     $('#content').css({width:width, height:height});
     $('#app_header').css({width:width});
     $('#app_footer').css({width:width});

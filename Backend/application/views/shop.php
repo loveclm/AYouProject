@@ -52,9 +52,9 @@
                     <tr style="background-color: lightslategrey;">
                         <th>商家名称</th>
                         <th width="100">商家类型</th>
-                        <th width="150">景区数</th>
-                        <th width="150">旅游线路数</th>
-                        <th width="150">授权码数</th>
+                        <th width="100">景区数</th>
+                        <th width="100">旅游线路数</th>
+                        <th width="100">授权码数</th>
                         <th>所属地区</th>
                         <th width="100">状态</th>
                         <th width="300">操作</th>
@@ -70,10 +70,10 @@
                         ?>
                         <tr>
                             <td><?php echo $shop->name;?></td>
-                            <td><?php echo $shop->type == 0 ? '旅行社': '渠道商'; ?></td>
-                            <td><?php echo '';?></td>
-                            <td><?php echo '';?></td>
-                            <td><?php echo '';?></td>
+                            <td><?php echo $shop->type == '1' ? '旅行社': ($shop->type == '2'?'渠道商':''); ?></td>
+                            <td><?php echo $this->order_model->getAreaCountByShopId($shop->id,1);?></td>
+                            <td><?php echo $this->order_model->getAreaCountByShopId($shop->id,2);?></td>
+                            <td><?php echo $this->auth_model->getAuthCountByShopId($shop->id);?></td>
                             <td><?php echo $shop->address_1;?></td>
                             <td><?php echo $shop->status == 1 ? '已禁用': '未禁用'; ?></td>
                             <td>

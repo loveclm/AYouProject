@@ -48,7 +48,7 @@
                         <th width="">具体线路</th>
                         <th width="100">价格</th>
                         <th width="100">状态</th>
-                        <th width="200">操作</th>
+                        <th width="150">操作</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -57,8 +57,13 @@
 
                     for($i = 0; $i < $courseCount; $i++){
                         $course = $courseList[$i];
-                        $areas = json_decode($courseList[$i]->info);
+                        $areas = json_decode($courseList[$i]->point_list);
                         $areaCount = count($areas);
+                        $courseName='';
+                        foreach($areas as $areaItem){
+                            if($courseName=='') $courseName=$areaItem->name;
+                            else $courseName=$courseName.' - '.$areaItem->name;
+                        }
 
                         //for ($k = 0; $k < $areaCount; $k++){
                         //    $price = $price + intval($areas[$k]->price);
@@ -66,8 +71,8 @@
                         ?>
                         <tr>
                             <td><?php echo ($course->name);?></td>
-                            <td><?php echo '';?></td>
-                            <td><?php echo '';?></td>
+                            <td><?php echo $courseName;?></td>
+                            <td><?php echo $course->price;?></td>
                             <td><?php echo $course->status == 1 ? '已上架': '未上架'; ?></td>
                             <td>
                                 <a href="editcourse/<?php echo $course->id;?>">查看 &nbsp;</a>

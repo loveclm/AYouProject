@@ -53,11 +53,11 @@
                         <tr>
                             <td><?php echo $i + 1; ?></td>
                             <td><?php echo $item->code; ?></td>
-                            <td><?php echo $item->status == 1 ? '已使用' : '未使用'; ?></td>
+                            <td><?php echo $item->status == 0 ? '未使用' : '已使用'; ?></td>
                             <td><?php echo $item->ordered_time; ?></td>
                             <td>
                                 <?php
-                                if ($item->status == 1) {
+                                if ($item->status != 0) {
                                     ?>
                                     <a href="#" onclick="authOrderItem('<?php echo base_url(); ?>',<?php echo $item->id; ?>);"> 订单详情 &nbsp;</a>
                                     <?php

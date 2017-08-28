@@ -9,7 +9,7 @@ require APPPATH . '/libraries/BaseController.php';
  * @version : 1.0
  * @since : 12 August 2017
  */
-class Ordermanage extends BaseController
+class ordermanage extends BaseController
 {
     /**
      * This is default constructor of the class
@@ -18,6 +18,7 @@ class Ordermanage extends BaseController
     {
         parent::__construct();
         $this->load->model('order_model');
+        $this->load->model('shop_model');
         $this->isLoggedIn();
     }
 
