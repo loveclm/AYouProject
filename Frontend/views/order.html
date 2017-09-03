@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head lang="en">
-    <title>A游不错</title>
+    <title>我的订单</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <meta name="apple-touch-fullscreen" content="yes">
@@ -9,14 +9,14 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <meta name="format-detection" content="telephone=no">
 
-    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
+    <link rel="stylesheet" type="text/css" href="../css/bootstrap.min.css"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="../css/AdminLTE.min.css">
     <link rel="stylesheet" href="../css/skins/_all-skins.min.css">
     <link rel="stylesheet" href="../css/style.css">
 
     <script type="text/javascript" src="../js/plugins/jquery.min.js"></script>
-    <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../js/plugins/bootstrap.min.js"></script>
     <script type="text/javascript" src="../js/global.js"></script>
     <script type="text/javascript" src="../js/order.js"></script>
 </head>
@@ -166,6 +166,26 @@
                 <!-- /.tab-content -->
             </div>
         </div>
+    </div>
+    <div class="modal custom-modal" id="confirm">
+        <div class="modal-dialog" id="confirm_dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span></button>
+                    <h4 class="modal-title">问题</h4>
+                </div>
+                <div class="modal-body">
+                    <p>你真的可以取消订单吗？</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" onclick="SendOrderCancelRequest()">确认</button>
+                    <button type="button" class="btn btn-primary" onclick="OnCancel()">取消</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
     </div>
 </body>
 </html>

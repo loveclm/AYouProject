@@ -8,11 +8,10 @@ var bPhoneverified = 0;
 var bAuthorizing = 0;
 
 var phone_num = "";
-var sms_code = "";
 
 var new_scenic_id = "";
-
-var bMovable = 1;
+var shop_id = 0;
+var bMovable = 0;
 var cur_scenic_data = null;
 
 window.addEventListener('resize', function(event){
@@ -27,6 +26,7 @@ $(document).ready(function(){
     }
     // resize client region
     resize();
+    sessionStorage.setItem('shopid', shop_id);
 
     // loading needed data in local storage
     loadDataFormStorage();
@@ -41,10 +41,12 @@ $(document).ready(function(){
         if(bCommentaryState == 0)
         {
             $('#btn-commentary').css({'background':'url(\'resource/image/home_commentary_off.png\') no-repeat', 'background-size':'contain'});
+            explain_area_control("stop");
             showNotification('已关闭景区讲解');
         }else
         {
             $('#btn-commentary').css({'background':'url(\'resource/image/home_commentary_on.png\') no-repeat', 'background-size':'contain'});
+            explain_area_control("play");
             showNotification('已开启景区讲解');
         }
 
@@ -71,12 +73,12 @@ $(document).ready(function(){
 
     // change auto playing state with button click event
     $('#btn-position').click(function(){
-        if(bMovable == 0)
-        {
-            $('#btn-position').css({'background':'url(\'resource/image/home_position_off.png\') no-repeat', 'background-size':'contain'});
-        }else
+        if(bMovable == 1)
         {
             $('#btn-position').css({'background':'url(\'resource/image/home_position_on.png\') no-repeat', 'background-size':'contain'});
+        }else
+        {
+            $('#btn-position').css({'background':'url(\'resource/image/home_position_off.png\') no-repeat', 'background-size':'contain'});
         }
 
         bMovable = 1 - bMovable;
@@ -88,16 +90,15 @@ $(document).ready(function(){
 function loadDataFormStorage(){
     initialize();
 
+    if(shop_id == 0){
+        shop_id = parseInt(sessionStorage.getItem('shop_id'));
+    }
+
     bPhoneverified = parseInt(sessionStorage.getItem('phone_verified'));
     if(bPhoneverified == 0)
         localStorage.setItem('phone_number', "");
     else
         phone_num = localStorage.getItem('phone_number');
-
-    // loading information related with attraction explain
-    bCommentaryState = parseInt(sessionStorage.getItem('explain_check'));
-    bAutomaticState = parseInt(sessionStorage.getItem('auto_explain_check'));
-    bMovable = parseInt(sessionStorage.getItem('movable'));
 
     // loading information of the current scenic area
     new_scenic_id = sessionStorage.getItem('new_scenic_id');
@@ -115,6 +116,11 @@ function loadDataFormStorage(){
 // showing the information of current scenic area
 function showScenicareaInformation(){
     bMovable = parseInt(sessionStorage.getItem('movable'));
+    if(bMovable == 1)
+        $('#btn-position').css({'background':'url(\'resource/image/home_position_off.png\') no-repeat', 'background-size':'contain'});
+    else
+        $('#btn-position').css({'background':'url(\'resource/image/home_position_on.png\') no-repeat', 'background-size':'contain'});
+
     if( new_scenic_id != "") {
         sessionStorage.setItem('new_scenic_id', '');
         getScenicareafromID(new_scenic_id);
@@ -128,6 +134,11 @@ function showScenicareaInformation(){
 function initialize(){
     initializeStorage();
 
+    // loading information related with attraction explain
+    bCommentaryState = parseInt(sessionStorage.getItem('explain_check'));
+    bAutomaticState = parseInt(sessionStorage.getItem('auto_explain_check'));
+    bMovable = parseInt(sessionStorage.getItem('movable'));
+
     if(bCommentaryState == 0)
         $('#btn-commentary').css({'background':'url(\'resource/image/home_commentary_on.png\') no-repeat', 'background-size':'contain'});
     else
@@ -138,10 +149,11 @@ function initialize(){
     else
         $('#btn-automatic').css({'background':'url(\'resource/image/home_automatic_off.png\') no-repeat', 'background-size':'contain'});
 
-    if(bMovable == 0)
+    if(bMovable == 1)
         $('#btn-position').css({'background':'url(\'resource/image/home_position_off.png\') no-repeat', 'background-size':'contain'});
     else
         $('#btn-position').css({'background':'url(\'resource/image/home_position_on.png\') no-repeat', 'background-size':'contain'});
+
     // loading gaode map
     initMap();
 }
@@ -158,16 +170,19 @@ function initializeStorage(){
         sessionStorage.setItem('auto_explain_check', 0);
 
     if(sessionStorage.getItem('movable') === null)
-        sessionStorage.setItem('movable', 1);
+        sessionStorage.setItem('movable', 0);
 
     // current verified phone number
     if(localStorage.getItem('phone_number') === null)
         localStorage.setItem('phone_number', "");
 
+    if( sessionStorage.getItem('shop_id') == null)
+        sessionStorage.setItem('shop_id', "");
+
     // new scenic area id : this area is the scenic area that exchange with current scenic area
     if(sessionStorage.getItem('new_scenic_id') === null)
         sessionStorage.setItem('new_scenic_id', "");
-    // current scenic area
+
 }
 
 function showNotification(data){
@@ -177,16 +192,38 @@ function showNotification(data){
     setTimeout(function() { $('#notification').hide(); }, 3000);
 }
 
-function start_explain(index) {
+function start_explain_area() {
+    // play audio with the setted music type
+    var music = document.getElementById('area_music'); // id for audio element
+    $("#audioSource").attr("src", cur_scenic_data.audio).detach().appendTo("#area_music");
+
+    music.load();
+    explain_area_control("play");
+}
+
+function  explain_area_control(data) {
+    // play audio with the setted music type
+    var music = document.getElementById('area_music'); // id for audio element
+    if(data == "play") {
+        $('#area_music').trigger('play');
+        //music.play();
+    }else if(data == "stop"){
+        $("#area_music").trigger('pause');
+        $("#area_music").prop("currentTime",0);
+        //music.pause();
+    }
+}
+
+function start_explain_attraction(index) {
     // play audio with the setted music type
     var music = document.getElementById('music'); // id for audio element
     $("#audioSource").attr("src", cur_scenic_data.attractions[index].audio_files[cur_voice_type-1]).detach().appendTo("#music");
 
     music.load();
-    start_explain_control("play");
+    explain_attraction_control("play");
 }
 
-function start_explain_control(data) {
+function explain_attraction_control(data) {
     // play audio with the setted music type
     var music = document.getElementById('music'); // id for audio element
     if(data == "play") {
@@ -197,151 +234,6 @@ function start_explain_control(data) {
         $("#music").prop("currentTime",0);
         //music.pause();
     }
-}
-
-function verifyAuthorizationCode(){
-    $('#login').hide();
-
-    if(bPhoneverified == 1)
-    {
-        $('#code_auth').show();
-    }else{
-        bAuthorizing = 1;
-        verifyPhone();
-    }
-}
-
-function verifyPhone(){
-    $('#login').hide();
-    if(bPhoneverified == 1) return;
-
-    $('#phone_verify').show();
-}
-
-// send SMS message to user's phone in order to verify user's phone
-function sendSMSToPhone(){
-    // accomplish along 4 stages
-    phone_num = $('#phone_number').val();
-    //phone number validation
-    if(phone_num == '' || phone_num.length != 11)
-    {
-        alert('手机号码错了。 再次输入。');
-        return;
-    }
-
-    // send SMS sending request in backend server.
-    $('#loading').css({display:'block'});
-    $.ajax({
-        type: 'POST',
-        url: 'plugin/SMS/SendTemplateSMS.php', //rest API url
-        dataType: 'json',
-        data: {'phone_num':  phone_num}, // set function name and parameters
-        success: function(data){
-            // get SMS code from received data
-            $('#loading').css({display:'none'});
-            if(data['result'] == "success") {
-                sms_code = data['code'];
-            }else{
-                sms_code = "";
-                alert(data['error']);
-            }
-        },
-        fail: function(){
-            return;
-        }
-    });
-    //sms_code = "1234";
-}
-
-// confirm the phone verification code
-function confirm_verify_phone(){
-    if(sms_code == "")
-    {
-        alert('请确认您正确输入手机号码并重新发送请求。再次击点"获取验证码"。');
-        return;
-    }
-    // verify SMS code accuracy
-    var code = $('#verify_code').val();
-    if( sms_code != code || code == "") {
-        alert('验证码错了。 再次输入。');
-        return;
-    }
-
-    bPhoneverified = 1;
-    // store phone verification state
-    sessionStorage.setItem('phone_verified', bPhoneverified);
-    localStorage.setItem('phone_number', phone_num);
-
-    $('#phone_verify').hide();
-    $('#phone_number').val("");
-    $('#verify_code').val("");
-
-    // If for verifying authorization code verify phone then show authorization code verifying dialog,
-    // If else downloading needed infos of the current scenic area, attraction of the current scenic area and so on.
-    if(bAuthorizing == 1)
-    {
-        bAuthorizing = 0;
-        $('#code_auth').show();
-    }else{
-        // change attraction marks along information
-        if(cur_scenic_data != null)
-            getScenicareafromID(cur_scenic_data.id);
-    }
-}
-
-function OnCancelauthcodeVerify(){
-    $('#code_auth').hide();
-    $('#auth_code').val("");
-}
-
-function OnConfirmauthCode(){
-    /*  validate authorization code
-    **  If authorization code don't exist in the order lists of backend, verification is fail.
-     */
-    var auth_code = $('#auth_code').val();
-    if(auth_code == "")
-    {
-        alert('请输入授权码。');
-        return;
-    }
-
-    var payment_data = [];
-    payment_data['id'] = "none";
-    payment_data['type'] = 4;
-    payment_data['real_cost'] = auth_code;
-
-    // send the order information to back-end
-    $.ajax({
-        type: 'POST',
-        url: SERVER_URL + 'api/Areas/getAllCourseInfos',
-        dataType: 'json',
-        // username:'admin',
-        // password:'1234',
-        data: {'phone' : phone_num, 'id':payment_data['id'], 'type':payment_data['type'], 'cost':payment_data['real_cost']},
-        success: function (data) {
-            if (data.status == false) {
-                alert('订单失败。授权码错了。');
-                return;
-            }
-            $('#code_auth').hide();
-            $('#auth_code').val("");
-
-            if(cur_scenic_data != null)
-                getScenicareafromID(cur_scenic_data.id);
-
-            alert('订单成功。');
-        },
-        error: function (data) {
-            alert('订单失败。');
-        }
-    });
-
-    // $('#code_auth').hide();
-    // $('#auth_code').val("");
-    //
-    // // change attraction marks along information
-    // if(cur_scenic_data != null)
-    //     getScenicareafromID(cur_scenic_data.id);
 }
 
 function display_attraction_data() {

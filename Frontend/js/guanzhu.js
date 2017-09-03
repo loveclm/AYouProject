@@ -44,5 +44,6 @@ function resize_guanzhu(){
     $('#container').css({display:'block',width:map_width, height:map_height, top:map_top, bottom:0});
 
     var content_margin=(document.body.clientWidth-width)/2;
+    $('#logo img').css({width: Math.min(width, height)*0.25});
     $('#back_img').css({position:'fixed',left: content_margin+10});
 }

@@ -2,8 +2,17 @@
  * Created by Administrator on 8/11/2017.
  */
 var payment_data = null;
+var bPhoneverified = 0;
+var phone_num = "";
+var new_orderID = "";
 
 $(function(){
+    bPhoneverified = parseInt(sessionStorage.getItem('phone_verified'));
+    if(bPhoneverified == 0)
+        localStorage.setItem('phone_number', "");
+    else
+        phone_num = localStorage.getItem('phone_number');
+
     display_data();
     resize_buypage();
 });
@@ -13,84 +22,116 @@ window.addEventListener('resize', function(event){
 });
 
 function back(){
-    sessionStorage.removeItem('cur_order');
+    sessionStorage.removeItem('payment_data');
     history.back();
 }
 
 // send order to server and pay via weixin
 function OnPay() {
-    var phone_num = localStorage.getItem('phone_number');
-    if(phone_num == "") return;
-    // weixin payment
-    var buy_type = "";
-    switch (payment_data['type']){
-        case 1:
-            buy_type = '购买旅游线路';
-            break;
-        case 2:
-            buy_type = '购买景区';
-            break;
-        case 3:
-            buy_type = '购买景点';
-            break;
+    if( bPhoneverified == 0){
+        sessionStorage.setItem('purchage_state', "payment ready");
+        bAuthorizing = 0;
+        verifyPhone();
+        return;
     }
+
     sendOrder();
-    // send payment request
-    // $.ajax({
-    //     type : 'GET',
-    //     url : '../plugin/payment.php',
-    //     dataType : 'json',
-    //     data : { 'cost': payment_data['real_cost'], 'type': buy_type, 'product': payment_data['name']},
-    //     success: function (data) {
-    //         if(data['result'] == 'success'){
-    //             callpay(data['parameters']);
-    //         }
-    //     },
-    //     error: function (data) {
-    //     }
-    // });
 }
 
 function sendOrder(){
     // send the order information to back-end
     var phone_num = localStorage.getItem('phone_number');
+    var shop_id = sessionStorage.getItem('shopid');
+
     $.ajax({
         type: 'POST',
         url: SERVER_URL + 'api/Areas/setAreaBuyOrder',
         dataType: 'json',
         // username:'admin',
         // password:'1234',
-        data: {'phone' : phone_num, 'id':payment_data['id'], 'type':payment_data['type'], 'cost':payment_data['real_cost']},
+        data: {'shop':shop_id,'phone' : phone_num, 'id':payment_data['id'], 'type':payment_data['type'], 'cost':payment_data['real_cost']},
         success: function (data) {
-            if (data.status == false) return;
-            history.back();
+            if (data.status == false) {
+                alert('订单取消了。');
+                return;
+            }
+            new_orderID = data['result'];
+
+            // weixin payment
+            var buy_type = "";
+            switch (payment_data['type']){
+                case 1:
+                    buy_type = '购买旅游线路';
+                    break;
+                case 2:
+                    buy_type = '购买景区';
+                    break;
+                case 3:
+                    buy_type = '购买景点';
+                    break;
+            }
+            // send payment request
+            $.ajax({
+                type : 'GET',
+                url : '../plugin/Wxpay/payment.php',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                dataType : 'json',
+                data : { 'cost': payment_data['real_cost'], 'type': buy_type, 'product': payment_data['name']},
+                success: function (data) {
+                    if(data['result'] == 'success'){
+                        callpay(data['parameters']);
+                    }
+                },
+                error: function (data) {
+                }
+            });
         },
         error: function (data) {
+            alert('订单失败了。');
         }
     });
 }
+
 function jsapi_call(param) {
     WeixinJSBridge.invoke(
         'getBrandWCPayRequest',
         param,
         function(res){
-            WeixinJSBridge.log(res.err_msg);
-            //alert(res.err_code+res.err_desc+res.err_msg);
+            //WeixinJSBridge.log(res.err_msg);
             switch (res.err_msg){
                 case 'get_brand_wcpay_request:ok':
-                    sendOrder();
+                    alert('已付款成功。');
+                    sendPaidOrderRequest();
                     break;
                 case 'get_brand_wcpay_request:cancel':
-                    //alert('cancel');
+                    alert('支付已取消。');
                     break;
                 case 'get_brand_wcpay_request:fail':
-                    //alert('fail');
+                    alert('支付失败。');
                     break;
             }
         }
     );
 }
 
+function  sendPaidOrderRequest() {
+    // send payment state to server
+    $.ajax({
+        type : 'POST',
+        url : SERVER_URL + 'api/Areas/setPayOrder',
+        dataType : 'json',
+        data : { 'id': new_orderID, 'phone': phone_num},
+        success: function (data) {
+            new_orderID = "";
+            location.href = 'order.html';
+        },
+        error: function (data) {
+            sendPaidOrderRequest();
+        }
+    });
+}
 function callpay(param)
 {
     if (typeof WeixinJSBridge == "undefined"){
@@ -123,15 +164,19 @@ function display_data(){
     switch (payment_data['type']){
         case 1:
             header_content_html += '购买旅游线路' + '</h3>';
+            document.title = '购买旅游线路';
             break;
         case 2:
             header_content_html += '购买景区' + '</h3>';
+            document.title = '购买景区';
             break;
         case 3:
             header_content_html += '购买景点' + '</h3>';
+            document.title = '购买景点';
             break;
-        case 4:
+        default:
             header_content_html += '重新购买订单' + '</h3>';
+            document.title = '重新购买订单';
             break;
     }
 
@@ -141,7 +186,7 @@ function display_data(){
 
     content_html = '<img src="'+payment_data['image']+'">';
     content_html += '<div><h5>'+payment_data['name']+'</h5>';
-    content_html += '<h5 style="color: red">¥'+parseFloat(payment_data['cost']).toFixed(2)+'</h5></div>';
+    content_html += '<h5 style="color: red">¥'+parseFloat(payment_data['real_cost']).toFixed(2)+'</h5></div>';
 
     $('.order_body').html(content_html);
     $('#real_price').html('¥' + parseFloat(payment_data['real_cost']).toFixed(2));

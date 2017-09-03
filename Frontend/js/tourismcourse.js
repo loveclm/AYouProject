@@ -5,9 +5,21 @@ var tourism_list = [];
 var tourismColors = ['#90d4e7','#fc8797','#fdc029','#01c8cf','#acacac'];
 var cur_tourism_id;
 
+var bPhoneverified = 0;
+var bAuthorizing = 0;
+var phone_num = "";
+
+
 $(function(){
+    bPhoneverified = parseInt(sessionStorage.getItem('phone_verified'));
+    if(bPhoneverified == 0)
+        localStorage.setItem('phone_number', "");
+    else
+        phone_num = localStorage.getItem('phone_number');
+
     resize_tourism_course();
-    loadTourismsFromLocalstorage();
+    getTourismCoursesFromServer();
+    //loadTourismsFromLocalstorage();
 });
 
 window.addEventListener('resize', function(event){
@@ -37,6 +49,9 @@ function display_tourism_data(){
     $('#tourismlist-header').find('h4').html('旅游线路 (共'+ cnt+'条线路)');
     // show individual tourism data
     var content_html = "";
+    $('#tourismlist-body').html(content_html);
+    if(tourism_list == null) return;
+
     var curColor;
     for( var i = 0; i < tourism_list.length; i++){
         if(i > 3){
@@ -58,22 +73,44 @@ function showcourse(index){
     $('#buy_course_title').find('h5').html(tourism_list[index]['name']);
 
     var content_html = "";
-    var total_cost = tourism_list[index]['cost'];
+    var total_cost = tourism_list[index]['cost']*tourism_list[index]['discount_rate'];
     for( var i = 0; i < tourism_list[index]['scenic_areas'].length; i++)
     {
         // loading the infos of the current scenic area
         var attractionCnt = tourism_list[index]['scenic_areas'][i]['attractionCnt'];
-        content_html += '<div class="course_column"><h5>景区 '+(i+1)+' : ' + tourism_list[index]['scenic_areas'][i]['name']+' ( '+attractionCnt+'个景点 )</h5></div>';
+        content_html += '<div class="course_column" onclick="showAreaOfCourse('+tourism_list[index]['scenic_areas'][i]['id'] +')"><h5>景区 '+(i+1)+' : ' + tourism_list[index]['scenic_areas'][i]['name']+' ( '+attractionCnt+'个景点 )</h5></div>';
     }
-    content_html += '<div class="btn-custom btn-course" onclick="onlinePayment('+ index+')"><h5>支付' + total_cost +'元，解锁线路</h5></div>';
+    content_html += '<div class="btn-custom btn-course" onclick="onlinePayment('+ index+')"><h5>支付' + total_cost.toFixed(2) +'元，解锁线路</h5></div>';
     content_html += '<div class="btn-custom btn-course" onclick="buy_with_authCode('+index+')"><h5>输入授权码</h5></div>';
 
     $('#buy_course_content').html(content_html);
     $('#buy_course').show();
 }
 
+// if select a scenic area of the current tourism course, shows the scenic area.
+function showAreaOfCourse(area_id){
+    var new_scenic_id = area_id;
+    sessionStorage.setItem('new_scenic_id', new_scenic_id);
+
+    var geo_scenic_id = sessionStorage.getItem('geo_scenic_id');
+    if( geo_scenic_id == new_scenic_id){
+        sessionStorage.setItem('movable', 0);
+    }else{
+        sessionStorage.setItem('movable', 1);
+    }
+    window.location.href = '../index.php';
+}
+
 // online payment
 function  onlinePayment(index) {
+    // check phone verification state
+    if(bPhoneverified == 0) {
+        $('#buy_course').hide();
+        bAuthorizing = 0;
+        verifyPhone();
+        return;
+    }
+
     var cur_tourism = tourism_list[index];
     // calculate discount price
     var real_cost = cur_tourism['cost'] * cur_tourism['discount_rate'];
@@ -95,54 +132,16 @@ function  buy_with_authCode(index){
     var cur_tourism = tourism_list[index];
 
     $('#buy_course').hide();
-    $('#code_auth').show();
-}
 
-function OnCancelauthcodeVerify(){
-    $('#code_auth').hide();
-    $('#auth_code').val("");
-
-    //downloading needed data
-}
-
-function OnConfirmauthCode(){
-    /*  validate authorization code
-    **  If authorization code don't exist in the order lists of backend, verification is fail.
-     */
-    var auth_code = $('#auth_code').val();
-    if(auth_code == "")
-    {
-        alert('请输入授权码');
+    // check phone verification state
+    if(bPhoneverified == 0) {
+        bAuthorizing = 1;
+        verifyPhone();
         return;
     }
 
-    // send ajax request and receive ajax response and so process with the result of the backend
-    // If verification is fail, maintain old state.
-
-    var phone_num = localStorage.getItem('phone_number');
-    if(phone_num == "") return;
-    // send the order information to back-end
-    $.ajax({
-        type: 'POST',
-        url: SERVER_URL + 'api/Areas/setAreaBuyOrder',
-        dataType: 'json',
-        // username:'admin',
-        // password:'1234',
-        data: {'phone' : phone_num, 'id':"", 'type': 4, 'cost': auth_code},
-        success: function (data) {
-            if (data.status == false) {
-                alert('订单失败。授权码错了。');
-                return;
-            }
-            $('#code_auth').hide();
-            $('#auth_code').val("");
-            //alert('订单成功。');
-        },
-        error: function (data) {
-        }
-    });
+    $('#code_auth').show();
 }
-
 
 function resize_tourism_course(){
     initRatio = getDevicePixelRatio();

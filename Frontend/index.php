@@ -1,3 +1,8 @@
+<?php
+    $shop_id = 0;
+    if(isset($_GET['shopid']))
+        $shop_id = $_GET['shopid'];
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,25 +14,15 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <meta name="format-detection" content="telephone=no">
 
-    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="css/AdminLTE.min.css">
     <link rel="stylesheet" href="css/skins/_all-skins.min.css">
     <link rel="stylesheet" href="css/style.css">
-    <style type="text/css">
-        #login #btn-close{
-            width: 10%;
-            position: absolute;
-            top: 45px;
-            right: -10px;
-        }
-        #loading{ display: none;}
-    </style>
 
     <script src="https://webapi.amap.com/maps?v=1.3&key=0250860ccb5953fa5d655e8acf40ebb7&plugin=AMap.ToolBar,AMap.Walking,AMap.Driving"></script>
-
     <script type="text/javascript" src="js/plugins/jquery.min.js"/>
-    <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="js/plugins/bootstrap.min.js"></script>
     <script type="text/javascript" src="js/global.js"></script>
     <script type="text/javascript" src="js/map.js"></script>
     <script type="text/javascript" src="js/main.js"></script>
@@ -214,6 +209,9 @@
                 <audio id="music" >
                     <source src="" id="audioSource" type="audio/mpeg">
                 </audio>
+                <audio id="area_music" >
+                    <source src="" id="area_audioSource" type="audio/mpeg">
+                </audio>
             </div>
         </div>
 
@@ -224,6 +222,7 @@
 <script type="text/javascript">
     var cur_menu_index = 0;
     var cur_voice_type = 1;
+    shop_id = <?php echo $shop_id?>;
 
     function menuClicked(index) {
         // show the details along with menu item
@@ -236,12 +235,6 @@
         clearMenuSelection();
 
         cur_menu_index = index;
-
-        // check phone verification state
-        if(bPhoneverified == 0) {
-            verifyPhone();
-            return;
-        }
 
         $('#menu-item'+index).css({color:'#24c6d3'});
         $('#menu-item'+index).children().attr('src', 'resource/image/home_icon'+index +'_n.png');
@@ -305,14 +298,6 @@
         $('#login').hide();
     }
 
-    function phone_verify_dialog_close(){
-        $('#phone_verify').hide();
-    }
-
-    function code_auth_dialog_close(){
-        $('#code_auth').hide();
-    }
-
     function clearMenuSelection(){
         if(cur_menu_index != 0)
         {
@@ -330,16 +315,13 @@
 
     function settingGuanzhu(){
         // check phone verification state
-        if(bPhoneverified == 0) {
-            verifyPhone();
-            return;
-        }
-        window.location.href = 'views/guanzhu.html';
+         window.location.href = 'views/guanzhu.html';
     }
 
     function showOrderList(){
         // check phone verification state
         if(bPhoneverified == 0) {
+            bAuthorizing = 0;
             verifyPhone();
             return;
         }
@@ -349,6 +331,7 @@
     function showMineScenicAreas(){
         // check phone verification state
         if(bPhoneverified == 0) {
+            bAuthorizing = 0;
             verifyPhone();
             return;
         }

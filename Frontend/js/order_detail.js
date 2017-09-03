@@ -3,10 +3,11 @@
  */
 
 var order_detail = [];
+var phone_num = "";
 
 $(function(){
+    phone_num = localStorage.getItem('phone_number');
     resize_order_detail();
-
     display_order_detail_data();
 });
 
@@ -55,12 +56,12 @@ function display_order_detail_data(){
 
     footer_html += '<div class="order_footer">';
 
-    switch(order_detail['state'])
+    switch(parseInt(order_detail['state']))
     {
         case 1:  // the case of using state
             // configure detail information
             content_html += '<div class="order_detail">';
-            content_html += '   <h5>有交日期&nbsp&nbsp&nbsp  '+ order_detail['expiration_date']+'</h5>';
+            content_html += '   <h5>有交日期&nbsp&nbsp&nbsp  '+ order_detail['expiration_time']+'</h5>';
             content_html += '</div>';
 
             content_html += '<div class="order_detail">';
@@ -99,7 +100,7 @@ function display_order_detail_data(){
         case 4:  // the case of expired state
             // configure detail information
             content_html += '<div class="order_detail">';
-            content_html += '   <h5>有交日期&nbsp&nbsp&nbsp  '+ order_detail['expiration_date']+'</h5>';
+            content_html += '   <h5>有交日期&nbsp&nbsp&nbsp  '+ order_detail['expiration_time']+'</h5>';
             content_html += '</div>';
             content_html += '<div class="order_detail">';
             content_html += '   <h5>下单时间&nbsp&nbsp&nbsp  '+ order_detail['order_time']+'</h5>';
@@ -109,33 +110,22 @@ function display_order_detail_data(){
             footer_html +='    <div onclick="purchase_again_Order()"><h5>重新购买</h5></div>';
             break;
     }
-    content_html += '</div>'
+    //content_html += '</div>'
     $('#container').html(content_html);
     $('#app_footer').html(footer_html);
 }
 
 
 function cancelOrder() {
-    // when user cancels his/her order, must send it to server
-    // send ajax request and receive ajax response and so process with the result of the backend
-    // If verification is fail, maintain old state.
-    /*
-     $.ajax({
-         type: 'GET',
-         url: 'http://server/backend/dbmanage.php', //rest API url
-         dataType: 'json',
-         data: {func: 'function_name', info: res}, // set function name and parameters
-         }).success(function(data){
-             $('#code_auth').hide();
-             // change attraction marks along information
-             loadOrderData();
 
-         }).fail(function(){
-             return;
-     });
-     */
+    sessionStorage.setItem('cancel_order_id', order_detail['id']);
 
-    //return;
+    $('#confirm').show();
+}
+
+function OnCancel(){
+    $('#confirm').hide();
+    sessionStorage.removeItem('cancel_order_id');
 }
 
 function pay_for_Order() {

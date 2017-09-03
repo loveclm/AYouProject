@@ -7,7 +7,8 @@ var filter_str = "";
 
 $(function(){
     resize_scenic();
-    loadScenicAreas();
+    getAllScenicAreasFromServer();
+    //loadScenicAreas();
 });
 
 window.addEventListener('resize', function(event){
@@ -26,6 +27,9 @@ function display_scenic_data(){
     //------- show the scenic list
     // show individual scenic data
     var content_html = "";
+    $('#scenic_list').html(content_html);
+    if(scenic_list == null) return;
+
     for( var i = 0; i < scenic_list.length; i++){
         if(scenic_list[i]['name'].indexOf(filter_str) >= 0) {
             content_html += '<div class="scenic_item" id="scenic_item' + (i + 1) + '" onclick="selectScenicArea(' + i + ')">';
@@ -43,9 +47,9 @@ function selectScenicArea(index){
 
     var geo_scenic_id = sessionStorage.getItem('geo_scenic_id');
     if( geo_scenic_id == new_scenic_id){
-        sessionStorage.setItem('movable', 1);
-    }else{
         sessionStorage.setItem('movable', 0);
+    }else{
+        sessionStorage.setItem('movable', 1);
     }
     window.location.href = '../index.php';
 }

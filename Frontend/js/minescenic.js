@@ -7,7 +7,8 @@ var minescenic_List = [];
 
 $(function(){
     resize_minesceniclist();
-    loadmyScenicData();
+    getMyScenicAreasFromServer();
+    //loadmyScenicData();
 });
 
 window.addEventListener('resize', function(event){
@@ -32,6 +33,13 @@ function display_minescenic_data(){
     var content_html_using = "";
     var content_html_expired = "";
     var tmp_content_html="";
+
+    $('#tab_all').html(content_html_all);
+    $('#tab_using').html(content_html_using);
+    $('#tab_expired').html(content_html_expired);
+
+    if(sessionStorage.getItem('phone_number') == null || sessionStorage.getItem('phone_number')=="") return;
+    if(minescenic_List == null) return;
 
     // show each order information in order list
     for( var i = 0; i < minescenic_List.length; i++){
@@ -101,9 +109,9 @@ function showScenicArea(index){
     var new_scenic_id = minescenic_List[index]['id'];
     var geo_scenic_id = sessionStorage.getItem('geo_scenic_id');
     if( geo_scenic_id == new_scenic_id){
-        sessionStorage.setItem('movable', 1);
-    }else{
         sessionStorage.setItem('movable', 0);
+    }else{
+        sessionStorage.setItem('movable', 1);
     }
 
     window.location.href = '../index.php';

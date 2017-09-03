@@ -1,9 +1,37 @@
 /**
  * Created by Administrator on 8/9/2017.
  */
-var SERVER_URL = "http://192.168.2.18/";
+var SERVER_URL = "http://192.168.2.18/backend/";
 //var run_mode = "SIMULATE_MODE";   // This means system runs with simulate mode
 var run_mode = "REALTIME_MODE";   // This means system runs with real time mode
+var sms_code = "";
+
+// send cancel order request
+function SendOrderCancelRequest() {
+    // when user cancels his/her order, must send it to server
+    // send ajax request and receive ajax response and so process with the result of the backend
+    // If verification is fail, maintain old state.
+    $('#confirm').hide();
+    var order_id = sessionStorage.getItem('cancel_order_id');
+    if(order_id == null) return;
+
+    $.ajax({
+        type: 'POST',
+        url: SERVER_URL + 'api/Areas/setCancelOrder', //rest API url
+        dataType: 'json',
+        data: { phone: 'phone_num', id: order_id}, // set function name and parameters
+        success: function (data) {
+                if (data.status == false) {
+                    alert('取消订单失败。')
+                    return;
+                }
+                getMyOrdersFromServer();
+        },
+        error: function (data) {
+            alert('取消订单失败。')
+        }
+    });
+}
 
 // check current location
 function checkCurrentLocation(pos){
@@ -18,7 +46,9 @@ function checkCurrentLocation(pos){
             if(run_mode == "SIMULATE_MODE"){
                 new_scenic_id = 1;
             }else{
-                if (data.status == false) return;
+                if (data.status == false) {
+                    return;
+                }
                 // in the case that current scenic area exists, compare new scenic id with current scenic id
                 if(cur_scenic_data != null) {
                     if ((cur_scenic_data.id == data.id)) return;
@@ -27,7 +57,7 @@ function checkCurrentLocation(pos){
                 new_scenic_id = data['id'];
             }
 
-            bMovable = 1;
+            bMovable = 0;
             sessionStorage.setItem('new_scenic_id', new_scenic_id);
             sessionStorage.setItem('movable', bMovable);
             sessionStorage.setItem('geo_scenic_id', new_scenic_id);
@@ -95,16 +125,18 @@ function getMyScenicAreasFromServer(){
                 // simulate data
                 minescenic_List = simulate_MyScenicAreas();
             }else {
-                if (data.status == false) return;
-                // configure my scenic areas
-                minescenic_List = data['MyAreas'];
+                if (data.status == true) {
+                    // configure my scenic areas
+                    minescenic_List = data['MyAreas'];
+                }
             }
 
             sessionStorage.setObject('my_scenic_areas', minescenic_List);
             display_minescenic_data();
         },
         error: function (data) {
-
+            sessionStorage.setObject('my_scenic_areas', minescenic_List);
+            display_minescenic_data();
         }
     });
 }
@@ -128,15 +160,17 @@ function getAllScenicAreasFromServer(){
                 // simulate data
                 scenic_list = simulate_AllScenicAreas();
             }else {
-                if (data.status == false) return;
-                // configuring all scenic data from received data
-                scenic_list = data['Areas'];
+                if (data.status == true){
+                   // configuring all scenic data from received data
+                    scenic_list = data['Areas'];
+                }
             }
             sessionStorage.setObject('scenic_areas', scenic_list);
             display_scenic_data();
         },
         error: function (data) {
-
+            sessionStorage.setObject('scenic_areas', scenic_list);
+            display_scenic_data();
         }
     });
 }
@@ -160,14 +194,16 @@ function getMyOrdersFromServer(){
                 // simulate data
                 order_List = simulate_MyOrderList();
             }else {
-                if (data.status == false) return;
-                order_List = data['Orders'];
+                if (data.status == true) {
+                    order_List = data['Orders'];
+                }
             }
             sessionStorage.setObject('cur_orders', order_List);
             display_order_data();
         },
         error: function (data) {
-
+            sessionStorage.setObject('cur_orders', order_List);
+            display_order_data();
         }
     });
 }
@@ -191,14 +227,16 @@ function getTourismCoursesFromServer(){
                 // simulate data
                 tourism_list = simulate_tourismCourseList();
             }else {
-                if (data.status == false) return;
-                tourism_list = data['Courses'];
+                if (data.status == true) {
+                    tourism_list = data['Courses'];
+                }
             }
             sessionStorage.setObject('tourism_courses', tourism_list);
             display_tourism_data();
         },
         error: function (data) {
-
+            sessionStorage.setObject('tourism_courses', tourism_list);
+            display_tourism_data();
         }
     });
 }
@@ -268,6 +306,7 @@ function simulate_CurrentScenicArea(){
         bottom_left: [116.391541,39.913155],
         overlay:'resource/image/overlay.png',
         image:'resource/image/palace.png',
+        audio: 'resource/audio/4.wav',
         zoom : 2,
         cost:100,
         discount_rate:0.8,
@@ -363,7 +402,7 @@ function  simulate_MyOrderList() {
             discount_rate:0.7,
             order_time:'2017.08.05 13:00:00',
             paid_time:'2017.08.05 13:00:00',
-            expiration_date:'2017.08.05-2017.08.20',
+            expiration_time:'2017.08.05-2017.08.20',
             cancelled_time:'',
             state : 1,   // 1: using, 2: unpaid, 3: cancelled, 4:expired
             order_kind : 1     // 1: tourism course, 2: scenic area, 3: attraction
@@ -378,7 +417,7 @@ function  simulate_MyOrderList() {
             discount_rate:0.9,
             order_time:'2017.08.07 15:34:00',
             paid_time:'2017.08.07 16:35:00',
-            expiration_date:'2017.08.07-2017.08.22',
+            expiration_time:'2017.08.07-2017.08.22',
             cancelled_time:'',
             state : 1,  // 1: using, 2: unpaid, 3: cancelled, 4:expired
             order_kind : 2     // 1: tourism course, 2: scenic area, 3: attraction
@@ -393,7 +432,7 @@ function  simulate_MyOrderList() {
             discount_rate:0.79,
             order_time:'2017.08.06 13:00:00',
             paid_time:'',
-            expiration_date:'',
+            expiration_time:'',
             cancelled_time:'',
             state : 2,   // 1: using, 2: unpaid, 3: cancelled, 4:expired
             order_kind : 2     // 1: tourism course, 2: scenic area, 3: attraction
@@ -408,7 +447,7 @@ function  simulate_MyOrderList() {
             discount_rate:0.83,
             order_time:'2017.08.05 13:00:00',
             paid_time:'',
-            expiration_date:'',
+            expiration_time:'',
             cancelled_time:'2017.08.07 19:12:00',
             state : 3,  // 1: using, 2: unpaid, 3: cancelled, 4:expired
             order_kind : 2     // 1: tourism course, 2: scenic area, 3: attraction
@@ -423,7 +462,7 @@ function  simulate_MyOrderList() {
             discount_rate:0.93,
             order_time:'2017.07.05 15:35:00',
             paid_time:'2017.07.06 11:20:00',
-            expiration_date:'2017.07.06-2017.07.26',
+            expiration_time:'2017.07.06-2017.07.26',
             cancelled_time:'',
             state : 4,   // 1: using, 2: unpaid, 3: cancelled, 4:expired
             order_kind : 3     // 1: tourism course, 2: scenic area, 3: attraction
@@ -438,7 +477,7 @@ function  simulate_MyOrderList() {
             discount_rate:0.91,
             order_time:'2016.05.05 17:05:00',
             paid_time:'2016.05.09 08:30:00',
-            expiration_date:'2017.05.05-2017.05.25',
+            expiration_time:'2017.05.05-2017.05.25',
             cancelled_time:'',
             state : 4,   // 1: using, 2: unpaid, 3: cancelled, 4:expired
             order_kind : 3     // 1: tourism course, 2: scenic area, 3: attraction
@@ -510,15 +549,172 @@ function simulate_tourismCourseList(){
     return tmp_tourismlist;
 }
 
+
+function verifyAuthorizationCode(){
+    $('#login').hide();
+
+    if(bPhoneverified == 1)
+    {
+        $('#code_auth').show();
+    }else{
+        bAuthorizing = 1;
+        verifyPhone();
+    }
+}
+
+function verifyPhone(){
+    $('#login').hide();
+    if(bPhoneverified == 1) return;
+
+    $('#phone_verify').show();
+}
+
+// send SMS message to user's phone in order to verify user's phone
+function sendSMSToPhone(){
+    // accomplish along 4 stages
+    phone_num = $('#phone_number').val();
+    //phone number validation
+    if(phone_num == '' || phone_num.length != 11)
+    {
+        alert('手机号码错了。 再次输入。');
+        return;
+    }
+
+    // send SMS sending request in backend server.
+    // $('#loading').css({display:'block'});
+    // $.ajax({
+    //     type: 'POST',
+    //     url: 'http://www.ayoubc.com/tour/plugin/SMS/SendTemplateSMS.php', //rest API url
+    //     dataType: 'json',
+    //     data: {'phone_num':  phone_num}, // set function name and parameters
+    //     success: function(data){
+    //         // get SMS code from received data
+    //         $('#loading').css({display:'none'});
+    //         if(data['result'] == "success") {
+    //             sms_code = data['code'];
+    //         }else{
+    //             sms_code = "";
+    //             alert(data.error['0']);
+    //         }
+    //     },
+    //     fail: function(){
+    //         return;
+    //     }
+    // });
+    sms_code = "1234";
+}
+
+// confirm the phone verification code
+function confirm_verify_phone(){
+    if(sms_code == "")
+    {
+        alert('请确认您正确输入手机号码并重新发送请求。再次击点"获取验证码"。');
+        return;
+    }
+    // verify SMS code accuracy
+    var code = $('#verify_code').val();
+    if( sms_code != code || code == "") {
+        alert('验证码错了。 再次输入。');
+        return;
+    }
+
+    bPhoneverified = 1;
+    // store phone verification state
+    sessionStorage.setItem('phone_verified', bPhoneverified);
+    localStorage.setItem('phone_number', phone_num);
+
+    $('#phone_verify').hide();
+    $('#phone_number').val("");
+    $('#verify_code').val("");
+
+    // if purcharge state then jump to weixin payment state
+    var state = sessionStorage.getItem('purchage_state');
+    if (state != null){
+        OnPay();
+        sessionStorage.removeItem('purchage_state');
+    }
+
+    // If for verifying authorization code verify phone then show authorization code verifying dialog,
+    // If else downloading needed infos of the current scenic area, attraction of the current scenic area and so on.
+    if(bAuthorizing == 1)
+    {
+        bAuthorizing = 0;
+        $('#code_auth').show();
+    }else{
+        // change attraction marks along information
+        if(cur_scenic_data != null)
+            getScenicareafromID(cur_scenic_data.id);
+    }
+}
+
+function OnCancelauthcodeVerify(){
+    $('#code_auth').hide();
+    $('#auth_code').val("");
+}
+
+function OnConfirmauthCode(){
+    /*  validate authorization code
+    **  If authorization code don't exist in the order lists of backend, verification is fail.
+     */
+    var auth_code = $('#auth_code').val();
+    var shop_id = sessionStorage.getItem('shopid');
+
+    if(auth_code == "")
+    {
+        alert('请输入授权码。');
+        return;
+    }
+
+    var payment_data = [];
+    payment_data['id'] = "none";
+    payment_data['type'] = 4;
+    payment_data['real_cost'] = auth_code;
+
+    // send the order information to back-end
+    $.ajax({
+        type: 'POST',
+        url: SERVER_URL + 'api/Areas/getAllCourseInfos',
+        dataType: 'json',
+        // username:'admin',
+        // password:'1234',
+        data: { 'shop' : shop_id ,'phone' : phone_num, 'id':payment_data['id'], 'type':payment_data['type'], 'cost':payment_data['real_cost']},
+        success: function (data) {
+            if (data.status == false) {
+                alert('授权码有误，请重新输入!');
+                return;
+            }
+            $('#code_auth').hide();
+            $('#auth_code').val("");
+
+            if(cur_scenic_data != null)
+                getScenicareafromID(cur_scenic_data.id);
+
+            alert('您已解锁旅游线路，点击景区开启导游之旅！');
+        },
+        error: function (data) {
+            alert('授权失败。');
+        }
+    });
+}
+
+function phone_verify_dialog_close(){
+    $('#phone_verify').hide();
+}
+
+function code_auth_dialog_close(){
+    $('#code_auth').hide();
+    bAuthorizing = 0;
+}
+
 // calculate expiration date and expired date from any time
 function getDetailInfofromTime(tmpTime){
     /* calculate  expiration date and  expired date , state(using, expired ...)
-    **  expiration_date : 2017.08-05-2017.08.20
+    **  expiration_time : 2017.08-05-2017.08.20
     **  state : if using then 1, if expired then 2
      */
     var info = new Array();
     info['state'] = 1;
-    info['expiration_date'] = tmpTime.substr(0,10) + "-";
+    info['expiration_time'] = tmpTime.substr(0,10) + "-";
 
     var timeStr = tmpTime.replace('.', '-');
     timeStr = timeStr.replace('.', '-');
@@ -531,11 +727,11 @@ function getDetailInfofromTime(tmpTime){
 
     if(expired_date.getTime() < today.getTime()) info['state'] = 2;
 
-    info['expiration_date'] += expired_date.getFullYear() + ".";
-    if(expired_date.getMonth()<10) info['expiration_date'] += "0";
-    info['expiration_date'] += (expired_date.getMonth()+1) + ".";
-    if(expired_date.getDate()<10) info['expiration_date'] += "0";
-    info['expiration_date'] += expired_date.getDate();
+    info['expiration_time'] += expired_date.getFullYear() + ".";
+    if(expired_date.getMonth()<10) info['expiration_time'] += "0";
+    info['expiration_time'] += (expired_date.getMonth()+1) + ".";
+    if(expired_date.getDate()<10) info['expiration_time'] += "0";
+    info['expiration_time'] += expired_date.getDate();
 
     return info;
 }

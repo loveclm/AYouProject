@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head lang="en">
-    <title>A游不错</title>
+    <title>旅游线路</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <meta name="apple-touch-fullscreen" content="yes">
@@ -9,14 +9,14 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <meta name="format-detection" content="telephone=no">
 
-    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
+    <link rel="stylesheet" type="text/css" href="../css/bootstrap.min.css"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="../css/AdminLTE.min.css">
     <link rel="stylesheet" href="../css/skins/_all-skins.min.css">
     <link rel="stylesheet" href="../css/style.css">
 
     <script type="text/javascript" src="../js/plugins/jquery.min.js"></script>
-    <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../js/plugins/bootstrap.min.js"></script>
     <script type="text/javascript" src="../js/global.js"></script>
     <script type="text/javascript" src="../js/tourismcourse.js"></script>
 </head>
@@ -64,6 +64,41 @@
                     <div class="btn-custom btn-course"><h5>输入授权码</h5></div>
                 </div>
                 <div class="modal-footer" style="padding: 0px; border: none">
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+
+    <!--phone number verify dialog-->
+    <div class="modal custom-modal" id="phone_verify">
+        <div class="modal-dialog" id="phone_verify_dialog">
+            <div class="modal-content" style="height: 100%;border-radius: 12px;">
+                <div class="modal-header" id="phone_verify_title" style="padding: 0px; margin: 0px;border: none">
+                    <button class="close" onclick="phone_verify_dialog_close()">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                    <img src="../resource/image/top.png" style="width: 100%">
+                    <div style="text-align: center">
+                        <img src="../resource/image/sign_in.png">
+                        <h4>授权登录</h4>
+                    </div>
+                </div>
+                <div class="modal-body" id="phone_verify_content">
+                    <div>
+                        <h4 style="float: left">手机号</h4>
+                        <input type="text" class="form-control" id="phone_number" placeholder="" style="width: 70%" onkeypress="return event.charCode >= 48 && event.charCode <= 57">
+                    </div>
+                    <div>
+                        <h4 style="float: left">验证码</h4>
+                        <input type="text" class="form-control" id="verify_code" placeholder="验证码" style="width: 35%" onkeypress="return event.charCode >= 48 && event.charCode <= 57">
+                        <div class="btn-custom" id="btn_sendSMS" onclick="sendSMSToPhone()"><h5>获取验证码</h5></div>
+                    </div>
+                </div>
+                <div class="btn-custom" id="confirm_verify" onclick="confirm_verify_phone()">
+                    <i class="fa fa-refresh fa-spin" id="loading"></i>
+                    <h4 style="margin: 5px 0px">立即验证</h4>
                 </div>
             </div>
             <!-- /.modal-content -->

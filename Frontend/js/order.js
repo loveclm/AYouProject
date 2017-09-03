@@ -3,10 +3,13 @@
  */
 
 var order_List = [];
+var phone_num = "";
 
 $(function(){
+    phone_num = localStorage.getItem('phone_number');
     resize_orderlist();
-    loadOrderData();
+    getMyOrdersFromServer();
+    //loadOrderData();
 });
 
 window.addEventListener('resize', function(event){
@@ -34,6 +37,14 @@ function display_order_data(){
     var content_html_expired = "";
     var tmp_content_html="";
 
+    $('#tab_all').html(content_html_all);
+    $('#tab_unpaid').html(content_html_unpaid);
+    $('#tab_cancelled').html(content_html_cancelled);
+    $('#tab_expired').html(content_html_expired);
+
+    if(sessionStorage.getItem('phone_number') == null || sessionStorage.getItem('phone_number')=="") return;
+    if( order_List == null) return;
+
     // show each order information in order list
     for( var i = 0; i < order_List.length; i++){
         tmp_content_html="";
@@ -60,7 +71,7 @@ function display_order_data(){
             switch(order_List[i]['state'])
             {
                 case "2":
-                    tmp_content_html +='    <div onclick="cancelOrder('+i+')"><h5>取消订单</h5></div>';
+                    tmp_content_html +='    <div onclick="cancelOrder('+order_List[i]['id']+')"><h5>取消订单</h5></div>';
                     tmp_content_html +='    <div onclick="pay_for_Order('+i+')"><h5>付款</h5></div>';
                     break;
                 case "3":
@@ -103,28 +114,15 @@ function display_order_data(){
 }
 
 function cancelOrder(index) {
-    // when user cancels his/her order, must send it to server
-    // send ajax request and receive ajax response and so process with the result of the backend
-    // If verification is fail, maintain old state.
-    /*
-     $.ajax({
-         type: 'GET',
-         url: 'http://server/backend/dbmanage.php', //rest API url
-         dataType: 'json',
-         data: {func: 'function_name', info: res}, // set function name and parameters
-         }).success(function(data){
-             $('#code_auth').hide();
-             // change attraction marks along information
-             loadOrderData();
+    sessionStorage.setItem('cancel_order_id', index);
 
-         }).fail(function(){
-             return;
-     });
-     */
-
-    //return;
+    $('#confirm').show();
 }
 
+function OnCancel(){
+    $('#confirm').hide();
+    sessionStorage.removeItem('cancel_order_id');
+}
 function pay_for_Order(index) {
     // calculate order's price
     var cur_order = order_List[index];

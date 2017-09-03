@@ -166,6 +166,7 @@ html, body{
     border-bottom: 1px solid;
     border-bottom-color: #f6f6f6;
     padding: 0px 5px;
+    cursor: pointer;
 }
 
 #confirm_verify{
@@ -341,7 +342,7 @@ html, body{
 }
 
 .order_detail{
-    padding: 10px 20px;
+    padding: 10px 5%;
     margin: 7px 0px;
     background-color: #ffffff;
 }
@@ -498,3 +499,11 @@ div.info-bottom img {
     cursor: pointer;
     text-align: center;
 }
+
+#login #btn-close{
+    width: 10%;
+    position: absolute;
+    top: 45px;
+    right: -10px;
+}
+#loading{ display: none;}
