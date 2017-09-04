@@ -82,7 +82,7 @@ function resize_scenic(){
     var map_height = document.body.clientHeight - map_top;
     $('#container').css({display:'block',width:map_width, height:map_height, top:map_top, bottom:0});
 
-    var content_margin=(document.body.clientWidth-width)/2;
+    var content_margin=0; //(document.body.clientWidth-width)/2;
     $('#back_img').css({position:'fixed',left: content_margin+10});
 
 }

@@ -1,7 +1,7 @@
 /**
  * Created by Administrator on 8/9/2017.
  */
-var SERVER_URL = "http://192.168.2.18/backend/";
+var SERVER_URL = "http://www.ayoubc.com/backend/";
 //var run_mode = "SIMULATE_MODE";   // This means system runs with simulate mode
 var run_mode = "REALTIME_MODE";   // This means system runs with real time mode
 var sms_code = "";
@@ -35,7 +35,7 @@ function SendOrderCancelRequest() {
 
 // check current location
 function checkCurrentLocation(pos){
-    $.ajax({
+      $.ajax({
         type: 'POST',
         url: SERVER_URL + 'api/Areas/getAreaIdByPosition',
         dataType: 'json',
@@ -56,7 +56,7 @@ function checkCurrentLocation(pos){
 
                 new_scenic_id = data['id'];
             }
-
+            if(bMovable) return;
             bMovable = 0;
             sessionStorage.setItem('new_scenic_id', new_scenic_id);
             sessionStorage.setItem('movable', bMovable);
@@ -67,6 +67,26 @@ function checkCurrentLocation(pos){
 
         }
     });
+}
+
+function preparePayment() {
+    phone_num = localStorage.getItem('phone_number');
+    shop_id = sessionStorage.getItem('shopid');
+
+    var payment_data = sessionStorage.getObject('payment_data');
+    var buy_type = "";
+    switch (payment_data['type']){
+        case 1:
+            buy_type = '购买旅游线路';
+            break;
+        case 2:
+            buy_type = '购买景区';
+            break;
+        case 3:
+            buy_type = '购买景点';
+            break;
+    }
+    location.href = 'http://www.ayoubc.com/tour/plugin/Wxpay/payment.php?cost='+ payment_data['real_cost'] + '&type=' + buy_type + '&product='+ payment_data['name'];
 }
 
 // downloading the detail information of the scenic area from scenic id

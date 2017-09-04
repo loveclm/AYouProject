@@ -142,12 +142,30 @@ function pay_for_Order() {
         real_cost: real_cost
     };
 
+    sessionStorage.setItem('order_status', 'pay');
     sessionStorage.setObject('payment_data', payment_data);
-    window.location.href = '../views/purchase.html';
+    //window.location.href = '../views/purchase.html';
+    preparePayment();
 }
 
 function purchase_again_Order() {
-    pay_for_Order();
+    var cur_order = order_detail;
+    // calculate order's price
+    var real_cost = cur_order['cost'] * cur_order['discount_rate'];
+
+    var payment_data = {
+        type : 4,      // 1: tourism course, 2: scenic area,  3: attraction, 4: authorize code
+        id : cur_order['id'],
+        name: cur_order['name'],
+        image: cur_order['image'],
+        cost: cur_order['cost'],
+        real_cost: real_cost
+    };
+
+    sessionStorage.setObject('payment_data', payment_data);
+    //window.location.href = '../views/purchase.html';
+    preparePayment();
+
 }
 
 function showMainpage(){

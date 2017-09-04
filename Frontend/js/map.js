@@ -178,8 +178,8 @@ function  showAttractionInfos() {
         autoRotation: true
     });
     location_mark.setMap(map);
-
-    if(bAutomaticState == 0)   start_explain_area();
+    start_explain_area();
+    if(bAutomaticState == 1) explain_area_control('stop');
 }
 
 //解析定位结果
@@ -325,7 +325,8 @@ function processInfoEvents(index, data) {
             sessionStorage.setObject('payment_data', payment_data);
 
             closeInfoWindow();
-            window.location.href = 'views/purchase.html';
+            //window.location.href = 'views/purchase.html';
+            preparePayment();
             break;
         case 4:
             // check phone verification state
@@ -353,7 +354,8 @@ function processInfoEvents(index, data) {
             sessionStorage.setObject('payment_data', payment_data);
 
             closeInfoWindow();
-            window.location.href = 'views/purchase.html';
+            //window.location.href = 'views/purchase.html';
+            preparePayment();
             break;
         case 5:
             // verify authorization code

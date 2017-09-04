@@ -42,7 +42,7 @@ function display_order_data(){
     $('#tab_cancelled').html(content_html_cancelled);
     $('#tab_expired').html(content_html_expired);
 
-    if(sessionStorage.getItem('phone_number') == null || sessionStorage.getItem('phone_number')=="") return;
+    if(localStorage.getItem('phone_number') == null || localStorage.getItem('phone_number')=="") return;
     if( order_List == null) return;
 
     // show each order information in order list
@@ -137,12 +137,30 @@ function pay_for_Order(index) {
         real_cost: real_cost
     };
 
+    sessionStorage.setItem('order_status', 'pay');
     sessionStorage.setObject('payment_data', payment_data);
-    window.location.href = '../views/purchase.html';
+    //window.location.href = '../views/purchase.html';
+    preparePayment();
 }
 
 function purchase_again_Order(index) {
-    pay_for_Order(index);
+    // calculate order's price
+    var cur_order = order_List[index];
+    var real_cost = cur_order['cost'] * cur_order['discount_rate'];
+
+    var payment_data = {
+        type : cur_order['order_kind'],      // 1: tourism course, 2: scenic area,  3: attraction, 4: authorize code
+        id : cur_order['id'],
+        name: cur_order['name'],
+        image: cur_order['image'],
+        cost: cur_order['cost'],
+        real_cost: real_cost
+    };
+
+    sessionStorage.setObject('payment_data', payment_data);
+    //window.location.href = '../views/purchase.html';
+    preparePayment();
+
 }
 
 function showOrderDetailInfo(index)

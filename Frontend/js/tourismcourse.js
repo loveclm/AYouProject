@@ -125,7 +125,9 @@ function  onlinePayment(index) {
     };
 
     sessionStorage.setObject('payment_data', payment_data);
-    window.location.href = '../views/purchase.html';
+
+    //window.location.href = '../views/purchase.html';
+    preparePayment();
 }
 
 function  buy_with_authCode(index){

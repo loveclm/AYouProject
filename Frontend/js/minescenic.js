@@ -38,7 +38,7 @@ function display_minescenic_data(){
     $('#tab_using').html(content_html_using);
     $('#tab_expired').html(content_html_expired);
 
-    if(sessionStorage.getItem('phone_number') == null || sessionStorage.getItem('phone_number')=="") return;
+    if(localStorage.getItem('phone_number') == null || localStorage.getItem('phone_number')=="") return;
     if(minescenic_List == null) return;
 
     // show each order information in order list
@@ -96,7 +96,8 @@ function pay_for_Order(index) {
     };
 
     sessionStorage.setObject('payment_data', payment_data);
-    window.location.href = '../views/purchase.html';
+    //window.location.href = '../views/purchase.html';
+    preparePayment();
 }
 
 function purchase_again_Order(index) {
