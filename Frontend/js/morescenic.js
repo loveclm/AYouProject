@@ -33,7 +33,7 @@ function display_scenic_data(){
     for( var i = 0; i < scenic_list.length; i++){
         if(scenic_list[i]['name'].indexOf(filter_str) >= 0) {
             content_html += '<div class="scenic_item" id="scenic_item' + (i + 1) + '" onclick="selectScenicArea(' + i + ')">';
-            content_html += '<img src="../resource/image/voice.png" style="float: left; height:100%">';
+            content_html += '<img src="../resource/image/voice.png" style="float: left; height:70%; margin-top: 6px">';
             content_html += '<h5 style="float: left; padding-left: 15px; font-weight: bold">' + scenic_list[i]['name'] + '</h5></div>';
             // define eventListener
         }

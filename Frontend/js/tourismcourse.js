@@ -85,6 +85,7 @@ function showcourse(index){
 
     $('#buy_course_content').html(content_html);
     $('#buy_course').show();
+    showDialogToCenter('buy_course_dialog');
 }
 
 // if select a scenic area of the current tourism course, shows the scenic area.
@@ -143,6 +144,7 @@ function  buy_with_authCode(index){
     }
 
     $('#code_auth').show();
+    showDialogToCenter('code_auth_dialog');
 }
 
 function resize_tourism_course(){

@@ -32,9 +32,10 @@ $(document).ready(function(){
     loadDataFormStorage();
 
     // if phone was not verified then show verification dialog
-    if(bPhoneverified == 0)
+    if(bPhoneverified == 0) {
         $('#login').show();
-
+        showDialogToCenter('login-dialog');
+    }
     //  event listener
     // change explaining state with button click event
     $('#btn-commentary').click(function(){
@@ -242,7 +243,7 @@ function display_attraction_data() {
     var content_html = '<div id="search_attraction">';
     content_html += '   <div class="has-feedback">';
     content_html += '   <input type="text" class="form-control input-sm" onchange="filter_attraction(this.value)" placeholder="请输入景点">';
-    content_html += '   <span class="glyphicon glyphicon-search form-control-feedback"></span>';
+    content_html += '   <span class="fa fa-search form-control-feedback"></span>';
     content_html += '</div></div>';
     $('#detail_content_search').html(content_html);
 
@@ -252,7 +253,7 @@ function display_attraction_data() {
 
             content_html += '   <div class="attraction_item" id="attraction_item' + (i + 1) + '" onclick="selectAttraction(' + i + ')">';
             content_html += '   <img src="resource/image/attraction.png" style="float: left; height:100%">';
-            content_html += '   <h4 style="float: left; font-weight: bold; margin-top:5px; margin-left:10px ">' + cur_scenic_data['attractions'][i]['name'] + '</h4></div>';
+            content_html += '   <h5 style="float: left; font-weight: bold; margin-top:5px; margin-left:10px ">' + cur_scenic_data['attractions'][i]['name'] + '</h5></div>';
         }
     }
     content_html += '</div>';
@@ -313,19 +314,19 @@ function resize(){
     var btn_height = document.getElementById('btn-help').clientHeight;
     var dh = btn_height+10;
     var delta = 10;
-    if(height < 600){
-        btn_height  = map_height/8;
+    //if(height < 600){
+        btn_height  = map_height/12;
         delta = 5;
         dh = btn_height + delta;
-    }
+    //}
 
     $('#btn-help').css({display:'block', top:map_top + delta, right:content_margin, width: btn_height, height: btn_height});
     $('#btn-follow').css({display:'block', top:map_top + dh + delta, right:content_margin, width: btn_height, height: btn_height});
     $('#btn-order').css({display:'block', top:map_top + dh*2 + delta, right:content_margin, width: btn_height, height: btn_height});
     $('#btn-scenic').css({display:'block', top:map_top + dh*3 + delta, right:content_margin, width: btn_height, height: btn_height});
-    $('#btn-commentary').css({display:'block', bottom:map_bottom + 2*dh + delta/2, right:content_margin, width: btn_height, height: btn_height});
-    $('#btn-automatic').css({display:'block', bottom:map_bottom + dh + delta/2, right:content_margin, width: btn_height, height: btn_height});
-    $('#btn-position').css({display:'block', bottom:map_bottom + delta, right:content_margin, width: btn_height, height: btn_height});
+    $('#btn-commentary').css({display:'block', bottom:map_bottom + dh + delta/2, right:content_margin, width: btn_height, height: btn_height});
+    $('#btn-automatic').css({display:'block', bottom:map_bottom + delta, right:content_margin, width: btn_height, height: btn_height});
+    //$('#btn-position').css({display:'block', bottom:map_bottom + delta, right:content_margin, width: btn_height, height: btn_height});
 
     //set margin of login modal dialog
     $('.custom-modal').css({'margin-left':content_margin,'margin-right':content_margin});

@@ -261,6 +261,15 @@ function getTourismCoursesFromServer(){
     });
 }
 
+function showDialogToCenter(id){
+    var height = document.body.clientHeight
+        || document.documentElement.clientHeight
+        || window.innerHeight;
+    var dialog_height = $('#'+id).css('height');
+    var margin_top = (parseInt(height) - parseInt(dialog_height))/2;
+    $('#'+id).css({'margin-top': margin_top});
+}
+
 // simulate scenic data ( use in the simulation method)
 function simulate_CurrentScenicArea(){
     var scenic_area = [];
@@ -576,6 +585,7 @@ function verifyAuthorizationCode(){
     if(bPhoneverified == 1)
     {
         $('#code_auth').show();
+        showDialogToCenter('code_auth_dialog');
     }else{
         bAuthorizing = 1;
         verifyPhone();
@@ -587,6 +597,7 @@ function verifyPhone(){
     if(bPhoneverified == 1) return;
 
     $('#phone_verify').show();
+    showDialogToCenter('phone_verify_dialog');
 }
 
 // send SMS message to user's phone in order to verify user's phone
@@ -660,6 +671,7 @@ function confirm_verify_phone(){
     {
         bAuthorizing = 0;
         $('#code_auth').show();
+        showDialogToCenter('code_auth_dialog');
     }else{
         // change attraction marks along information
         if(cur_scenic_data != null)

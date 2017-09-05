@@ -41,7 +41,7 @@
         <div class="btn-right" id="btn-scenic" onclick="showMineScenicAreas()"></div>
         <div class="btn-right" id="btn-commentary"></div>
         <div class="btn-right" id="btn-automatic"></div>
-        <div class="btn-right" id="btn-position"></div>
+        <!--<div class="btn-right" id="btn-position"></div>-->
 
         <!--phone number authorization dialog-->
         <div class="modal custom-modal" id="login">
@@ -54,11 +54,11 @@
                     <div class="modal-body" style="background: #ffffff">
                         <p>世界这么大， 一起去看看呗</p>
                         <p>让我带着你， 你带着钱, 现在就出发</p>
-                        <p>哎呦不错， 我们的旅途从这裡开始...</p>
+                        <p>哎呦不错， 我们的旅途从这里开始...</p>
                     </div>
                     <div class="modal-footer">
-                        <div class="text-button" style="border-bottom-left-radius: 7px" onclick="verifyAuthorizationCode()">授权验证</div>
-                        <div class="text-button" style="border-bottom-right-radius: 7px" onclick="verifyPhone()">立即购买</div>
+                        <div class="text-button" style="border-bottom-left-radius: 7px" onclick="verifyAuthorizationCode()">授权认证</div>
+                        <div class="text-button" id="btn_online_pay" style="border-bottom-right-radius: 7px" onclick="verifyPhone()">立即购买</div>
                     </div>
                 </div>
                 <!-- /.modal-content -->
@@ -82,11 +82,11 @@
                     </div>
                     <div class="modal-body" id="phone_verify_content">
                         <div>
-                            <h4 style="float: left">手机号</h4>
-                            <input type="text" class="form-control" id="phone_number" placeholder="" style="width: 70%" onkeypress="return event.charCode >= 48 && event.charCode <= 57">
+                            <h5 style="float: left">手机号</h5>
+                            <input type="text" class="form-control" id="phone_number" placeholder="" style="width: 76%" onkeypress="return event.charCode >= 48 && event.charCode <= 57">
                         </div>
                         <div>
-                            <h4 style="float: left">验证码</h4>
+                            <h5 style="float: left">验证码</h5>
                             <input type="text" class="form-control" id="verify_code" placeholder="验证码" style="width: 35%" onkeypress="return event.charCode >= 48 && event.charCode <= 57">
                             <div class="btn-custom" id="btn_sendSMS" onclick="sendSMSToPhone()"><h5>获取验证码</h5></div>
                         </div>
@@ -117,7 +117,7 @@
                     </div>
                     <div class="modal-body" id="code_auth_content">
                         <div style="margin: 20px 0px">
-                            <h4 style="float: left; margin-left: 5px; margin-right: 15px">授权码</h4>
+                            <h5 style="float: left; margin-left: 5px; margin-right: 15px">授权码</h5>
                             <input type="text" class="form-control" id="auth_code" placeholder="" style="width: 70%" onkeypress="return event.charCode >= 48 && event.charCode <= 57">
                         </div>
                     </div>
@@ -125,11 +125,11 @@
                         <h4>授权码有误，请重新输入！</h4>
                     </div>
                     <div style="margin: 10px 20px; height: 50px">
-                        <div class="btn-custom" onclick="OnCancelauthcodeVerify()" style="float: left; margin: 0px 15px; padding: 0px 30px; border-radius: 20px">
-                            <h4 style="margin: 5px 0px">取消</h4>
+                        <div class="btn-custom" id="btn_cancel" onclick="OnCancelauthcodeVerify()">
+                            <h5 style="margin: 5px 0px">取消</h5>
                         </div>
-                        <div class="btn-custom" onclick="OnConfirmauthCode()" style="float: left; margin: 0px 15px; padding: 0px 30px; border-radius: 20px">
-                            <h4 style="margin: 5px 0px">确认</h4>
+                        <div class="btn-custom" id="btn_ok" onclick="OnConfirmauthCode()">
+                            <h5 style="margin: 5px 0px">确认</h5>
                         </div>
 
                     </div>
@@ -149,9 +149,9 @@
                         </button>
                         <h4 style="font-weight: bold; padding-left: 20px">test</h4>
                     </div>
-                    <div class="modal-body" id="menu-detail-content" style="overflow-y: scroll; height: 80%">
+                    <div class="modal-body" id="menu-detail-content" style="height: 80%">
                         <div id="detail_content_search"></div>
-                        <div id="detail_content_data"></div>
+                        <div id="detail_content_data" style="overflow-y: scroll; height: 80%"></div>
                     </div>
                     <div class="modal-footer" style="padding: 0px; border: none">
                     </div>
@@ -171,7 +171,7 @@
                         </button>
                         <h3 style="font-weight: bold; text-align: center">帮助中心</h3>
                     </div>
-                    <div class="modal-body" id="help-content" style="overflow-y: scroll; height: 88%; padding: 10px">
+                    <div class="modal-body" id="help-content" style="overflow-y: scroll; padding: 0px 10px">
                         <h5 style="line-height: 1.5">1. 进入景区页面， 点击“景点讲解”小图标,即可收听景点语音讲解。</h5>
                         <img src="resource/image/help1.png" style="width: 95%">
                         <h5 style="line-height: 1.5">2. 如该景区是还没有授权过的,点击“讲解”时，就会出现“授激活”的弹框，若您有购买过授权码的“输入授权码”即可;如果没有购买过该景区的授权码，您可以点击“立即购买”按钮讲行购买。</h5>
@@ -260,10 +260,10 @@
                 // configure content of the voice type selection dialog
                 var content_html = "";
                 var captionListOfvoiceType = ['原声','美女','帅哥'];
-                for( var i= 1; i < 4; i++)
+                for( var i= 1; i < 2; i++)
                 {
                     content_html += '<div style="float:left; margin: 5px; cursor:pointer;" id="voiceType'+ i +'" onclick="voiceSelected('+ i +')">'
-                    content_html += '<img src=\'resource/image/voice' + i + '.png\' style="width:70px; height:70px">';
+                    content_html += '<img src=\'resource/image/voice' + i + '.png\' style="width:40px; height:40px">';
                     content_html += '<h5 style="text-align: center">' + captionListOfvoiceType[i-1] + '</h5></div>';
                 }
 
@@ -315,7 +315,7 @@
 
     function settingGuanzhu(){
         // check phone verification state
-         window.location.href = 'views/guanzhu.html';
+        // window.location.href = 'views/guanzhu.html';
     }
 
     function showOrderList(){
@@ -340,6 +340,12 @@
 
     function showhelp(){
         $('#help').show();
+
+        var help_header_height = $('#help-dialog-title').css('height');
+        var help_dialog_height = $('#help-dialog').css('height');
+        var content_height = parseInt(help_dialog_height) - parseInt(help_header_height);
+        $('#help-content').css({height: content_height-10});
+        showDialogToCenter('help-dialog');
     }
 
     function Help_dialog_close(){

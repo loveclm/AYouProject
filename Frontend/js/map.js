@@ -111,7 +111,7 @@ function  setOverlay() {
             cur_scenic_data.bottom_left,   //左下角
             cur_scenic_data.top_right    //右上角
         ),
-        zooms: [15, 18]
+        zooms: [10, 18]
     });
 
     imageLayer.setMap(map);
@@ -181,7 +181,43 @@ function  showAttractionInfos() {
     start_explain_area();
     if(bAutomaticState == 1) explain_area_control('stop');
 }
+function selectAttraction(index) {
+    bcurAudioplaying = 0;
+    $('#menu-detail').hide();
+    var bAllpaid = 1;
+    var total_cost = 0;
+    for( var i = 0; i < markList.length; i++){
+        if(cur_scenic_data.attractions[i].buy_state == 3) {
+            bAllpaid = 0;
+            total_cost += parseFloat( cur_scenic_data.attractions[i].cost); //* cur_scenic_data.attractions[i].discount_rate;
+        }
+    }
+    total_cost *= parseFloat( cur_scenic_data.discount_rate);
 
+    //实例化信息窗体
+    var title = cur_scenic_data.attractions[index].name;
+    var cur_attraction_cost = parseFloat(cur_scenic_data.attractions[index].cost) * parseFloat(cur_scenic_data.attractions[index].discount_rate)
+    content = [];
+    if(bAllpaid == 1){
+        content.push('<div id="hear_button" class="info-button" onclick="processInfoEvents(1,'+ index+')">开始试听</div>');
+        content.push('<div class="info-button" onclick="processInfoEvents(2,'+ index+')">为您导航</div>');
+    }else{
+        switch (cur_scenic_data.attractions[index].buy_state){
+            case 1:
+            case 2:
+                content.push('<div id="hear_button" class="info-button" onclick="processInfoEvents(1,'+ index+')">开始试听</div>');
+                break;
+            case 3:
+                content.push('<div class="info-button" onclick="processInfoEvents(3,'+ index+')">' + cur_attraction_cost.toFixed(0) + '元解锁景点</div>');
+                break;
+        }
+        content.push('<div class="info-button" onclick="processInfoEvents(4,'+ index+')">' + total_cost.toFixed(0) + '元解锁景区</div>');
+        content.push('<div class="info-button" onclick="processInfoEvents(2,'+ index+')">为您导航</div>');
+        content.push('<div class="info-button" onclick="processInfoEvents(5,'+ index+')">授权验证</div>');
+    }
+    infoWindow.setContent(createInfoWindow(title, content.join('<br>')));
+    infoWindow.open(map, markList[index].getPosition());
+}
 //解析定位结果
 function getLocationCompleted(data) {
     var cur_pos = [data.position.getLng(), data.position.getLat()];
