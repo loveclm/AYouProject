@@ -17,6 +17,8 @@ class Areas extends REST_Controller
         $this->load->model('area_model');
         $this->load->model('order_model');
         $this->load->model('auth_model');
+        $this->load->model('user_model');
+        $this->load->model('shop_model');
     }
 
     public function test_post()
@@ -33,8 +35,13 @@ class Areas extends REST_Controller
         //$this->response($this->area_model->findAreas());
     }
 
+    // Rest API - post
+    // input: $key - the name of area
+    // output: area data records with name like $key
     public function find_post($key = '')
     {
+        $request = $this->post();
+        $key = $request['key'];
         $this->response($this->area_model->findAreas($key));
     }
 
@@ -49,24 +56,66 @@ class Areas extends REST_Controller
 
     public function save_post($id = NULL)
     {
-        if (! $id)
-        {
+        if (!$id) {
             $new_id = $this->area_model->addNewArea($this->post());
             $this->response(array('status' => true, 'id' => $new_id, 'message' => sprintf('Area #%d has been created.', $new_id)), 200);
-        }
-        else
-        {
+        } else {
             $this->area_model->update($this->post(), $id);
             $this->response(array('status' => true, 'message' => sprintf('Area #%d has been updated.', $id)), 200);
         }
     }
 
+    public function changeStatus_post($id = NULL)
+    {
+        if (!$id) {
+            $new_id = $this->area_model->addNewArea($this->post());
+            $this->response(array('status' => true, 'id' => $new_id, 'message' => sprintf('Area #%d has been created.', $new_id)), 200);
+        } else {
+            $area = $this->post();
+            if ($area['status'] == 1) {
+                $this->area_model->update($this->post(), $id);
+                $this->response(array('status' => true, 'message' => sprintf('Area #%d has been updated.', $id)), 200);
+            } else if (!$this->area_model->getParentCourseByAreaId($id, '1')) {
+                $this->area_model->update($this->post(), $id);
+                $this->response(array('status' => true, 'message' => sprintf('Area #%d has been updated.', $id)), 200);
+            } else {
+                $this->response(array('status' => false, 'message' => sprintf('Area #%d is using now.', $id)), 200);
+            }
+
+        }
+    }
+
+    public function changeCourseStatus_post($id = NULL)
+    {
+        if (!$id) {
+            $new_id = $this->area_model->addNewArea($this->post());
+            $this->response(array('status' => true, 'id' => $new_id, 'message' => sprintf('Course #%d has been created.', $new_id)), 200);
+        } else {
+            $area = $this->post();
+            if ($area['status'] != 1) {
+                $this->area_model->update($this->post(), $id);
+                $this->response(array('status' => true, 'message' => sprintf('Course #%d has been updated.', $id)), 200);
+            } else if ($this->area_model->getAreaStatusByCourseId($id, '0')) {
+                $this->area_model->update($this->post(), $id);
+                $this->response(array('status' => true, 'message' => sprintf('Course #%d has been updated.', $id)), 200);
+            } else {
+                $this->response(array('status' => false, 'message' => sprintf('All areas in Course #%d have to be available.', $id)), 200);
+            }
+
+        }
+    }
+
     public function remove_post($id = NULL)
     {
-        if ($this->area_model->delete($id)) {
-            $this->response(array('status' => true, 'message' => sprintf('Area #%d has been deleted.', $id)), 200);
+        if ($this->area_model->getParentCourseByAreaId($id)) {
+            $this->response(array('status' => false, 'message' => sprintf('Area #%d is using now.', $id)), 200);
         } else {
-            $this->response(array('status' => false, 'error_message' => 'This Area does not exist!'), 404);
+            if ($this->area_model->delete($id)) {
+                $this->response(array('status' => true, 'message' => sprintf('Area #%d has been deleted.', $id)), 200);
+            } else {
+
+                $this->response(array('status' => false, 'error_message' => 'This Area does not exist!'), 404);
+            }
         }
     }
 
@@ -75,9 +124,15 @@ class Areas extends REST_Controller
         $error = false;
         $files = array();
         $uploaddir = 'uploads/';
-        //var_dump($_FILES.','.$id);
+        $tt = time();
+        $ext = explode(".", $_FILES[0]['name']);
+        $nn = rand(1000, 9999);
+        $filename = 'ayoubc' . $nn . $tt . '.' . $ext[1];
+//        var_dump($_FILES);
         foreach ($_FILES as $file) {
-            if (move_uploaded_file($file['tmp_name'], $uploaddir . basename($file['name']))) {
+//            if (move_uploaded_file($file['tmp_name'], $uploaddir . (basename($file['name'])))) {
+            if (move_uploaded_file($file['tmp_name'], $uploaddir . $filename)) {
+//                $files[] = $file['name'];
                 $files[] = $file['name'];
             } else {
                 $error = true;
@@ -85,22 +140,26 @@ class Areas extends REST_Controller
             break;
         }
         if (!$error) {
-            $this->response(array('status' => true, 'file' => $files[0]), 200);
+//            $this->response(array('status' => true, 'file' => $files[0]), 200);
+            $this->response(array('status' => true, 'file' => $filename, 'originfile' => $files[0]), 200);
         } else {
             $this->response(array('status' => false, 'error_message' => 'There was an error uploading your files!'), 404);
         }
     }
 
 ///////////////////////////////////////////////////////////
-////////////////??????  External APIs
+////////////////    External APIs
 ///////////////////////////////////////////////////////////
 
+    // Rest API - post
+    // input: the absolute position of person
+    // output: area name
     public function getAreaIdByPosition_post()
     {
         $request = $this->post();
         $lng = $request['pos'][0];
         $lat = $request['pos'][1];
-        $all_areas = $this->area_model->getAreas('', 'all', 0);
+        $all_areas = $this->area_model->getAreas('', 'all', 1); // 1-available, 2-disable
         $id = -1;
         if (count($all_areas) > 0) {
             foreach ($all_areas as $item) {
@@ -126,13 +185,15 @@ class Areas extends REST_Controller
     public function getAllCourseInfos_post()
     {
         $request = $this->post();
-        $all_courses = $this->area_model->getCourses('all', 0);
+        $phone = $request['phone'];
+        $all_courses = $this->area_model->getCourses('all', 1); // 1-available, 2-disable
         if (count($all_courses) == 0) {
             $this->response(array('status' => false, 'Courses' => '-1'), 200);
         } else {
             $i = 0;
             $course_list = array();
             foreach ($all_courses as $item) {
+                if ($item->status == 0) continue;
                 $all_areas = json_decode($item->point_list);
                 $courseInfo = json_decode($item->info);
                 $j = 0;
@@ -149,25 +210,34 @@ class Areas extends REST_Controller
                             array(
                                 'id' => $areaData->id,
                                 'name' => $areaData->name,
+                                'cost' => round((floatval($areaData->price) -
+                                            floatval($this->order_model->calculateMyPrice($phone, $areaData->id))) *
+                                         100) / 100,
+                                'discount_rate' => $areaData->discount_rate,
+                                'origin_price' => $areaData->price,
                                 'attractionCnt' => count(json_decode($areaData->point_list))
                             )
                         );
                     }
                 }
                 $i++;
-                $cour_array =
-                    array_push(
-                        $course_list,
-                        array(
-                            'id' => $item->id,
-                            'name' => $name,    //  $item->name || $name
-                            'image' => base_url() . 'uploads/' . $courseInfo->overay,
-                            'cost' => $item->price,
-                            'discount_rate' => $item->discount_rate,
-                            'scenic_areas' => $areas
-                        )
-                    );
+                array_push(
+                    $course_list,
+                    array(
+                        'id' => $item->id,
+                        'name' => $name,    //  $item->name || $name
+                        'image' => base_url() . 'uploads/' . $courseInfo->overay,
+                        'cost' => round((floatval($item->price) -
+                                    floatval($this->order_model->calculateMyPrice($phone, $item->id))) *
+                                floatval($item->discount_rate) * 100) / 100,
+                        'origin_price' => $item->price,
+                        'discount_rate' => $item->discount_rate,
+                        'scenic_areas' => $areas
+                    )
+                );
+
             }
+            //var_dump($course_list);
             $this->response(array('status' => true, 'Courses' => $course_list), 200);
         }
     }
@@ -175,7 +245,9 @@ class Areas extends REST_Controller
     public function getAllAreaInfos_post()
     {
         $request = $this->post();
-        $all_areas = $this->area_model->getAreas('', 'all', 0);
+        //$mobile = $request['phone'];
+
+        $all_areas = $this->area_model->getAreas('', 'all', 1); // 1-available, 2-disable
         if (count($all_areas) == 0) {
             $this->response(array('status' => false, 'Areas' => '-1'), 200);
         } else {
@@ -183,11 +255,15 @@ class Areas extends REST_Controller
             $areas = array();
             foreach ($all_areas as $item) {
                 $i++;
+                $areainfo = json_decode($item->info);
                 array_push(
                     $areas,
                     array(
                         'id' => $item->id,
-                        'name' => $item->name
+                        'name' => $item->name,
+                        'cost' => $item->price,
+                        'discount_rate' => $item->discount_rate,
+                        'audio' => base_url() . 'uploads/' . $areainfo->audio
                     )
                 );
             }
@@ -212,48 +288,74 @@ class Areas extends REST_Controller
     {
         $request = $this->post();
         $mobile = $request['phone'];
-        $orders = $this->order_model->getOrdersByUser($mobile);
-        if (count($orders) == 0) {
+        $areaItems = $this->area_model->getAreas('', 'all', 1);
+        $courseItems = $this->area_model->getCourses('', 1);
+        if (count($areaItems) == 0) {
             $this->response(array('status' => false, 'MyAreas' => '-1'), 200);
         } else {
             $i = 0;
             $Auths = array();
-            foreach ($orders as $item) {
+            foreach ($areaItems as $item) {
                 $i++;
-                if ($item->areaid == '0') {// auth orders
-                    $areaitem = $this->area_model->getAreaByAuthId($item->authid);
-                    $area_info = json_decode($areaitem->info);
-                    array_push(
-                        $Auths,
-                        array(
-                            'id' => $areaitem->id,
-                            'name' => $areaitem->name,
-                            'cost' => $areaitem->price,//$auth_area_info->price,
-                            'discount_rate' => $areaitem->discount_rate,
-                            'image' => base_url() . 'uploads/' . $area_info->overay,
-                            'order_time' => $item->ordered_time,
-                            'state' => $item->status,
-                            'type' => ($item->status == '1') ? 1 : 2
-                        )
-                    );
-                } else { //buy orders
-                    $areaitem = $this->area_model->getAreaById($item->areaid);
-                    $attritem = json_decode($areaitem->point_list);
-                    $area_info = json_decode($areaitem->info);
-                    array_push(
-                        $Auths,
-                        array(
-                            'id' => ($item->attractionid == '0') ? $item->areaid : $item->attractionid,
-                            'name' => $areaitem->name,
-                            'cost' => $areaitem->price,//$auth_area_info->price,
-                            'discount_rate' => $areaitem->discount_rate,
-                            'image' => base_url() . 'uploads/' . $area_info->overay,
-                            'order_time' => $item->ordered_time,
-                            'state' => $item->status,
-                            'type' => ($item->status == '1') ? 1 : 2
-                        )
-                    );
+                // get last order item as same as areaItem or courseItem
+                $Ids = array();
+                array_push($Ids, $item->id);
+                if (count($courseItems) > 0) {
+                    foreach ($courseItems as $csitem) {
+                        $arInfos = json_decode($csitem->point_list);
+                        if (sizeof($arInfos) == 0) continue;
+
+                        foreach ($arInfos as $aritem) {
+                            if ($item->id == $aritem->id) {
+                                array_push($Ids, $csitem->id);
+                                break;
+                            }
+                        }
+                    }
                 }
+
+                $lastOrder = $this->order_model->getOrderByAreaIds($Ids, $mobile);
+                if (count($lastOrder) == 0) continue;
+
+                if ($lastOrder->status != '1') {
+                    if ($lastOrder->status == 3 || $lastOrder->status == 2) continue;
+                    if ($lastOrder->ordertype == '2' || $lastOrder->ordertype == '4') {
+                        $status_ret = $this->order_model->getBuyStatusById($lastOrder->areaid, 1, $mobile, $lastOrder->id); // 0-attr, 1-area, 2- course
+                    } else if ($lastOrder->ordertype == '3') {
+                        $status_ret = $this->order_model->getBuyStatusById($lastOrder->attractionid, 0, $mobile, $lastOrder->id); // 0-attr, 1-area, 2- course
+                    } else if ($lastOrder->ordertype == '1') {
+                        $status_ret = $this->order_model->getBuyStatusById($lastOrder->areaid, 2, $mobile, $lastOrder->id); // 0-attr, 1-area, 2- course
+                    }
+                    //$status_ret = $lastOrder->status;
+                    if ($status_ret == '4') { // 1-using, 2-unpaid, 3-canceled, 4-expired
+                        $status_ret = 2; // 2-expired
+                    } else if ($status_ret == '1') {
+                        $status_ret = 1; // 1-using
+                    } else {
+                        continue;
+                    }
+                } else {
+                    $status_ret = 1;
+                }
+
+                $area_info = json_decode($item->info);
+                array_push(
+                    $Auths,
+                    array(
+                        'areaid' => $item->id,
+                        'id' => $lastOrder->id,
+                        'name' => $item->name,
+                        'cost' => round((floatval($item->price) -
+                                    floatval($this->order_model->calculateMyPrice($mobile, $item->id))) *
+                                floatval($item->discount_rate) * 100) / 100,
+                        'paid_price' => $item->price,
+                        'discount_rate' => $item->discount_rate,
+                        'image' => base_url() . 'uploads/' . $area_info->overay,
+                        'order_time' => $lastOrder->ordered_time,
+                        'state' => $status_ret,
+                        'type' => $item->type
+                    )
+                );
             }
             $this->response(array('status' => true, 'MyAreas' => $Auths), 200);
         }
@@ -267,7 +369,7 @@ class Areas extends REST_Controller
         $item = $this->area_model->getAreaById($id);
         if (count($item) == 0) {
             $this->response(array('status' => false, 'CurArea' => '-1'), 200);
-        } else if ($item->type == 2) {
+        } else if ($item->type == 1) {
             $this->response(array('status' => false, 'CurArea' => '-1'), 200);
         } else {
             $curDate = date_create(date("Y-m-d"));
@@ -279,6 +381,13 @@ class Areas extends REST_Controller
             if (count($attractions) > 0) {
                 foreach ($attractions as $atts) {
                     $i++;
+                    if ($atts->trial == '1') {
+                        $buy_state = 1;//trial
+                    } else if ($phone == '') {
+                        $buy_state = 3;//unpaid
+                    } else {
+                        $buy_state = $this->order_model->getStatusByAttractionId($atts->id, $phone);
+                    }
                     array_push(
                         $attractionList,
                         array(
@@ -287,7 +396,7 @@ class Areas extends REST_Controller
                             'position' => json_decode($atts->position),
                             'cost' => $atts->price,
                             'discount_rate' => $atts->discount_rate,
-                            'buy_state' => $atts->trial == '1' ? 1 : 3,
+                            'buy_state' => $buy_state,// 1-trial, 2-paid, 3-unpaid
                             'audio_files' => [
                                 base_url() . 'uploads/' . $atts->audio_1,
                                 base_url() . 'uploads/' . $atts->audio_2,
@@ -307,11 +416,13 @@ class Areas extends REST_Controller
                 'bottom_left' => ($itemInfo->position[0]),
                 'overlay' => base_url() . 'uploads/' . $itemInfo->overay,
                 'image' => base_url() . 'uploads/' . $itemInfo->overay,
-                'zoom' => '2',
+                'audio' => base_url() . 'uploads/' . $itemInfo->audio,
+                'zoom' => '10',
                 'cost' => $item->price,
                 'discount_rate' => $item->discount_rate,
                 'attractionCnt' => count($attractionList),
-                'attractions' => $attractionList
+                'attractions' => $attractionList,
+                'zoom' => ($itemInfo->zoom)
             ];
             $this->response(array('status' => true, 'CurArea' => $scenic_area), 200);
         }
@@ -324,54 +435,125 @@ class Areas extends REST_Controller
         $phone = $request['phone'];
         $cost = $request['cost'];
         $type = $request['type'];
+        $shopid = $request['shop'];
 
         $init['num'] = $this->auth_model->getCount() + 1;
         $date = new DateTime();
         if ($phone == '' || $type == '') {
             $this->response(array('status' => false, 'result' => '-1'), 200);
         } else {
-            if ($type == '1' || $type == '2') {
-                $authOrderItem = [
-                    "value" => sprintf("%'.02d%'.08d", '12', $init['num']),
-                    "code" => $cost,
-                    "userphone" => $phone,
-                    "ordertype" => '1',
-                    "status" => '2',
-                    "areaid" => $areaid,
-                    "ordered_time" => $date->format('Y-m-d H:i:s'),
-                    "paid_time" => $date->format('Y-m-d H:i:s')
+            $user = $this->user_model->getOrderUserByPhone($phone);
+            if (count($user) == 0) {
+                $userInfo = [
+                    'mobile' => $phone
                 ];
-                $this->order_model->AddBuyOrder($authOrderItem);
-            } else if ($type == '3') {
-                $area = explode('_', $areaid);
+                $this->user_model->addNewOrderUser($userInfo);
+            }
+            if ($type == '1' || $type == '2') { // 1-course, 2-area
+                $areaItem = $this->area_model->getAreaById($areaid);
+                $shopItem = $this->shop_model->getShopById($shopid);
+                if (count($areaItem) == 0) {
+                    $this->response(array('status' => false, 'result' => 'The area is not exist.'), 200);
+                    return;
+                }
+                if ($areaItem->type != $type) {
+                    $this->response(array('status' => false, 'result' => 'The course or area type is mismatch.'), 200);
+                    return;
+                }
+                if (count($shopItem) == 0) {
+                    $this->response(array('status' => false, 'result' => 'The shop is not exist.'), 200);
+                    return;
+                }
                 $authOrderItem = [
-                    "value" => sprintf("%'.02d%'.08d", '12', $init['num']),
-                    "code" => $cost,
+                    "value" => sprintf("%'.07d%'.04d", time() % 1e7, rand(1000, 9999)),
+                    "code" => round($cost * 100) / 100,
                     "userphone" => $phone,
-                    "ordertype" => '1',
-                    "status" => '2',
+                    "ordertype" => $type, // 1,2 - course or area
+                    "status" => '2',// 2- ordered but unpaid
+                    "areaid" => $areaid,
+                    "attractionid" => 0,
+                    "authid" => $shopid,
+                    "ordered_time" => $date->format('Y-m-d H:i:s'),
+                ];
+                $this->order_model->addBuyOrder($authOrderItem);
+            } else if ($type == '3') {  // 3-attraction
+                $area = explode('_', $areaid);
+                $areaItem = $this->area_model->getAreaById($area[0]);
+                if (count($areaItem) == 0) {
+                    $this->response(array('status' => false, 'result' => '-1'), 200);
+                    return;
+                }
+                $authOrderItem = [
+                    "value" => sprintf("%'.07d%'.04d", time() % 1e7, rand(1000, 9999)),
+                    "code" => round($cost * 100) / 100,
+                    "userphone" => $phone,
+                    "ordertype" => $type, // 3- attraction
+                    "status" => '2', // 2-ordered but unpaid
                     "areaid" => $area[0],
+                    "authid" => $shopid,
                     "attractionid" => $areaid,
                     "ordered_time" => $date->format('Y-m-d H:i:s'),
-                    "paid_time" => $date->format('Y-m-d H:i:s')
                 ];
-                $this->order_model->AddBuyOrder($authOrderItem);
-            } else {
-                $authOrderItem = [
-                    "code" => $cost,
-                    "userphone" => $phone,
-                    "status" => '1',
-                    "areaid" => $areaid,
-                    "ordertype" => '1',
-                    "paid_time" => $date->format('Y-m-d H:i:s')
-                ];
-                if(!$this->order_model->AddAuthOrder($authOrderItem))
-                    $this->response(array('status' => false, 'result' => '-1'), 200);
+                $this->order_model->addBuyOrder($authOrderItem);
+            } else { // 4-authorization code
+                if ($shopid != '') {
+                    $areaItem = $this->area_model->getAreaById($areaid);
+                    $authOrderItem = [
+                        "code" => $areaid,
+                        "userphone" => $phone,
+                        "ordertype" => $type, // 4-authorization
+                        "status" => '1', // ordered and paid
+                        "authid" => $shopid,
+                        "paid_time" => $date->format('Y-m-d H:i:s')
+                    ];
+                    $result = $this->order_model->addAuthOrder($authOrderItem);
+                    if ($result == 0) {
+                        $this->response(array('status' => false, 'result' => '-1'), 200);
+                    } else {
+                        $this->response(array('status' => true, 'result' => $authOrderItem['code']), 200);
+                    }
+                }
+                return;
             }
-            $this->response(array('status' => true, 'result' => '1'), 200);
+            $this->response(array('status' => true, 'result' => $authOrderItem['value']), 200);
         }
     }
 
+    public function setPayOrder_post()
+    {
+        $request = $this->post();
+        $value = $request['id'];// areaid  or courseid or attractionid
+        //$value = explode("_", $value);
+        //$value = $value[0];
+        $phone = $request['phone'];
+        $shopid = $request['shop'];
+        $qr_areaid = $request['qr_areaid'];
+        $cost = $request['cost'];
+
+//        $result[0]['state'] = 1;   // 1- paid
+        $result = $this->order_model->addPayOrder($value, $phone, $shopid, $qr_areaid, $cost);
+        if ($result == NULL) {
+            $this->response(array('status' => false, 'result' => '-1'), 200);
+        } else {
+            $this->response(array('status' => true, 'result' => $result[0]), 200);
+        }
+    }
+
+    public function setCancelOrder_post()
+    {
+        $request = $this->post();
+        $valueid = $request['id'];
+        $phone = $request['phone'];
+
+        $result = $this->order_model->cancelBuyOrder($valueid, $phone);
+        if ($phone == '' || $valueid == '') {
+            $this->response(array('status' => false, 'result' => '-1'), 200);
+        } else if (count($result) == 0) {
+            $this->response(array('status' => false, 'result' => '-1'), 200);
+        } else {
+            $this->response(array('status' => true, 'result' => $result), 200);
+        }
+    }
 }
 
 /* End of file Areas.php */

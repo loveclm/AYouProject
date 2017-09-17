@@ -22,7 +22,7 @@ class collection_model extends CI_Model
 
         $query = $this->db->get();
         $result = $query->result();
-        $retData='';
+        $retData = NULL;
         if (count($result) == 0) {
             return '';
         } else {
@@ -42,12 +42,14 @@ class collection_model extends CI_Model
      * This function is used to get all Tourist Area
      * @return array $result : This is result
      */
-    function getBuyOrderPaid($mobile)
+    function getBuyOrderPaid($mobile, $shopid = '')
     {
-        $this->db->select('*');
+        $this->db->select('code');
         $this->db->from('tbl_order');
         $this->db->where('userphone', $mobile);
-        $this->db->where('ordertype','1');
+        if ($shopid != '')
+            $this->db->where('authid', $shopid);
+        $this->db->where("ordertype <> '4'");
         $qresult = $this->db->count_all_results();
 
         return $qresult;
@@ -57,12 +59,15 @@ class collection_model extends CI_Model
      * This function is used to get all Tourist Area
      * @return array $result : This is result
      */
-    function getAuthOrderPaid($mobile)
+    function getAuthOrderPaid($mobile, $shopid = '')
     {
-        $this->db->select('*');
-        $this->db->from('tbl_order');
+        $this->db->select('od.code');
+        $this->db->from('tbl_order as od');
+        $this->db->join('tbl_authcode as au', 'od.authid = au.id');
+        if ($shopid != '')
+            $this->db->where('au.shopid', $shopid);
         $this->db->where('userphone', $mobile);
-        $this->db->where('ordertype', '2');
+        $this->db->where('ordertype', '4');
         $qresult = $this->db->count_all_results();
         return $qresult;
     }
@@ -71,7 +76,7 @@ class collection_model extends CI_Model
      * This function is used to get all Tourist Area
      * @return array $result : This is result
      */
-    function getTotalPaid($id)
+    function getTotalPaid($id, $shopid = '')
     {
         return ($this->getAuthOrderPaid($id) + $this->getBuyOrderPaid($id));
     }

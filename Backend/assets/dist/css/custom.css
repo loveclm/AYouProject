@@ -14,6 +14,9 @@
 .area-search-control-view button{
     width: 80px;
 }
+.table-bordered>tbody>tr>td{
+    border: 1px solid #b0b0b0;
+}
 .alert{
     padding: 6px;
     margin-bottom: 10px;
@@ -80,6 +83,9 @@
 .custom-info-row {
     padding-bottom: 10px;
 }
+.custom-info-row select{
+    height:27px;
+}
 .custom-course-itemlist-view {
     padding: 0px;
     border: 0px solid;
@@ -97,3 +103,20 @@
 #custom-generate-qr-view {
     padding: 5px;
 }
+
+#tip {
+    background-color: transparent;
+    border: transparent;
+    padding: 0 0px;
+    position: relative;
+    font-size: inherit;
+    left: 0px;
+    top: 0px;
+    border-radius: 3px;
+    line-height: 36px;
+}
+#tip select{
+    width:100px;
+    height:35px;
+}
+

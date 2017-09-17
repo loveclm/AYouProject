@@ -9,7 +9,7 @@
     <section class="content" style="min-height: 800px;">
         <div class="container">
             <div class="row">
-                <div class="col-xs-6 col-sm-4 form-inline">
+                <div class="col-xs-6 col-sm-6 form-inline">
                     <div class="form-group area-search-name-view">
                         <label>旅游线路名称</label>
                         <input type="text" id="searchName" value="<?php echo $searchName == 'all' ? '': $searchName; ?>" class="form-control">
@@ -17,12 +17,12 @@
 
                 </div>
 
-                <div class="col-xs-6 col-sm-4 form-inline">
+                <div class="col-xs-6 col-sm-2 form-inline">
                     <div class="form-group">
                         <select class="form-control" id="searchStatus">
                             <option value="0" <?php if ($searchStatus == 0) echo ' selected'?>>状态</option>
-                            <option value="1" <?php if ($searchStatus == 1) echo ' selected'?>>未上架</option>
-                            <option value="2" <?php if ($searchStatus == 2) echo ' selected'?>>已上架</option>
+                            <option value="2" <?php if ($searchStatus == 2) echo ' selected'?>>未上架</option>
+                            <option value="1" <?php if ($searchStatus == 1) echo ' selected'?>>已上架</option>
                         </select>
                     </div>
                 </div>
@@ -46,12 +46,12 @@
                     <tr style="background-color: lightslategrey;">
                         <th>旅游线路名称</th>
                         <th width="">具体线路</th>
-                        <th width="100">价格</th>
-                        <th width="100">状态</th>
-                        <th width="150">操作</th>
+                        <th width="">价格</th>
+                        <th width="">状态</th>
+                        <th width="">操作</th>
                     </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="content_tbl">
                     <?php
                     $courseCount = count($courseList);
 
@@ -72,10 +72,10 @@
                         <tr>
                             <td><?php echo ($course->name);?></td>
                             <td><?php echo $courseName;?></td>
-                            <td><?php echo $course->price;?></td>
+                            <td><?php echo floatval($course->price)*floatval($course->discount_rate);?></td>
                             <td><?php echo $course->status == 1 ? '已上架': '未上架'; ?></td>
                             <td>
-                                <a href="editcourse/<?php echo $course->id;?>">查看 &nbsp;</a>
+                                <a href="<?php echo base_url();?>editcourse/<?php echo $course->id;?>">查看 &nbsp;</a>
                                 <?php
                                 if($course->status == 0){
                                     ?>
@@ -100,21 +100,21 @@
                 <div class="form-group">
                     <div id="custom-confirm-delete-view" style="display:none;">
                         <p>
-                            是否要删除此景区？
+                            是否要删除此线路？
                         </p>
                         <div class="form-group">
-                            <button onclick="deleteArea('<?php echo base_url(); ?>', 0);">取消</button>
-                            <button onclick="deleteArea('<?php echo base_url(); ?>', 1);">确定</button>
+                            <button class="btn btn-default" onclick="deleteArea('<?php echo base_url(); ?>', 0);">取消</button>
+                            <button class="btn btn-primary" onclick="deleteArea('<?php echo base_url(); ?>', 1);">确定</button>
                         </div>
 
                     </div>
                     <div id="custom-confirm-deploy-view" style="display:none;">
-                        <p>
-                            是否要上架此景区？
+                        <p id="deployMessage">
+                            是否要上架此线路？
                         </p>
                         <div class="form-group">
-                            <button onclick="deployArea('<?php echo base_url(); ?>', 0);">取消</button>
-                            <button onclick="deployArea('<?php echo base_url(); ?>', 1);">确定</button>
+                            <button class="btn btn-default" onclick="deployArea('<?php echo base_url(); ?>', 0);">取消</button>
+                            <button class="btn btn-primary" onclick="deployArea('<?php echo base_url(); ?>', 1);">确定</button>
                             <input id="current-areaid" style="display: none;"/>
                             <input id="current-areastatus" style="display: none;"/>
                         </div>

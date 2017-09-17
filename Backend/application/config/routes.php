@@ -60,6 +60,7 @@ $route['shop'] = 'shop';
 $route['addshop'] = 'shop/addShop';
 $route['shopListing/(:any)/(:num)'] = "shop/shoplisting/$1/$2";
 $route['editshop/(:any)'] = 'shop/editshop/$1';
+$route['showshop/(:any)'] = 'shop/showshop/$1';
 
 $route['qrmanage'] = 'qrmanage';
 $route['qrListing/(:any)/(:num)'] = "qrmanage/qrlisting/$1/$2";
@@ -76,7 +77,15 @@ $route['orderListing/(:num)/(:any)/(:any)/(:any)/(:num)'] = 'ordermanage/authLis
 
 $route['settlemanage'] = 'settlemanage';
 $route['settlebuyListing/(:num)/(:any)/(:any)/(:any)'] = 'settlemanage/buyListing/$1/$2/$3/$4';
-$route['settleorderListing/(:num)/(:any)/(:any)/(:any)'] = 'settlemanage/authListing/$1/$2/$3/$4';
+$route['settleAuthListing/(:num)/(:any)/(:any)/(:any)'] = 'settlemanage/authListing/$1/$2/$3/$4';
+$route['settleBuyDetail/(:num)/(:any)/(:any)/(:any)/(:num)'] = 'settlemanage/settleBuyDetail/$1/$2/$3/$4/$5';
+$route['settleAuthDetail/(:num)/(:any)/(:any)/(:any)/(:num)'] = 'settlemanage/settleAuthDetail/$1/$2/$3/$4/$5';
+$route['performBuySettle/(:any)/(:num)'] = 'settlemanage/performBuySettle/$1/$2';
+$route['performAuthSettle/(:any)/(:num)/(:num)'] = 'settlemanage/performAuthSettle/$1/$2/$3';
+
+$route['Wxpay'] = 'Wxpay';
+$route['Wxpay/confirm/(:any)'] = 'Wxpay/confirm/$1';
+$route['Wxpay/pay_callback'] = 'Wxpay/pay_callback';
 
 $route['usermanage'] = 'usermanage';
 $route['userCoListing/(:num)/(:any)'] = 'usermanage/userCollectListing/$1/$2';

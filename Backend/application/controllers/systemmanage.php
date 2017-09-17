@@ -45,22 +45,21 @@ class systemmanage extends BaseController
             $this->loadThis();
         } else {
             $searchText = $this->input->post('searchText');
-            $data['searchText'] = $searchText;
+            $searchStatus = $this->input->post('searchStatus');
 
             $this->load->library('pagination');
 
             $count = $this->user_model->userListingCount($searchText);
 
-            $returns = $this->paginationCompress("userListing/", $count, 5);
+            $returns = $this->paginationCompress("userListing/", $count, 10);
 
-            $data['userRecords'] = $this->user_model->userListing($searchText, $returns["page"], $returns["segment"]);
+            $data['userRecords'] = $this->user_model
+                ->userListing($searchText, $searchStatus, $returns["page"], $returns["segment"]);
 
             $this->global['pageTitle'] = '人员管理';
             $this->global['pageType'] = 'user';
-            $this->global['areaList'] = $this->area_model->getAreas($name, $address, $status);
-            $this->global['searchName'] = $name;
-            $this->global['searchAddress'] = $address;
-            $this->global['searchStatus'] = $status;
+            $data['searchText'] = $searchText;
+            $data['searchStatus'] = $status;
 
             $this->loadViews("systemusermanage", $this->global, $data, NULL);
         }
@@ -153,17 +152,18 @@ class systemmanage extends BaseController
                 $this->global['roleId'] = $roleId;
                 $this->addNew();
             } else {
-                $userInfo = array('email' => $email, 'password' => getHashedPassword($password), 'roleId' => $roleId + 1, 'name' => $name,
+                $userInfo = array('email' => $email, 'password' => getHashedPassword($password), 'roleId' => $roleId, 'name' => $name,
                     'mobile' => $mobile, 'createdBy' => $this->vendorId, 'createdDtm' => date('Y-m-d H:i:s'));
 
                 $result = $this->user_model->addNewUser($userInfo);
 
                 if ($result > 0) {
-                    $this->session->set_flashdata('success', '新用户创建成功.');
+                    $this->session->set_flashdata('success', '添加人员成功.');
+                    redirect('addNew');
                 } else {
-                    $this->session->set_flashdata('error', '用户创建失败.');
+                    $this->session->set_flashdata('error', '添加人员失败. 此帐户已存在!');
+                    redirect('addNew');
                 }
-                redirect('addNew');
             }
         }
     }
@@ -179,17 +179,17 @@ class systemmanage extends BaseController
             $roleName = $this->input->post('roleName');
             $result = $this->user_model->findRole($roleName);
             if (count($result) > 0) {
-                $this->session->set_flashdata('error', '角色创建失败.');
+                $this->session->set_flashdata('error', '添加角色失败.此角色已存在!');
                 echo(json_encode(array('status' => FALSE)));
                 return;
             }
 
             $result = $this->user_model->addNewRole($roleName);
             if ($result > 0) {
-                $this->session->set_flashdata('success', '新角色创建成功.');
+                $this->session->set_flashdata('success', '添加角色成功.');
                 echo(json_encode(array('status' => TRUE)));
             } else {
-                $this->session->set_flashdata('error', '角色创建失败.');
+                $this->session->set_flashdata('error', '添加角色失败!');
                 echo(json_encode(array('status' => FALSE)));
             }
         }
@@ -207,15 +207,15 @@ class systemmanage extends BaseController
             $permission = $this->input->post('permission');
 
             $result = $this->user_model->getRoleById($roleId);
-            $roleInfo=$result[0];
+            $roleInfo = $result[0];
             $roleInfo->permission = $permission;
             $result = $this->user_model->updateRole($roleInfo, $roleId);
 
             if ($result == true) {
-                $this->session->set_flashdata('success', '用户更新成功.');
+                $this->session->set_flashdata('success', '修改角色成功.');
                 echo(json_encode(array('status' => TRUE)));
             } else {
-                $this->session->set_flashdata('error', '用户更新失败.');
+                $this->session->set_flashdata('error', '修改角色失败.');
                 echo(json_encode(array('status' => FALSE)));
             }
 
@@ -266,6 +266,7 @@ class systemmanage extends BaseController
 //            $this->form_validation->set_rules('mobile','Mobile Number','required|min_length[10]|xss_clean');
 
             $name = ucwords(strtolower($this->input->post('fname')));
+            $name = ucwords(strtolower($this->input->post('fname')));
             $email = $this->input->post('email');
             $password = $this->input->post('password');
             $cpassword = $this->input->post('cpassword');
@@ -282,10 +283,10 @@ class systemmanage extends BaseController
                 $userInfo = array();
 
                 if (empty($password)) {
-                    $userInfo = array('email' => $email, 'roleId' => $roleId + 1, 'name' => $name,
+                    $userInfo = array('email' => $email, 'roleId' => $roleId, 'name' => $name,
                         'mobile' => $mobile, 'updatedBy' => $this->vendorId, 'updatedDtm' => date('Y-m-d H:i:s'));
                 } else {
-                    $userInfo = array('email' => $email, 'password' => getHashedPassword($password), 'roleId' => $roleId + 1,
+                    $userInfo = array('email' => $email, 'password' => getHashedPassword($password), 'roleId' => $roleId,
                         'name' => ucwords($name), 'mobile' => $mobile, 'updatedBy' => $this->vendorId,
                         'updatedDtm' => date('Y-m-d H:i:s'));
                 }
@@ -293,10 +294,10 @@ class systemmanage extends BaseController
                 $result = $this->user_model->editUser($userInfo, $userId);
 
                 if ($result == true) {
-                    $this->session->set_flashdata('success', '用户更新成功.');
+                    $this->session->set_flashdata('success', '修改账号成功.');
                     echo(json_encode(array('status' => TRUE)));
                 } else {
-                    $this->session->set_flashdata('error', '用户更新失败.');
+                    $this->session->set_flashdata('error', '修改账号失败.');
                     echo(json_encode(array('status' => FALSE)));
                 }
 
@@ -311,14 +312,20 @@ class systemmanage extends BaseController
      */
     function deleteUser($id)
     {
-        if ($this->isAdmin() == TRUE) {
-            echo(json_encode(array('status' => 'access')));
+        if ($this->isAdmin() == TRUE || $id == 1) {
+            $this->loadThis();
+            //echo(json_encode(array('status' => 'access')));
         } else {
             $userId = $id;
-            $userInfo = array('isDeleted' => 1, 'updatedBy' => $this->vendorId, 'updatedDtm' => date('Y-m-d H:i:s'));
+            $userInfo = array(
+                'email' => '',
+                'isDeleted' => 1,
+                'roleId' => 0,
+                'updatedBy' => $this->vendorId,
+                'updatedDtm' => date('Y-m-d H:i:s')
+            );
 
             $result = $this->user_model->deleteUser($userId, $userInfo);
-
             if ($result > 0) {
                 echo(json_encode(array('status' => TRUE)));
             } else {
@@ -395,11 +402,11 @@ class systemmanage extends BaseController
                 $result = $this->user_model->changePassword($this->vendorId, $usersData);
 
                 if ($result > 0) {
-                    $this->session->set_flashdata('success', '密码更新成功.');
+                    $this->session->set_flashdata('success', '修改密码成功.');
                     echo(json_encode(array('status' => TRUE)));
                     redirect('logout');
                 } else {
-                    $this->session->set_flashdata('error', '密码更新失败.');
+                    $this->session->set_flashdata('error', '修改密码失败.');
                     echo(json_encode(array('status' => FALSE)));
                 }
 
@@ -424,10 +431,10 @@ class systemmanage extends BaseController
         $result = $this->user_model->changePassword($id, $usersData);
 
         if ($result > 0) {
-            $this->session->set_flashdata('success', '密码更新成功.');
+            $this->session->set_flashdata('success', '修改密码成功.');
             echo(json_encode(array('status' => TRUE)));
         } else {
-            $this->session->set_flashdata('error', '密码更新失败.');
+            $this->session->set_flashdata('error', '修改密码失败.');
             echo(json_encode(array('status' => FALSE)));
         }
 

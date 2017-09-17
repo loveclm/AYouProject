@@ -16,6 +16,7 @@ class Shops extends REST_Controller
 
         $this->load->model('shop_model');
         $this->load->model('auth_model');
+        $this->load->model('user_model');
     }
 
     public function index_get()
@@ -42,19 +43,58 @@ class Shops extends REST_Controller
 
         if (!$id) {
             $new_id = $this->shop_model->add($this->post());
-            $this->response(array('status' => true, 'id' => $new_id, 'message' => sprintf('Area #%d has been created.', $new_id)), 200);
+            $this->response(array('status' => true, 'id' => $new_id, 'message' => sprintf('新增景区成功.', $new_id)), 200);
         } else {
             $this->shop_model->update($this->post(), $id);
-            $this->response(array('status' => true, 'message' => sprintf('Area #%d has been updated.', $id)), 200);
+            $this->response(array('status' => true, 'message' => sprintf('修改景区成功.', $id)), 200);
+        }
+    }
+
+    public function saveAccount_post($id = NULL)
+    {
+        $newShop = $this->post();
+        $date_now=new DateTime();
+        $newAccount = [
+            "email"=>$newShop['phonenumber'],
+            "name"=>$newShop['name'],
+            "password"=>getHashedPassword($newShop['password']),
+            "roleId"=>2, // shop manager
+            "isDeleted"=>0, //0-available, 1-deleted
+            "createdBy"=>1, // 1- created by admin
+            "createdDtm"=>date_format($date_now,"Y-m-d H:i:s"), // 1- created by admin
+        ];
+        if (!$id) {
+            $new_id = $this->user_model->addNewUser($newAccount);
+            if($new_id == 0) {
+                $this->response(array('status' => false, 'id' => 0, 'message' => sprintf('此账号已存在.', $new_id)), 200);
+            }else {
+                $new_id = $this->shop_model->add($newShop);
+                $this->response(array('status' => true, 'id' => $new_id, 'message' => sprintf('新增商家成功.', $new_id)), 200);
+            }
+        } else {
+            $new_id = $this->user_model->updateUser($newAccount, $newAccount['email']);
+            $this->shop_model->update($this->post(), $id);
+            $this->response(array('status' => true, 'message' => sprintf('修改商家成功.', $id)), 200);
         }
     }
 
     public function remove_post($id = NULL)
     {
-        if ($this->shop_model->delete($id)) {
-            $this->response(array('status' => true, 'message' => sprintf('Area #%d has been deleted.', $id)), 200);
+        $newShop = $this->shop_model->getShopById($id);
+        $date_now = new DateTime();
+        $newAccount = [
+            "email"=>$newShop->phonenumber,
+            "name"=>$newShop->name,
+            "password"=>getHashedPassword($newShop->password),
+            "roleId"=>2, // shop manager
+            "isDeleted"=>1, //0-available, 1-deleted
+            "createdBy"=>1, // 1- created by admin
+            "updatedDtm"=>date_format($date_now,"Y-m-d H:i:s"), // 1- updated by admin
+        ];
+        if ($this->shop_model->delete($id) && $this->user_model->updateUser($newAccount, $newAccount['email'])) {
+            $this->response(array('status' => true, 'message' => sprintf('景区删除成功.', $id)), 200);
         } else {
-            $this->response(array('status' => false, 'error_message' => 'This Area does not exist!'), 404);
+            $this->response(array('status' => false, 'error_message' => '景区没有了!'), 200);
         }
     }
 
@@ -79,18 +119,18 @@ class Shops extends REST_Controller
             $date = new DateTime();
             $authOrderItem = array(
                 "authid" => sprintf("%d", $authid),
-                "value" => sprintf("%'.02d%'.08d", '12', $init['num'] + $i),
+                "value" => sprintf("%'.07d%'.04d", time()%1e7,rand(1000,9999)),
                 "userphone" => '0',
                 "areaid" => $authInfo['targetid'],
                 "status" => '0',
-                "code" => sprintf("%'.03d%'.03d%'.05d", $authInfo['shopid'], $authInfo['targetid'], $init['code'] + $i),
+                "code" => sprintf("%'.03d%'.03d%'.06d", $authInfo['shopid'], $authInfo['targetid'], $init['code'] + $i),
                 "ordered_time" => $date->format('Y-m-d H:i:s'),
-                "ordertype" => '2'
+                "ordertype" => '4'
             );
 
             $this->shop_model->addAuthOrder($authOrderItem);
         }
-        $this->response(array('status' => true, 'message' => sprintf('Authcode #%d has been created.', $authInfo['codecount'])), 200);
+        $this->response(array('status' => true, 'message' => sprintf('新增授权码成功.', $authInfo['codecount'])), 200);
     }
 
     public function generateQR_post($id = NULL)
@@ -108,7 +148,7 @@ class Shops extends REST_Controller
         );
 
         $this->shop_model->addQR($authItem);
-        $this->response(array('status' => true, 'message' => sprintf('QRcode has been created.')), 200);
+        $this->response(array('status' => true, 'message' => sprintf('新增二维码成功.')), 200);
     }
 
 ////////////////////// External Rest APIs

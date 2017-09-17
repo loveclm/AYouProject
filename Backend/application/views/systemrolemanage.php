@@ -21,24 +21,28 @@
                     <table class="table area-result-view table-bordered table-hover">
                         <thead>
                         <tr style="background-color: lightslategrey;">
-                            <th width="100">序号</th>
+                            <th width="">序号</th>
                             <th>用户角色</th>
-                            <th width="150">功能设置</th>
-                            <th width="250">操作</th>
+                            <th width="">功能设置</th>
+                            <th width="">操作</th>
                         </tr>
                         </thead>
                         <tbody>
                         <?php
                         if (!empty($userRecords)) {
-                            $i=0;
+                            $i = 0;
                             foreach ($userRecords as $record) {
+                                $roleusers = $this->user_model->getAllUsers($record->roleId);
+                                if (count($roleusers) > 0) $roleStatus = 1;
+                                else $roleStatus = 0;
+                                if($record->roleId==2) continue;
                                 $i++;
                                 ?>
                                 <tr>
                                     <td><?php echo $i ?></td>
                                     <td><?php echo $record->role ?></td>
                                     <div id="permission<?php echo $record->roleId ?>"
-                                         style="display: none"><?php echo isset($record->permission)?$record->permission:''; ?></div>
+                                         style="display: none"><?php echo isset($record->permission) ? $record->permission : ''; ?></div>
                                     <td class="text-center">
                                         <a href="#"
                                            onclick="showRoleEdit('<?php echo $record->roleId; ?>');">
@@ -46,8 +50,9 @@
                                         </a>
                                     </td>
                                     <td class="text-center">
-                                        <a href="#" data-userid="<?php echo $record->roleId; ?>"
-                                           onclick="confirmDelete('<?php echo $record->roleId; ?>')">
+                                        <a href="#" style="<?= ($roleStatus == 1) ? 'color:grey;' : ''; ?>"
+                                           data-userid="<?php echo $record->roleId; ?>"
+                                           onclick="<?= ($roleStatus != 1) ? ('confirmDelete(\''. $record->roleId.' \')') : ''; ?>">
                                             删除 &nbsp;
                                         </a>
                                     </td>
@@ -64,8 +69,10 @@
                                 <label>确定删除？</label>
                             </div>
                             <div class="form-group">
-                                <button onclick="$('#custom-confirm-delete-view').hide();">取消</button>
-                                <button onclick="deleteRole('<?php echo base_url(); ?>');">确定</button>
+                                <button class="btn btn-default" onclick="$('#custom-confirm-delete-view').hide();">取消
+                                </button>
+                                <button class="btn btn-primary" onclick="deleteRole('<?php echo base_url(); ?>');">确定
+                                </button>
                                 <div id="roleId" style="display: none;"></div>
                             </div>
                         </div>
@@ -75,8 +82,11 @@
                                 <input id="rolename" type="text" maxlength="20"/>
                             </div>
                             <div class="form-group">
-                                <button onclick="$('#custom-generate-auth-count-view').hide();">取消</button>
-                                <button onclick="addRole('<?php echo base_url(); ?>' );">确认</button>
+                                <button class="btn btn-default" onclick="$('#custom-generate-auth-count-view').hide();">
+                                    取消
+                                </button>
+                                <button class="btn btn-primary" onclick="addRole('<?php echo base_url(); ?>' );">确认
+                                </button>
                             </div>
                             <div class="form-group alert-danger" id="alertmsg" style="display: none;"></div>
                         </div>
@@ -109,8 +119,11 @@
                                 </div>
                             </div>
                             <div class="form-group" style="text-align: center">
-                                <button onclick="$('#custom-generate-auth-view').hide();">取消</button>
-                                <button onclick="updateRole('<?php echo base_url(); ?>', '<?php echo $role; ?>' );">确认</button>
+                                <button class="btn btn-default" onclick="$('#custom-generate-auth-view').hide();">取消
+                                </button>
+                                <button class="btn btn-primary"
+                                        onclick="updateRole('<?php echo base_url(); ?>', '<?php echo $role; ?>' );">确认
+                                </button>
                             </div>
                             <div class="form-group alert-danger" id="alertmsg" style="display: none;"></div>
                         </div>

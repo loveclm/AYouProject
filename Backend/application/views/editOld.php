@@ -35,19 +35,19 @@ if(!empty($userInfo))
                             <div class="row">
                                 <div class="col-md-12 form-inline">
                                     <div class="form-group" style="margin-bottom: 10px;">
-                                        <label for="fname" >&nbsp;&nbsp;&nbsp;*账 号 &nbsp;:&nbsp;</label>
+                                        <label for="email">&nbsp;&nbsp;&nbsp;*账 号 &nbsp;:&nbsp;</label>
+                                        <input type="text" class="form-control required email" id="email"
+                                               name="email" maxlength="128" value="<?php echo isset($email)?$email:''; ?>">
+                                    </div>
+                                </div>
+                                <div class="col-md-12 form-inline">
+                                    <div class="form-group" style="margin-bottom: 10px;">
+                                        <label for="fname" >&nbsp;&nbsp;&nbsp;*姓 名 &nbsp;:&nbsp;</label>
                                         <input type="text" class="form-control required" id="fname" name="fname"
                                                maxlength="128" value="<?php echo isset($name)?$name:''; ?>">
                                         <input type="hidden" value="<?php echo $userId; ?>" name="userId" id="userId" />
                                     </div>
 
-                                </div>
-                                <div class="col-md-12 form-inline">
-                                    <div class="form-group" style="margin-bottom: 10px;">
-                                        <label for="email">&nbsp;&nbsp;&nbsp;*姓 名 &nbsp;:&nbsp;</label>
-                                        <input type="text" class="form-control required email" id="email"
-                                               name="email" maxlength="128" value="<?php echo isset($email)?$email:''; ?>">
-                                    </div>
                                 </div>
                             </div>
                             <div class="row">
@@ -78,15 +78,15 @@ if(!empty($userInfo))
                                     <div class="form-group" style="margin-bottom: 10px;">
                                         <label for="role">*用户角色 &nbsp;:&nbsp;</label>
                                         <select class="form-control required" id="role" name="role">
-                                            <option value="0">请选择</option>
                                             <?php
                                             if (!empty($roles)) {
                                                 $i=0;
                                                 foreach ($roles as $rl) {
                                                     $i++;
+                                                    //if($i==1) continue;
                                                     ?>
-                                                    <option <?php echo isset($roleId)?($i==($roleId-1)?'selected':''):''; ?>
-                                                        value="<?php echo $i; ?>"><?php echo $rl->role ?></option>
+                                                    <option <?php echo isset($roleId)?($rl->roleId==$roleId?' selected ':''):' '; ?>
+                                                        value="<?php echo $rl->roleId; ?>"><?php echo $rl->role ?></option>
                                                     <?php
                                                 }
                                             }
@@ -122,6 +122,9 @@ if(!empty($userInfo))
                         <div class="alert alert-success alert-dismissable">
                             <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
                             <?php echo $this->session->flashdata('success'); ?>
+                            <input id="success_alert"
+                                   value="<?php echo $this->session->flashdata('success'); ?>"
+                                style="display: block;">
                         </div>
                     <?php } ?>
 

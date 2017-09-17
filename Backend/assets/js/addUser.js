@@ -1,46 +1,67 @@
 /**
  * File : addUser.js
- * 
+ *
  * This file contain the validation of add user form
- * 
+ *
  * Using validation plugin : jquery.validate.js
- * 
+ *
  * @author Kishor Mali
  */
 
 //return previos page
 function cancel(url) {
-	if (url == '')
-		window.history.back();
-	else
-		location.href = url + 'userListing';
+    if (url == '')
+        window.history.back();
+    else
+        location.href = url + 'userListing';
 }
 
-$(document).ready(function(){
+$(document).ready(function () {
 
-	
-	//var addUserForm = $("#addUser");
+});
 
-	//var validator = addUserForm.validate({
-/*
-		rules:{
-			fname :{ required : true },
-//			email : { required : true, email : true, remote : { url : baseURL + "checkEmailExists", type :"post"} },
-			email : { required : true, email : false, remote : { url : baseURL + "checkEmailExists", type :"post"} },
-			password : { required : true },
-			cpassword : {required : true, equalTo: "#password"},
-//			mobile : { required : true, digits : true },
-			role : { required : true, selected : true}
-		},
-		messages:{
-			fname :{ required : decodeURIComponent(escape('?????????20?????????????????')) },
-			email : { required : "?????",remote : "???20??????????" },
-			password : { required : "????????6-20??" },
-			cpassword : {required : "?????", equalTo: "??6-20????????????????????" },
-//			mobile : { required : "This field is required", digits : "Please enter numbers only" },
-			role : { required : "???????????", selected : "???????????" }
-		}
- */
-	//});
+function addSystem_User() {
+    var email = $('#email').val();
+    var fname = $('#fname').val();
+    var password = $('#password').val();
+    var cpassword = $('#cpassword').val();
+    var mobile = $('#mobile').val();
+    var role = $('#role :selected').val();
+
+    $.ajax({
+        type: 'POST',
+        url: url + 'systemmanage/addNewUser',
+        dataType: 'json',
+        data: {
+            email: email,
+            fname: fname,
+            password: password,
+            cpassword: cpassword,
+            mobile: mobile,
+            role: role
+        },
+        success: function (data, textStatus, jqXHR) {
+            if (JSON.parse(data['status']))
+                window.alert("添加人员成功.");
+            location.href = baseURL + "userListing";
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            // Handle errors here
+            console.log('ERRORS: ' + textStatus);
+            // STOP LOADING SPINNER
+        }
+    });
+}
+
+$(window).load(function (){
+
+    setTimeout(function () {
+        var status = $("#success_message").val();
+        console.log(status);
+        if (status == "添加人员成功.") {
+            window.alert("添加人员成功.");
+            location.href = baseURL + "userListing";
+        }
+    },100);
 
 });

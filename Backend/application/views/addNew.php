@@ -9,25 +9,26 @@
             <div class="row">
                 <!-- left column -->
                 <div class="col-md-4">
-                        <!-- form start -->
-                        <form role="form" id="addUser" action="<?php echo base_url() ?>addNewUser" method="post"
-                              role="form">
+                    <!-- form start -->
+                    <form role="form" id="addUser" action="<?php echo base_url(); ?>addNewUser" method="post">
+<!--                        <form role="form" id="addUser" action="" method="">-->
                             <div class="box-body">
                                 <div class="row">
                                     <div class="col-md-12 form-inline">
                                         <div class="form-group" style="margin-bottom: 10px;">
-                                            <label for="fname" >&nbsp;&nbsp;&nbsp;*账 号 &nbsp;:&nbsp;</label>
-                                            <input type="text" class="form-control required" id="fname" name="fname"
-                                                   maxlength="128" value="<?php echo isset($fname)?$fname:''; ?>">
+                                            <label for="email">&nbsp;&nbsp;&nbsp;*账 号 &nbsp;:&nbsp;</label>
+                                            <input type="text" class="form-control required email" id="email"
+                                                   name="email" maxlength="12"
+                                                   value="<?php echo isset($email) ? $email : ''; ?>">
                                         </div>
-
                                     </div>
                                     <div class="col-md-12 form-inline">
                                         <div class="form-group" style="margin-bottom: 10px;">
-                                            <label for="email">&nbsp;&nbsp;&nbsp;*姓 名 &nbsp;:&nbsp;</label>
-                                            <input type="text" class="form-control required email" id="email"
-                                                   name="email" maxlength="128" value="<?php echo isset($email)?$email:''; ?>">
+                                            <label for="fname">&nbsp;&nbsp;&nbsp;*姓 名 &nbsp;:&nbsp;</label>
+                                            <input type="text" class="form-control required" id="fname" name="fname"
+                                                   maxlength="128" value="<?php echo isset($fname) ? $fname : ''; ?>">
                                         </div>
+
                                     </div>
                                 </div>
                                 <div class="row">
@@ -35,14 +36,16 @@
                                         <div class="form-group" style="margin-bottom: 10px;">
                                             <label for="password">&nbsp;&nbsp;&nbsp;*密 码 &nbsp;:&nbsp;</label>
                                             <input type="password" class="form-control required" id="password"
-                                                   name="password" maxlength="20" value="<?php echo isset($password)?$password:''; ?>">
+                                                   name="password" maxlength="20"
+                                                   value="<?php echo isset($password) ? $password : ''; ?>">
                                         </div>
                                     </div>
                                     <div class="col-md-12 form-inline">
                                         <div class="form-group" style="margin-bottom: 10px;">
                                             <label for="cpassword">*确认密码 &nbsp;:&nbsp;</label>
                                             <input type="password" class="form-control required equalTo" id="cpassword"
-                                                   name="cpassword" maxlength="20" value="<?php echo isset($cpassword)?$cpassword:''; ?>">
+                                                   name="cpassword" maxlength="20"
+                                                   value="<?php echo isset($cpassword) ? $cpassword : ''; ?>">
                                         </div>
                                     </div>
                                 </div>
@@ -58,15 +61,15 @@
                                         <div class="form-group" style="margin-bottom: 10px;">
                                             <label for="role">*用户角色 &nbsp;:&nbsp;</label>
                                             <select class="form-control required" id="role" name="role">
-                                                <option value="0">请选择</option>
                                                 <?php
                                                 if (!empty($roles)) {
-                                                    $i=0;
+                                                    $i = 0;
                                                     foreach ($roles as $rl) {
                                                         $i++;
+                                                        //if($i==1) continue;
                                                         ?>
-                                                        <option <?php echo isset($roleId)?($i==$roleId?'selected':''):''; ?>
-                                                            value="<?php echo $i; ?>"><?php echo $rl->role ?></option>
+                                                        <option <?php echo isset($roleId) ? ($rl->roleId == 1 ? 'selected' : '') : ''; ?>
+                                                                value="<?php echo $rl->roleId; ?>"><?php echo $rl->role ?></option>
                                                         <?php
                                                     }
                                                 }
@@ -80,7 +83,8 @@
 
                             <div class="">
                                 <input type="submit" class="btn btn-primary" value="确认"/>
-                                <input type="reset" class="btn btn-default" value="取消" onclick="cancel('<?php echo base_url();?>');" />
+                                <input type="reset" class="btn btn-default" value="取消"
+                                       onclick="cancel('<?php echo base_url(); ?>');"/>
                             </div>
                         </form>
                 </div>
@@ -99,9 +103,10 @@
                     $success = $this->session->flashdata('success');
                     if ($success) {
                         ?>
-                        <div class="alert alert-success alert-dismissable">
+                        <div class="alert alert-success alert-dismissable" style="display:none;">
                             <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-                            <?php echo $this->session->flashdata('success'); ?>
+                            <input type="text" value="<?php echo $this->session->flashdata('success'); ?>"
+                                   id="success_message" style="display:none;">
                         </div>
                     <?php } ?>
 
