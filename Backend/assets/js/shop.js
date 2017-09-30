@@ -266,7 +266,8 @@ function generateAuth(url, confirm) {
 function showQR(url_suffix) {
     $('#custom-generate-qr-view').show();
     console.log('http://www.ayoubc.com/tour' + encodeURI(url_suffix));
-    $('#qr-view').qrcode({text: 'http://www.ayoubc.com/tour/index.php' + url_suffix});
+//    $('#qr-view').qrcode({text: 'http://www.ayoubc.com/tour/index.php' + url_suffix});
+    $('#qr-view').qrcode({text: 'http://www.ayoubc.com/test01' + url_suffix});
 }
 
 function generateAuthFinal(url, confirm) {

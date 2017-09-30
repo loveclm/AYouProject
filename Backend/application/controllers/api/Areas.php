@@ -126,8 +126,9 @@ class Areas extends REST_Controller
         $uploaddir = 'uploads/';
         $tt = time();
         $ext = explode(".", $_FILES[0]['name']);
+        $len = count($ext);
         $nn = rand(1000, 9999);
-        $filename = 'ayoubc' . $nn . $tt . '.' . $ext[1];
+        $filename = 'ayoubc' . $nn . $tt . '.' . $ext[$len - 1];
 //        var_dump($_FILES);
         foreach ($_FILES as $file) {
 //            if (move_uploaded_file($file['tmp_name'], $uploaddir . (basename($file['name'])))) {
@@ -212,7 +213,7 @@ class Areas extends REST_Controller
                                 'name' => $areaData->name,
                                 'cost' => round((floatval($areaData->price) -
                                             floatval($this->order_model->calculateMyPrice($phone, $areaData->id))) *
-                                         100) / 100,
+                                        100) / 100,
                                 'discount_rate' => $areaData->discount_rate,
                                 'origin_price' => $areaData->price,
                                 'attractionCnt' => count(json_decode($areaData->point_list))
@@ -549,6 +550,21 @@ class Areas extends REST_Controller
         if ($phone == '' || $valueid == '') {
             $this->response(array('status' => false, 'result' => '-1'), 200);
         } else if (count($result) == 0) {
+            $this->response(array('status' => false, 'result' => '-1'), 200);
+        } else {
+            $this->response(array('status' => true, 'result' => $result), 200);
+        }
+    }
+
+    public function testingAjax_post()
+    {
+        $request = $this->post();
+        $data = $request['data'];
+        for ($i = 0; $i < 1; $i++) {
+            $result = $this->shop_model->add($data);
+            if ($result == 0) break;
+        }
+        if ($result == 0) {
             $this->response(array('status' => false, 'result' => '-1'), 200);
         } else {
             $this->response(array('status' => true, 'result' => $result), 200);

@@ -121,10 +121,10 @@ class shop extends BaseController
             $output_html .= '<td>';
             $output_html .= '<a href="' . base_url() . 'showshop/' . $shop->id . '">查看 &nbsp;&nbsp;</a>';
             $output_html .= '<a href="' . base_url() . 'editshop/' . $shop->id . '">编辑 &nbsp;&nbsp;</a>';
-            if ($shop->status == '0') {
+            if ($shop->status == 1) {
                 $output_html .= '<a href="#" onclick="deleteShopConfirm(' . $shop->id . ')">删除 &nbsp;&nbsp;</a>';
             }
-            if ($shop->status == '0') {
+            if ($shop->status == 0) {
                 $output_html .= '<a href="#" onclick="deployShopConfirm(' . $shop->id . ')">禁用 &nbsp;&nbsp;</a>';
             } else {
                 $output_html .= '<a href="#" onclick="undeployShopConfirm(' . $shop->id . ')">取消禁用 &nbsp;&nbsp;</a>';

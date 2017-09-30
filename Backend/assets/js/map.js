@@ -5,6 +5,7 @@
 
 // variables for AMap
 var map = null; // AMap pointer
+var googleLayer;
 var state = 'new';
 // selected position
 var leftBottom = [116.391541, 39.913155];
@@ -59,6 +60,13 @@ function initMap(center) {
             getData(result.districtList[0]);
         }
     });
+
+    googleLayer = new AMap.TileLayer({
+        // 图块取图地址
+        tileUrl: 'https://mt{1,2,3,0}.google.cn/vt/lyrs=m@142&hl=zh-CN&gl=cn&x=[x]&y=[y]&z=[z]&s=Galil',
+        zIndex:100
+    });
+    googleLayer.setMap(map);
 
     //var mouseTool = new AMap.MouseTool(map); //在地图中添加MouseTool插件
     //var drawRectangle = mouseTool.rectangle(); //用鼠标工具画矩形
@@ -294,6 +302,13 @@ $(document).ready(function () {
             //]
         });
 
+        googleLayer = new AMap.TileLayer({
+            // 图块取图地址
+            tileUrl: 'https://mt{1,2,3,0}.google.cn/vt/lyrs=m@142&hl=zh-CN&gl=cn&x=[x]&y=[y]&z=[z]&s=Galil',
+            zIndex:100
+        });
+        googleLayer.setMap(map);
+
         imageLayer = new AMap.ImageLayer({
             url: url + 'uploads/' + overlay,
             bounds: new AMap.Bounds(
@@ -364,6 +379,14 @@ $(document).ready(function () {
             //    imageLayer
             //]
         });
+
+        googleLayer = new AMap.TileLayer({
+            // 图块取图地址
+            tileUrl: 'https://mt{1,2,3,0}.google.cn/vt/lyrs=m@142&hl=zh-CN&gl=cn&x=[x]&y=[y]&z=[z]&s=Galil',
+            zIndex:100
+        });
+        googleLayer.setMap(map);
+
         imageLayer = new AMap.ImageLayer({
             url: base_url + 'assets/images/bound.png',
             bounds: new AMap.Bounds(
@@ -669,6 +692,7 @@ $(document).ready(function () {
             contentType: false, // Set content type to false as jQuery will tell the server its a query string request
             success: function (data, textStatus, jqXHR) {
                 console.log(data);
+                $('#upload-point-audio').val('');
                 if (typeof data.error === 'undefined') {
                     if (data['status'] == true) {
                         $("#pointaudio").val(data['file']);

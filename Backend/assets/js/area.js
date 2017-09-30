@@ -90,43 +90,21 @@ function searchArea_jingqu(url) {
     });
 }
 
-function test_api111() {
-    var posi = [116.404845, 39.898345];
-    var id = '1200000018';
-    var phone = '12345678901';
-    $.ajax({
-        type: 'POST',
-        //url: 'http://www.ayoubc.com/backend/api/Areas/getMyAreaInfos',
-        url: 'http://192.168.2.18/backend/api/Areas/setPayOrder',
-        dataType: 'json',
-        username: 'admin',
-        password: '1234',
-        data: {
-            'pos': posi,
-            'id': id,
-            'phone': phone
-        },
-        success: function (data, textStatus, jqXHR) {
-            console.log(data);
-        },
-        error: function (jqXHR, textStatus, errorThrown) {
-            // Handle errors here
-            console.log('ERRORS: ' + textStatus);
-            // STOP LOADING SPINNER
-        }
-    });
-}
 
-function test_api() {
-    var posi = [116.404845, 39.898345];
+
+
+
+
+function test_api375456() {
+//    var posi = [116.404845, 39.898345];
     //var id = '00700100002';
 
-    var phone = '13130545612';
-    var cost = '1.5';
-    var type = '3';
-    var id = '56571463642';
-    var shopid = '18';
-    var qr_areaid = '81';
+    var phone = '18588209031';
+    var cost = 1;
+//    var type = '3';
+    var id = '67013054569';
+    var shopid = 26;
+    var qr_areaid = 111;
     $.ajax({
         type: 'POST',
         //url: 'http://www.ayoubc.com/backend/api/Areas/getAllCourseInfos',
@@ -142,10 +120,10 @@ function test_api() {
             'id': id,
             'phone': phone,
             'cost': cost,
-            'type': type,
+//            'type': type,
             'qr_areaid': qr_areaid,
             'shop': shopid,
-            'pos':posi
+//            'pos':posi
         },
         success: function (data, textStatus, jqXHR) {
             console.log(data);
@@ -158,7 +136,54 @@ function test_api() {
     });
 }
 
-function test_api33() {
+function test_api() {
+//    var posi = [116.404845, 39.898345];
+    //var id = '00700100002';
+
+    var data = [];
+    var success = 0;
+    var err = 0;
+    var time0 = parseInt(Date.now()) / 1000;
+    console.log('ajax start_time:' + time0+'s');
+    for (var i = 0; i < 500; i++) {
+        data[i] = {
+            'name': Math.round(Math.random() * 500 + 1).toString(5),
+            'phonenumber': Math.round(Math.random() * 500 + 1).toString(5),
+            'password': Math.round(Math.random() * 500 + 1).toString(5),
+            'address_1': '试听',
+        }
+//    }
+    console.log(data.length);
+        $.ajax({
+            type: 'POST',
+            url: 'http://192.168.2.203/backend/api/Areas/testingAjax',
+            dataType: 'json',
+            username: 'admin',
+            password: '1234',
+            data: {
+                'data': JSON.stringify(data),
+            },
+            success: function (data, textStatus, jqXHR) {
+                console.log(data);
+                success++;
+                var time1 = (parseInt(Date.now()) / 1000);
+
+                console.log('end time:' + time1 +'s,\nduration:' + (time1-time0) + 's,success:' + success + ',failed:' + err);
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                // Handle errors here
+                console.log('ERRORS: ' + textStatus);
+                // STOP LOADING SPINNER
+                err++;
+                var time1 = (parseInt(Date.now()) / 1000);
+
+                console.log('end time:' + time1 +',duration:' + (time1-time0) + ',success:' + success + ',failed:' + err);
+            }
+        });
+    }
+}
+
+function test_api2() {
     var posi = [116.404845, 39.898345];
     var id = '11';
     var phone = '24562456245';

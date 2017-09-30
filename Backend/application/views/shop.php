@@ -134,7 +134,7 @@
                                     <a href="<?php echo base_url(); ?>editshop/<?php echo $shop->id; ?>">编辑
                                         &nbsp;&nbsp;</a>
                                     <?php
-                                    if ($shop->status == 0) {
+                                    if ($shop->status == 1) {
                                         ?>
                                         <a href="#"
                                            onclick="deleteShopConfirm(<?php echo $shop->id; ?>);">删除 &nbsp;&nbsp;</a>

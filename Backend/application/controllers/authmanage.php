@@ -58,7 +58,7 @@ class authmanage extends BaseController
             }
             $this->global['authList'] = $authList;
             $this->global['searchType'] = $searchType;
-            $this->global['searchName'] = $name == 'ALL' ? '' : utf8_decode($name);
+            $this->global['searchName'] = $name == 'ALL' ? '' : $name;
             $this->global['searchStatus'] = $status;
             $this->loadViews("authmanage", $this->global, NULL, NULL);
         }

@@ -48,9 +48,9 @@
 $active_group = 'default';
 $active_record = TRUE;
 
-$db['default']['hostname'] = '127.0.0.1';
-$db['default']['username'] = 'root';
-$db['default']['password'] = '!@#456PassWord';
+$db['default']['hostname'] = '192.168.2.203';
+$db['default']['username'] = 'user203';
+$db['default']['password'] = 'user203';
 $db['default']['database'] = 'tour';
 $db['default']['dbdriver'] = 'mysqli';
 $db['default']['dbprefix'] = '';
@@ -63,6 +63,23 @@ $db['default']['dbcollat'] = 'utf8_unicode_ci';
 $db['default']['swap_pre'] = '';
 $db['default']['autoinit'] = TRUE;
 $db['default']['stricton'] = FALSE;
+
+
+$db['bk']['hostname'] = '192.168.2.204';
+$db['bk']['username'] = 'user204';
+$db['bk']['password'] = 'user204';
+$db['bk']['database'] = 'tour';
+$db['bk']['dbdriver'] = 'mysqli';
+$db['bk']['dbprefix'] = '';
+$db['bk']['pconnect'] = TRUE;
+$db['bk']['db_debug'] = TRUE;
+$db['bk']['cache_on'] = FALSE;
+$db['bk']['cachedir'] = '';
+$db['bk']['char_set'] = 'utf8';
+$db['bk']['dbcollat'] = 'utf8_unicode_ci';
+$db['bk']['swap_pre'] = '';
+$db['bk']['autoinit'] = TRUE;
+$db['bk']['stricton'] = FALSE;
 
 
 /* End of file database.php */

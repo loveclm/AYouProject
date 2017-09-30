@@ -123,7 +123,7 @@ class Shops extends REST_Controller
                 "userphone" => '0',
                 "areaid" => $authInfo['targetid'],
                 "status" => '0',
-                "code" => sprintf("%'.03d%'.03d%'.06d", $authInfo['shopid'], $authInfo['targetid'], $init['code'] + $i),
+                "code" => sprintf("%'.03d%'.03d%'.06d", rand(100,999), rand(100,999), intval($init['code']) + $i+rand(10000,99999)),
                 "ordered_time" => $date->format('Y-m-d H:i:s'),
                 "ordertype" => '4'
             );

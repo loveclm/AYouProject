@@ -32,9 +32,12 @@ class CI_Model {
 	 *
 	 * @access public
 	 */
+
 	function __construct()
 	{
 		log_message('debug', "Model Class Initialized");
+
+        $this->db_bk = $this->load->database('bk', TRUE);
 	}
 
 	/**
