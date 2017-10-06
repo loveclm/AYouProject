@@ -53,8 +53,8 @@ class login_controller extends CI_Controller
     {
         $this->load->library('form_validation');
 
-        $this->form_validation->set_rules('account', 'Account', 'required|max_length[20]|xss_clean|trim');
-        $this->form_validation->set_rules('password', 'Password', 'required|max_length[20]|');
+        $this->form_validation->set_rules('account', '账号', 'required|max_length[20]|xss_clean|trim');
+        $this->form_validation->set_rules('password', '密码', 'required|max_length[20]|');
 
         if ($this->form_validation->run() == FALSE) {
             $this->index();
@@ -83,7 +83,7 @@ class login_controller extends CI_Controller
                         redirect('/qrmanage');
                 }
             } else {
-                $this->session->set_flashdata('error', 'Account or password mismatch');
+                $this->session->set_flashdata('error', '帐户或密码不匹配。');
 
                 redirect('/loginMe');
             }

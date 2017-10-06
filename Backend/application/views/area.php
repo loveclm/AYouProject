@@ -2,7 +2,7 @@
     <!-- Content Header (Page header) -->
     <section class="content-header">
         <h1>
-            <a href="#" onclick="test_api();">景区管理</a>
+            <a href="#" onclick="test_api();">景区列表</a>
         </h1>
     </section>
 
@@ -28,7 +28,7 @@
                         ?>
                         <select id='province' onchange='search(this)'></select>
                         <select id='city' onchange='search(this)'></select>
-                        <select id='district' onchange='search(this)'></select>
+                        <select id='district' onchange='search(this)' style="display: none"></select>
                         <select id='street' onchange='setCenter(this)' style="display: none;"></select>
 
                         <div id="provinceName"

@@ -90,7 +90,7 @@
                                 </div>
                                 <div class="pull-right">
                                     <a href="<?php echo base_url(); ?>logout" class="btn btn-default btn-flat"><i
-                                            class="fa fa-sign-out"></i>登出</a>
+                                                class="fa fa-sign-out"></i>登出</a>
                                 </div>
                             </li>
                         </ul>
@@ -111,8 +111,25 @@
                 <li class="treeview"
                     style="<?php echo(($menu_acc != '') ? ($menu_acc->p_10 == '1' ? '' : 'display:none;') : 'display:none'); ?>">
                     <a href="<?php echo base_url(); ?>area">
-                        <i class="fa fa-dashboard"></i> <span>景区管理</span></i>
+                        <i class="fa fa-dashboard"></i>
+                        <span class="pull-right-container">景区管理
+                            <i class="fa fa-angle-left pull-right"></i>
+                        </span>
                     </a>
+                    <ul class="treeview-menu" style="display: none;">
+                        <li>
+                            <a href="<?php echo base_url(); ?>area">
+                                <i class="fa fa-circle-o"></i>
+                                国内景区
+                            </a>
+                        </li>
+                        <li>
+                            <a href="<?php echo base_url(); ?>area">
+                                <i class="fa fa-circle-o"></i>
+                                国外景区
+                            </a>
+                        </li>
+                    </ul>
                 </li>
                 <li class="treeview"
                     style="<?php echo(($menu_acc != '') ? ($menu_acc->p_20 == '1' ? '' : 'display:none;') : 'display:none'); ?>">
@@ -162,6 +179,29 @@
                         <span>用户管理</span>
                     </a>
                 </li>
+                <li class="treeview"
+                    style="<?php echo(($menu_acc != '') ? ($menu_acc->p_10 == '1' ? '' : 'display:none;') : 'display:none'); ?>">
+                    <a href="<?php echo base_url(); ?>area">
+                        <i class="fa fa-dashboard"></i>
+                        <span class="pull-right-container">地区管理
+                            <i class="fa fa-angle-left pull-right"></i>
+                        </span>
+                    </a>
+                    <ul class="treeview-menu" style="display: none;">
+                        <li>
+                            <a href="<?php echo base_url(); ?>address_inside">
+                                <i class="fa fa-circle-o"></i>
+                                国内地区
+                            </a>
+                        </li>
+                        <li>
+                            <a href="<?php echo base_url(); ?>address_outside">
+                                <i class="fa fa-circle-o"></i>
+                                国外地区
+                            </a>
+                        </li>
+                    </ul>
+                </li>
 
                 <?php
                 if ($role == ROLE_ADMIN) {
@@ -199,7 +239,8 @@
                     </a>
                 </li>
             </ul>
-            <input id="page_type_name" value="<?php echo isset($page_type_name)?$page_type_name:'';?>" style="display: none;"/>
+            <input id="page_type_name" value="<?php echo isset($page_type_name) ? $page_type_name : ''; ?>"
+                   style="display: none;"/>
         </section>
         <!-- /.sidebar -->
     </aside>

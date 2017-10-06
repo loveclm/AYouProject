@@ -48,9 +48,9 @@
 $active_group = 'default';
 $active_record = TRUE;
 
-$db['default']['hostname'] = '192.168.2.203';
-$db['default']['username'] = 'user203';
-$db['default']['password'] = 'user203';
+$db['default']['hostname'] = 'localhost';
+$db['default']['username'] = 'root';
+$db['default']['password'] = 'password';
 $db['default']['database'] = 'tour';
 $db['default']['dbdriver'] = 'mysqli';
 $db['default']['dbprefix'] = '';
@@ -63,7 +63,6 @@ $db['default']['dbcollat'] = 'utf8_unicode_ci';
 $db['default']['swap_pre'] = '';
 $db['default']['autoinit'] = TRUE;
 $db['default']['stricton'] = FALSE;
-
 
 $db['bk']['hostname'] = '192.168.2.204';
 $db['bk']['username'] = 'user204';

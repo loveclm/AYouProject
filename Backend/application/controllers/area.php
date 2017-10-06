@@ -26,7 +26,7 @@ class area extends BaseController
      */
     public function index()
     {
-        $this->global['pageTitle'] = '景区管理';
+        $this->global['pageTitle'] = '景区列表';
         $this->global['areaList'] =$this->area_model->getAreas();
         $this->global['searchName'] = '';
         $this->global['searchAddress'] = '';
@@ -45,7 +45,7 @@ class area extends BaseController
         }
         else
         {
-            $this->global['pageTitle'] = '景区管理';
+            $this->global['pageTitle'] = '景区列表';
             $this->global['areaList'] =$this->area_model->getAreas($name, $address, $status);
             $this->global['searchName'] = $name;
             $this->global['searchAddress'] = $address;

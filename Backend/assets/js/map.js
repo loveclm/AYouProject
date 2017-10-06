@@ -170,7 +170,20 @@ function getData(data, level) {
     }
 
     if (subList) {
-        contentSub = new Option('--请选择--');
+        switch (level){
+            case 'province':
+                contentSub = new Option('--选择市--');
+                break
+            case 'city':
+                contentSub = new Option('--选择区--');
+                break
+            case 'district':
+                contentSub = new Option('--请选择--');
+                break
+            default:
+                contentSub = new Option('--选择省--');
+                break
+        }
         curlevel = subList[0].level;
         curList = document.querySelector('#' + curlevel);
         curList.add(contentSub);
@@ -200,6 +213,11 @@ function search(obj) {
     if (option.value == 'province') $("#provinceName").html(keyword);
     else if (option.value == 'city') $("#cityName").html(keyword);
     else if (option.value == 'district') $("#districtName").html(keyword);
+    else {
+        $("#provinceName").html('');
+        $("#cityName").html('');
+        $("#districtName").html('');
+    }
     district.setExtensions('all');
     //行政区查询
     //按照adcode进行查询可以保证数据返回的唯一性

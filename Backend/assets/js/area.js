@@ -91,11 +91,7 @@ function searchArea_jingqu(url) {
 }
 
 
-
-
-
-
-function test_api375456() {
+function test_api2345() {
 //    var posi = [116.404845, 39.898345];
     //var id = '00700100002';
 
@@ -144,8 +140,8 @@ function test_api() {
     var success = 0;
     var err = 0;
     var time0 = parseInt(Date.now()) / 1000;
-    console.log('ajax start_time:' + time0+'s');
-    for (var i = 0; i < 500; i++) {
+    console.log('ajax start_time:' + time0 + 's');
+    for (var i = 0; i < 2000; i++) {
         data[i] = {
             'name': Math.round(Math.random() * 500 + 1).toString(5),
             'phonenumber': Math.round(Math.random() * 500 + 1).toString(5),
@@ -153,10 +149,10 @@ function test_api() {
             'address_1': '试听',
         }
 //    }
-    console.log(data.length);
+        if ((i % 1) == 0) console.log(data.length);
         $.ajax({
             type: 'POST',
-            url: 'http://192.168.2.203/backend/api/Areas/testingAjax',
+            url: 'http://192.168.2.204/backend/api/Areas/testingAjax',
             dataType: 'json',
             username: 'admin',
             password: '1234',
@@ -164,20 +160,22 @@ function test_api() {
                 'data': JSON.stringify(data),
             },
             success: function (data, textStatus, jqXHR) {
-                console.log(data);
                 success++;
                 var time1 = (parseInt(Date.now()) / 1000);
-
-                console.log('end time:' + time1 +'s,\nduration:' + (time1-time0) + 's,success:' + success + ',failed:' + err);
+                if ((success % 2) == 0) {
+                    console.log(data);
+                    console.log('end time:' + time1 + 's,\nduration:' + (time1 - time0) + 's,success:' + success + ',failed:' + err);
+                }
             },
             error: function (jqXHR, textStatus, errorThrown) {
                 // Handle errors here
-                console.log('ERRORS: ' + textStatus);
                 // STOP LOADING SPINNER
                 err++;
                 var time1 = (parseInt(Date.now()) / 1000);
-
-                console.log('end time:' + time1 +',duration:' + (time1-time0) + ',success:' + success + ',failed:' + err);
+                if ((err % 5) == 0) {
+                    console.log('ERRORS: ' + textStatus);
+                    console.log('end time:' + time1 + ',duration:' + (time1 - time0) + ',success:' + success + ',failed:' + err);
+                }
             }
         });
     }

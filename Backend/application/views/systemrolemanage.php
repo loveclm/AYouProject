@@ -139,7 +139,7 @@
 <script type="text/javascript" src="<?php echo base_url(); ?>assets/js/sysrole.js" charset="utf-8"></script>
 <script type="text/javascript">
     jQuery(document).ready(function () {
-        $('.treeview-menu').show();
+        //$('.treeview-menu').show();
         jQuery('ul.pagination li a').click(function (e) {
             e.preventDefault();
             var link = jQuery(this).get(0).href;
