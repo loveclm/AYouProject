@@ -73,7 +73,7 @@ function display_tourism_data(){
 function showcourse(index){
     //sessionStorage.setItem('targetid', tourism_list[index]['id']);
     var shop_id = sessionStorage.getItem('shopid');
-    window.location.href = 'tourism.php?shopid=' + shop_id + "&targetid=" + tourism_list[index]['id'];
+    window.location.href = 'tourism.php?shopid=\'' + shop_id + "\'&targetid=" + tourism_list[index]['id'];
 }
 
 function resize_tourism_course(){

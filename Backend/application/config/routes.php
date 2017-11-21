@@ -51,6 +51,11 @@ $route['editarea/(:any)'] = 'area/edit/$1';
 $route['addNewArea'] = 'area/addNewArea';
 $route['areaListing/(:any)/(:any)/(:num)'] = "area/listing/$1/$2/$3";
 
+$route['area_foreign'] = 'area_foreign';
+$route['addarea_foreign'] = 'area_foreign/addNew';
+$route['editarea_foreign/(:any)'] = 'area_foreign/edit/$1';
+$route['addNewArea_foreign'] = 'area_foreign/addNewArea';
+$route['areaListing_foreign/(:any)/(:any)/(:num)'] = "area_foreign/listing/$1/$2/$3";
 
 $route['address_inside'] = 'address_inside';
 $route['address_outside'] = 'address_outside';

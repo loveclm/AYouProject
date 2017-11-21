@@ -70,12 +70,12 @@
                                         <a href="<?php echo base_url() . 'editOld/' . $record->userId; ?>">
                                             编辑 &nbsp;
                                         </a>
-                                        <a href="#"
+                                        <a
                                            data-userid="<?php echo $record->userId; ?>"
                                            onclick="confirmDelete('<?php echo $record->userId; ?>')">
                                             删除 &nbsp;
                                         </a>
-                                        <a href="#" data-userid="<?php echo $record->userId; ?>"
+                                        <a  data-userid="<?php echo $record->userId; ?>"
                                            onclick="confirmPassword('<?php echo $record->userId; ?>')">
                                             重置密码 &nbsp;
                                         </a>

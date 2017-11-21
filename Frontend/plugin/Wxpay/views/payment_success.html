@@ -10,7 +10,7 @@
     <meta name="format-detection" content="telephone=no">
 
     <link rel="stylesheet" type="text/css" href="../css/bootstrap.min.css"/>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="css/font-awesome/css/font-awesome.min.css">
     <link rel="stylesheet" href="../css/AdminLTE.min.css">
     <link rel="stylesheet" href="../css/skins/_all-skins.min.css">
     <link rel="stylesheet" href="../css/style.css">
@@ -54,12 +54,38 @@
     </div>
 </body>
 <script type="text/javascript">
+    var payment_data = null;
     $(function () {
         var payment_data = sessionStorage.getObject('payment_data');
         $('#money').html('¥' + parseFloat(payment_data['real_cost']).toFixed(2));
+        if(payment_data['type'] == 1)
+            $('#btn_jump h4').html('查看线路');
     })
     function enterOrder() {
-        window.location.href = 'order_detail.html';
+        var payment_data = sessionStorage.getObject('payment_data');
+        var shopid = parseInt(sessionStorage.getItem('shopid'));
+        if(parseInt(payment_data['type']) == 1)
+            window.location.href = '../tourism_new.php?shopid=' + shopid + "&targetid=" + payment_data['id'] + "&map_type=0";
+        else
+            window.location.href = 'order_detail.html';
     }
 </script>
+<div class="modal custom-modal" id="message_dialog">
+    <div class="modal-dialog" id="alert_message_dialog">
+        <div class="modal-content" style="border-radius: 12px;">
+            <div class="modal-body" style="padding-bottom: 0px;">
+            </div>
+            <div class="modal-footer" style="border: none; padding-top: 0px;">
+                <button id="msg_cancel" type="button" class="btn_custom btn-default"
+                        onclick="$('#message_dialog').modal('hide');">取消
+                </button>
+                <button id="msg_ok" type="button" class="btn_custom"
+                        onclick="onOk()">确定
+                </button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
 </html>

@@ -1,16 +1,14 @@
 <div class="content-wrapper">
     <!-- Content Header (Page header) -->
     <section class="content-header">
-        <h1>
-            <a href="#" onclick="test_api();">国内地区</a>
-        </h1>
+        <h1 id="page_Id">国内地区</h1>
     </section>
 
     <section class="content" style="min-height: 800px;">
         <div class="container">
             <div class="row">
 
-                <div class="col-xs-12 col-sm-5 form-inline">
+                <div class="col-xs-12 col-sm-4 form-inline">
                     <div id="tip" class="form-group area-search-area-view">
                         <?php
 
@@ -42,20 +40,23 @@
                     </div>
                 </div>
 
-                <div class="col-xs-12 col-sm-7 form-inline">
+                <div class="col-xs-12 col-sm-8 form-inline">
                     <div class="form-group area-search-control-view">
                         <div class="form-inline" style="display: inline-block">
-                            <input id="area_name" class="form-control" type="text" placeholder="输入需要关联为线路热门的景区"
-                                   value="" style="width:250px"/>
+                            <select class=" select2 select2-hidden-accessible form-control"
+                                    id="area_name" data-placeholder="输入需要关联为线路热门的景区"
+                                    style="width: 200px;" tabindex="-1" aria-hidden="true">
+                            </select>
                             <span class="fa fa-search"
-                                  style="float: right;position: absolute;right: 31%;bottom: 8px;font-size: large;"
-                            onclick="searchArea_jingqu('<?php echo base_url(); ?>')"></span>
+                                  style="float: right;position: absolute;right: 140px;bottom: 8px;font-size: large;">
+                            </span>
                         </div>
-                        <a href="#" class="btn btn-primary"
-                           onclick="searchArea_jingqu('<?php echo base_url(); ?>');">确定</a>
-                        <a href="#" class="btn btn-primary"
+                        <a class="btn btn-primary"
+                           onclick="deployAreaConfirm_jingqu(2,3);">确定</a>
+                        <a class="btn btn-primary"
                            onclick="searchArea_jingqu('<?php echo base_url(); ?>');">查询</a>
                     </div>
+
                 </div>
             </div>
         </div>
@@ -96,6 +97,8 @@
             </div>
 
         </div>
+        <input id="hotCourseArea" value='<?php echo $hot_area->hot_area_course; ?>' style="display: none">
+        <input id="areaSearchList" value='<?php echo json_encode($area_search_list); ?>' style="display: none">
     </section>
 </div>
 <script type="text/javascript" src="<?php echo base_url(); ?>assets/js/address_inside.js" charset="utf-8"></script>

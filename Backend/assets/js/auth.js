@@ -33,10 +33,6 @@ function searchAuth(url) {
             }
         }
     });
-
-
-
-
 }
 
 // Search course on Course List Page

@@ -580,8 +580,8 @@ function addPointFromArea(url) {
                 "<input style='display: none;' value='" + pointImage + "'/>" +
                 "<input style='display: none;' value='" + pointAudio + "'/>" +
                 "<input style='display: none;' value='" + pointFree + "'/>" +
-                "<div class='col-sm-3' data-id='" + markerId + "' onclick='editPoint(this);'><a href='#'>编辑</a></div>" +
-                "<div class='col-sm-3' data-id='" + markerId + "' onclick='deletePoint(this);'><a href='#'>删除</a></div>" +
+                "<div class='col-sm-3' data-id='" + markerId + "' onclick='editPoint(this);'><a>编辑</a></div>" +
+                "<div class='col-sm-3' data-id='" + markerId + "' onclick='deletePoint(this);'><a >删除</a></div>" +
                 "</li>");
         }
     });
@@ -631,8 +631,8 @@ function addPoint(param) {
                 "<input style='display: none;' value='" + pointImage + "'/>" +
                 "<input style='display: none;' value='" + pointAudio + "'/>" +
                 "<input style='display: none;' value='" + pointFree + "'/>" +
-                "<div class='col-sm-3' data-id='" + markerId + "' onclick='editPoint(this);'><a href='#'>编辑</a></div>" +
-                "<div class='col-sm-3' data-id='" + markerId + "' onclick='deletePoint(this);'><a href='#'>删除</a></div>" +
+                "<div class='col-sm-3' data-id='" + markerId + "' onclick='editPoint(this);'><a>编辑</a></div>" +
+                "<div class='col-sm-3' data-id='" + markerId + "' onclick='deletePoint(this);'><a>删除</a></div>" +
                 "</li>");
         }
         else {

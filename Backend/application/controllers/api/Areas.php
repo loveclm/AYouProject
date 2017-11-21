@@ -114,37 +114,126 @@ class Areas extends REST_Controller
                 $this->response(array('status' => true, 'message' => sprintf('Area #%d has been deleted.', $id)), 200);
             } else {
 
-                $this->response(array('status' => false, 'error_message' => 'This Area does not exist!'), 404);
+                $this->response(array('status' => false, 'message' => 'This Area does not exist!'), 404);
             }
         }
     }
 
     public function upload_post($id = NULL)
     {
-        $error = false;
-        $files = array();
-        $uploaddir = 'uploads/';
+        $ret = array(
+            'data' => '',
+            'status' => 'fail'
+        );
+        $upload_path = 'uploads';
         $tt = time();
         $ext = explode(".", $_FILES[0]['name']);
         $len = count($ext);
         $nn = rand(1000, 9999);
         $filename = 'ayoubc' . $nn . $tt . '.' . $ext[$len - 1];
-//        var_dump($_FILES);
-        foreach ($_FILES as $file) {
-//            if (move_uploaded_file($file['tmp_name'], $uploaddir . (basename($file['name'])))) {
-            if (move_uploaded_file($file['tmp_name'], $uploaddir . $filename)) {
-//                $files[] = $file['name'];
-                $files[] = $file['name'];
-            } else {
-                $error = true;
+        if (strtolower($ext[$len - 1]) == 'wav' || strtolower($ext[$len - 1]) == 'mp3') {
+            $files = array();
+            $error = false;
+            foreach ($_FILES as $file) {
+                if (move_uploaded_file($file['tmp_name'], $upload_path . '/' . $filename)) {
+                    $files[] = $file['name'];
+                } else {
+                    $error = true;
+                }
+                break;
             }
-            break;
-        }
-        if (!$error) {
-//            $this->response(array('status' => true, 'file' => $files[0]), 200);
-            $this->response(array('status' => true, 'file' => $filename, 'originfile' => $files[0]), 200);
+            if (!$error) {
+                $this->response(array('status' => true, 'file' => $filename, 'originfile' => $files[0]), 200);
+            } else {
+                $this->response(array('status' => false, 'message' => 'There was an error uploading your files!'), 404);
+            }
         } else {
-            $this->response(array('status' => false, 'error_message' => 'There was an error uploading your files!'), 404);
+
+
+            $config['upload_path'] = './' . $upload_path;
+            $config['allowed_types'] = 'jpg|png|gif|bmp';
+            $config['file_name'] = $filename;
+            $image_data = array();
+            $is_file_error = FALSE;
+            if (!$_FILES) {
+                $is_file_error = TRUE;
+            }
+            if (!$is_file_error) {
+
+                $this->load->library('upload', $config);
+                if (!$this->upload->do_upload(0)) {
+                } else {
+                    //store the file info
+                    $image_data = $this->upload->data();
+                    $config['image_library'] = 'gd2';
+                    $config['source_image'] = $image_data['full_path']; //get original image
+                    $config['maintain_ratio'] = FALSE;
+                    $config['width'] = 650;
+                    $config['height'] = 850;
+                    $this->load->library('image_lib', $config);
+                    $this->image_lib->resize();
+
+                    $ret['data'] = $image_data['file_name'];
+                    $ret['status'] = 'success';
+                }
+            }
+            //echo json_encode($ret);
+
+            if ($ret['status'] == 'success') {
+//            $this->response(array('status' => true, 'file' => $files[0]), 200);
+                $this->response(array('status' => true, 'file' => $filename, 'originfile' => $ret['data']), 200);
+            } else {
+                $this->response(array('status' => false, 'message' => 'There was an error uploading your files!'), 200);
+            }
+        }
+    }
+
+    public function imgupload_post()////Image resize
+    {
+        $ret = array(
+            'data' => '',
+            'status' => 'fail'
+        );
+        $upload_path = 'uploads';
+        $tt = time();
+        $ext = explode(".", $_FILES[0]['name']);
+        $len = count($ext);
+        $nn = rand(1000, 9999);
+        $filename = 'ayoubc' . $nn . $tt . '.' . $ext[$len - 1];
+        $config['upload_path'] = './' . $upload_path;
+        $config['allowed_types'] = 'jpg|png|gif|bmp';
+        $config['file_name'] = $filename;
+        $image_data = array();
+        $is_file_error = FALSE;
+        if (!$_FILES) {
+            $is_file_error = TRUE;
+        }
+        if (!$is_file_error) {
+
+            $this->load->library('upload', $config);
+            if (!$this->upload->do_upload(0)) {
+            } else {
+                //store the file info
+                $image_data = $this->upload->data();
+                $config['image_library'] = 'gd2';
+                $config['source_image'] = $image_data['full_path']; //get original image
+                $config['maintain_ratio'] = FALSE;
+                $config['width'] = 150;
+                $config['height'] = 150;
+                $this->load->library('image_lib', $config);
+                $this->image_lib->resize();
+
+                $ret['data'] = $image_data['file_name'];
+                $ret['status'] = 'success';
+            }
+        }
+        //echo json_encode($ret);
+
+        if ($ret['status'] == 'success') {
+//            $this->response(array('status' => true, 'file' => $files[0]), 200);
+            $this->response(array('status' => true, 'file' => $filename, 'originfile' => $ret['data']), 200);
+        } else {
+            $this->response(array('status' => false, 'message' => 'There was an error uploading your files!'), 200);
         }
     }
 
@@ -206,17 +295,21 @@ class Areas extends REST_Controller
                         $j++;
                         if ($j == 1) $name = $areaData->name;
                         else $name = $name . ' - ' . $areaData->name;
+                        $areaInfo = json_decode($areaData->info);
                         array_push(
                             $areas,
                             array(
                                 'id' => $areaData->id,
                                 'name' => $areaData->name,
+                                'image' => base_url() . 'uploads/' . $areaInfo->thumbnail,
+                                'overlay' => base_url() . 'uploads/' . $areaInfo->overay,
                                 'cost' => round((floatval($areaData->price) -
                                             floatval($this->order_model->calculateMyPrice($phone, $areaData->id))) *
                                         100) / 100,
                                 'discount_rate' => $areaData->discount_rate,
                                 'origin_price' => $areaData->price,
-                                'attractionCnt' => count(json_decode($areaData->point_list))
+                                'attractionCnt' => count(json_decode($areaData->point_list)),
+                                'map_type' => (intval($areaData->isforeign) - 1)
                             )
                         );
                     }
@@ -226,6 +319,7 @@ class Areas extends REST_Controller
                     $course_list,
                     array(
                         'id' => $item->id,
+                        'title' => $item->name,    //  $item->name || $name
                         'name' => $name,    //  $item->name || $name
                         'image' => base_url() . 'uploads/' . $courseInfo->overay,
                         'cost' => round((floatval($item->price) -
@@ -241,6 +335,193 @@ class Areas extends REST_Controller
             //var_dump($course_list);
             $this->response(array('status' => true, 'Courses' => $course_list), 200);
         }
+    }
+
+    public function getCourseInfoById_post()
+    {
+        $request = $this->post();
+        $phone = $request['phone'];
+        $courseId = $request['id'];
+        $all_courses = $this->area_model->getAreaById($courseId); // 1-available, 2-disable
+        if (count($all_courses) == 0) {
+            $this->response(array('status' => false, 'result' => '-1'), 200);
+        } else {
+            $i = 0;
+            $course_list = array();
+            $item = $all_courses;
+            if ($item->status == 0)
+                $this->response(array('status' => false, 'result' => '-1'), 200);
+            $all_areas = json_decode($item->point_list);
+            $courseInfo = json_decode($item->info);
+            $j = 0;
+            $name = '';
+            $areas = array();
+            if (count($all_areas) > 0) {
+                foreach ($all_areas as $areaItem) {
+                    $areaData = $this->area_model->getAreaById($areaItem->id);
+                    $j++;
+                    if ($j == 1) $name = $areaData->name;
+                    else $name = $name . ' - ' . $areaData->name;
+                    $areaInfo = json_decode($areaData->info);
+                    $thumb = base_url() . 'uploads/' . $areaInfo->thumbnail;
+                    if ($areaInfo->thumbnail == '')
+                        $thumb = '';
+                    array_push(
+                        $areas,
+                        array(
+                            'id' => $areaData->id,
+                            'name' => $areaData->name,
+                            'image' => $thumb,
+                            'overlay' => base_url() . 'uploads/' . $areaInfo->overay,
+//                            'cost' => round(floatval($this->order_model->calculateMyPrice($phone, $areaData->id)) *
+//                                    100) / 100,
+                            'cost' => round((floatval($areaData->price) -
+                                        floatval($this->order_model->calculateMyPrice($phone, $areaData->id))) *
+                                    100) / 100,
+                            'discount_rate' => $areaData->discount_rate,
+                            'origin_price' => $areaData->price,
+                            'attractionCnt' => count(json_decode($areaData->point_list)),
+                            'map_type' => (intval($areaData->isforeign) - 1)
+                        )
+                    );
+                }
+            }
+            $i++;
+            $course_list = array(
+                'id' => $item->id,
+                'title' => $item->name,    //  $item->name || $name
+                'name' => $name,    //  $item->name || $name
+                'image' => base_url() . 'uploads/' . $courseInfo->overay,
+//                'cost' => round(floatval($this->order_model->calculateMyPrice($phone, $item->id)) *
+//                        floatval($item->discount_rate) * 100) / 100,
+                'cost' => round((floatval($item->price) -
+                            floatval($this->order_model->calculateMyPrice($phone, $item->id))) *
+                        floatval($item->discount_rate) * 100) / 100,
+                'origin_price' => $item->price,
+                'discount_rate' => $item->discount_rate,
+                'scenic_areas' => $areas
+            );
+
+            //var_dump($course_list);
+            $this->response(array('status' => true, 'result' => $course_list), 200);
+        }
+    }
+
+    function getAllMenuInfos()
+    {
+        //       $request = $this->post();
+//        $searchText = isset($request['search_text'])?$request['search_text']:'';
+        $searchText = '';
+        // 1-txt(cont,country,name), 2-(1-available,2-disable), 3-(1-inside,2-foreign)
+        $all_menu = $this->area_model->getMenuList($searchText, 1, 0);
+        if (count($all_menu) == 0) {
+            //$this->response(array('status' => false, 'data' => '-1'), 200);
+            return array();
+        }
+        $ret_menu = array();
+        $menu1 = array();
+        $menu2 = array();
+        $menu3 = array();
+        $menu4 = array();
+        $olditem = $all_menu[0];
+        foreach ($all_menu as $item) {
+            if ($item->address_1 != $olditem->address_1) {
+                array_push($menu3, array('parent' => $olditem->address_1, 'child' => $menu4));
+                $menu4 = array();
+            }
+            if ($item->isforeign != $olditem->isforeign) {
+                array_push($menu2, array('parent' => '国内', 'child' => $menu3));
+                $menu3 = array();
+                $menu4 = array();
+            }
+            array_push($menu4, $item->name);
+            $olditem = $item;
+        }
+        array_push($menu3, array('parent' => $olditem->address_1, 'child' => $menu4));
+        if ($olditem->isforeign == 1)
+            array_push($menu2, array('parent' => '国内', 'child' => $menu3));
+        else
+            array_push($menu2, array('parent' => '国外', 'child' => $menu3));
+        array_push($ret_menu, $menu2[0]['child']);
+
+        $menu1 = array();
+        $menu2 = array();
+        $menu3 = array();
+        $menu4 = array();
+        $olditem = $all_menu[0];
+        foreach ($all_menu as $item) {
+            if ($item->address_1 != $olditem->address_1) {
+                array_push($menu3, array('parent' => $olditem->address_1, 'child' => $menu4));
+                $menu4 = array();
+            }
+            if ($item->address != $olditem->address) {
+                array_push($menu2, array('parent' => $olditem->address, 'child' => $menu3));
+                $menu3 = array();
+                $menu4 = array();
+            }
+            if ($item->isforeign != $olditem->isforeign) {
+                array_push($menu1, array('parent' => $olditem->address, 'child' => $menu2));
+                $menu2 = array();
+                $menu3 = array();
+                $menu4 = array();
+            }
+            array_push($menu4, $item->name);
+            $olditem = $item;
+        }
+        array_push($menu3, array('parent' => $olditem->address_1, 'child' => $menu4));
+        array_push($menu2, array('parent' => $olditem->address, 'child' => $menu3));
+        if ($olditem->isforeign == 1)
+            array_push($ret_menu, array());
+        else
+            array_push($ret_menu, $menu2);
+
+        return $ret_menu;
+        //$this->response(array('status' => true, 'data' => $ret_menu), 200);
+    }
+
+    public function getFirstDatas_post()
+    {
+        $return_data = array();
+        array_push($return_data, $this->getAllMenuInfos());
+
+        $ret_data = array();
+        $hot_datas = $this->area_model->getHotObjectList(0, '');
+        $hotCourses = $this->area_model->getHotObjectList(1, '');
+        $hotAreas = $this->area_model->getHotObjectList(2, '');
+        $hotAreaCourses = $this->area_model->getHotObjectList(3, '');
+        array_push($ret_data, $hot_datas);
+        array_push($ret_data, $hotCourses);
+        array_push($ret_data, $hotAreas);
+        array_push($ret_data, $hotAreaCourses);
+
+        array_push($return_data, $ret_data);
+
+        $this->response(array('status' => true, 'data' => $return_data), 200);
+    }
+
+    public function getHotObjectInfos_post()
+    {
+        $request = $this->post();
+        $searchText = (isset($request['search_text'])) ? $request['search_text'] : '';
+        $searchType = (isset($request['search_type'])) ? $request['search_type'] : '';
+
+        $ret_data = array();
+        $hotAreas = $this->area_model->getHotObjectList($searchType, $searchText);
+        array_push($ret_data, $hotAreas);
+
+        $this->response(array('status' => true, 'data' => $ret_data), 200);
+    }
+
+    public function getAreaCoursesByText_post()
+    {
+        $request = $this->post();
+        $searchText = (isset($request['search_text'])) ? $request['search_text'] : '';
+        $searchType = (isset($request['search_type'])) ? $request['search_type'] : '';
+
+        $hotAreas = $this->area_model->getObjectsByText($searchType, $searchText);
+        $ret_data = $hotAreas;
+
+        $this->response(array('status' => true, 'data' => $ret_data), 200);
     }
 
     public function getAllAreaInfos_post()
@@ -262,9 +543,12 @@ class Areas extends REST_Controller
                     array(
                         'id' => $item->id,
                         'name' => $item->name,
+                        'image' => base_url() . 'uploads/' . json_decode($item->info)->thumbnail,
+                        'overlay' => base_url() . 'uploads/' . json_decode($item->info)->overay,
                         'cost' => $item->price,
                         'discount_rate' => $item->discount_rate,
-                        'audio' => base_url() . 'uploads/' . $areainfo->audio
+                        'audio' => base_url() . 'uploads/' . $areainfo->audio,
+                        'map_type' => (intval($item->isforeign) - 1)
                     )
                 );
             }
@@ -346,15 +630,17 @@ class Areas extends REST_Controller
                         'areaid' => $item->id,
                         'id' => $lastOrder->id,
                         'name' => $item->name,
+                        'image' => base_url() . 'uploads/' . $area_info->thumbnail,
+                        'overlay' => base_url() . 'uploads/' . $area_info->overay,
                         'cost' => round((floatval($item->price) -
                                     floatval($this->order_model->calculateMyPrice($mobile, $item->id))) *
                                 floatval($item->discount_rate) * 100) / 100,
                         'paid_price' => $item->price,
                         'discount_rate' => $item->discount_rate,
-                        'image' => base_url() . 'uploads/' . $area_info->overay,
                         'order_time' => $lastOrder->ordered_time,
                         'state' => $status_ret,
-                        'type' => $item->type
+                        'type' => $item->type,
+                        'map_type' => (intval($item->isforeign) - 1)
                     )
                 );
             }
@@ -416,14 +702,14 @@ class Areas extends REST_Controller
                 'top_right' => ($itemInfo->position[1]),
                 'bottom_left' => ($itemInfo->position[0]),
                 'overlay' => base_url() . 'uploads/' . $itemInfo->overay,
-                'image' => base_url() . 'uploads/' . $itemInfo->overay,
+                'image' => base_url() . 'uploads/' . $itemInfo->thumbnail,
                 'audio' => base_url() . 'uploads/' . $itemInfo->audio,
-                'zoom' => '10',
                 'cost' => $item->price,
                 'discount_rate' => $item->discount_rate,
                 'attractionCnt' => count($attractionList),
                 'attractions' => $attractionList,
-                'zoom' => ($itemInfo->zoom)
+                'zoom' => ($itemInfo->zoom),
+                'map_type' => (intval($item->isforeign) - 1)
             ];
             $this->response(array('status' => true, 'CurArea' => $scenic_area), 200);
         }
@@ -437,7 +723,7 @@ class Areas extends REST_Controller
         $cost = $request['cost'];
         $type = $request['type'];
         $shopid = $request['shop'];
-
+        if ($shopid == 'null' || $shopid == '' || $shopid == 'undefined' || $shopid == null) $shopid = 0;
         $init['num'] = $this->auth_model->getCount() + 1;
         $date = new DateTime();
         if ($phone == '' || $type == '') {

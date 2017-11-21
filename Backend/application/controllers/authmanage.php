@@ -121,7 +121,7 @@ class authmanage extends BaseController
             $output_html .= '<td>';
             $output_html .= '<a href="' . base_url() . 'authDetail/' . $item->id . '/0">查看 &nbsp;</a>';
             if ($item->status == 0 && $this->global['shop_manager_number'] == '') {
-                $output_html .= '<a href="#" onclick="showSelect(' . $item->id . ')">付款方式 &nbsp;</a>';
+                $output_html .= '<a  onclick="showSelect(' . $item->id . ')">付款方式 &nbsp;</a>';
             }
             $output_html .= '</td>';
             $output_html .= '</tr>';

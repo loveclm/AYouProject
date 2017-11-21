@@ -22,6 +22,7 @@ class shop extends BaseController
         $this->load->model('order_model');
         $this->load->model('auth_model');
         $this->load->model('user_model');
+        $this->load->model('address_model');
         $this->isLoggedIn();
     }
 
@@ -72,9 +73,12 @@ class shop extends BaseController
     public function shop()
     {
         $this->global['pageTitle'] = '商家管理';
+        $this->global['countryList'] = $this->address_model->getCountryNameList();
+
         $this->global['shopList'] = $this->shop_model->getShops('','all',0,$this->global['shop_manager_number']);
         $this->global['areaList'] = $this->area_model->getAreas('', 'all', '1'); //1-available, 2-disable
-        $this->global['courseList'] = $this->area_model->getCourses('', '1'); //1-available, 2-disable
+        $this->global['courseList'] = $this->area_model->getCourses('', '1'); //1-available,
+
         $this->global['searchName'] = '';
         $this->global['searchAddress'] = '';
         $this->global['searchStatus'] = 0;
@@ -94,7 +98,7 @@ class shop extends BaseController
             $status = $_POST['status'];
             $address = $_POST['address'];
 
-            $shopList = $this->shop_model->getShops($name, $address, $status,$this->global['shop_manager_number']);
+            $shopList = $this->shop_model->getShops($name, $address, $status, $this->global['shop_manager_number']);
             $ret['data'] = $this->output_shop($shopList);
             $ret['status'] = 'success';
         }
@@ -108,7 +112,7 @@ class shop extends BaseController
         $shopCount = count($shopList);
         for ($i = 0; $i < $shopCount; $i++) {
             $shop = $shopList[$i];
-            if($shop->id==0) continue;
+            if ($shop->id == 0) continue;
 
             $output_html .= '<tr>';
             $output_html .= '<td>' . $shop->name . '</td>';
@@ -116,21 +120,21 @@ class shop extends BaseController
             $output_html .= '<td>' . $this->order_model->getAreaCountByShopId($shop->id, 1) . '</td>';
             $output_html .= '<td>' . $this->order_model->getAreaCountByShopId($shop->id, 2) . '</td>';
             $output_html .= '<td>' . $this->auth_model->getAuthCountByShopId($shop->id) . '</td>';
-            $output_html .= '<td>' . $shop->address_1 . '</td>';
+            $output_html .= '<td>' . ($shop->isforeign == 1 ? '中国' : $shop->address_1). '</td>';
             $output_html .= '<td>' . ($shop->status == 1 ? '已禁用' : '未禁用') . '</td>';
             $output_html .= '<td>';
             $output_html .= '<a href="' . base_url() . 'showshop/' . $shop->id . '">查看 &nbsp;&nbsp;</a>';
             $output_html .= '<a href="' . base_url() . 'editshop/' . $shop->id . '">编辑 &nbsp;&nbsp;</a>';
             if ($shop->status == 1) {
-                $output_html .= '<a href="#" onclick="deleteShopConfirm(' . $shop->id . ')">删除 &nbsp;&nbsp;</a>';
+                $output_html .= '<a  onclick="deleteShopConfirm(' . $shop->id . ')">删除 &nbsp;&nbsp;</a>';
             }
             if ($shop->status == 0) {
-                $output_html .= '<a href="#" onclick="deployShopConfirm(' . $shop->id . ')">禁用 &nbsp;&nbsp;</a>';
+                $output_html .= '<a  onclick="deployShopConfirm(' . $shop->id . ')">禁用 &nbsp;&nbsp;</a>';
             } else {
-                $output_html .= '<a href="#" onclick="undeployShopConfirm(' . $shop->id . ')">取消禁用 &nbsp;&nbsp;</a>';
+                $output_html .= '<a  onclick="undeployShopConfirm(' . $shop->id . ')">取消禁用 &nbsp;&nbsp;</a>';
             }
-            $output_html .= '<a href="#" onclick="showGenerateQR(' . $shop->id . ')">生成二维码 &nbsp;&nbsp;</a>';
-            $output_html .= '<a href="#" onclick="showGenerateAuth(' . $shop->id . ')">发放授权码 &nbsp;&nbsp;</a>';
+            $output_html .= '<a  onclick="showGenerateQR(' . $shop->id . ','.$shop->isforeign.')">生成二维码 &nbsp;&nbsp;</a>';
+            $output_html .= '<a  onclick="showGenerateAuth(' . $shop->id . ')">发放授权码 &nbsp;&nbsp;</a>';
 
             $output_html .= '</td>';
             $output_html .= '</tr>';
@@ -154,11 +158,13 @@ class shop extends BaseController
             $areaid = $list->targetid;
             $areaInfo = $this->area_model->getAreaById($areaid);
 
-            $info = array('target' => $areaInfo->name,
+            $info = array(
+                'target' => $areaInfo->name,
                 'shop' => $list->name,
                 'type' => $list->type == '1' ? '旅游线路' : '景区',
                 'time' => $list->created_time,
-                'id' => $list->id);
+                'id' => $list->id
+            );
             array_push($qrList, $info);
         }
 
@@ -180,6 +186,7 @@ class shop extends BaseController
         } else {
             $this->global['pageTitle'] = '新增商家';
             $this->global['areaList'] = $this->area_model->getAreas();
+            $this->global['countryList']=$this->address_model->getCountryNameList();
             $this->loadViews("shop-add", $this->global, NULL, NULL);
         }
     }
@@ -246,6 +253,7 @@ class shop extends BaseController
         } else {
             $this->global['pageTitle'] = '编辑商家';
             $this->global['shop'] = $this->shop_model->getShopById($id);
+            $this->global['countryList']=$this->address_model->getCountryNameList();
 
             $this->loadViews("shop-add", $this->global, NULL, NULL);
         }
@@ -268,7 +276,7 @@ class shop extends BaseController
                 $i = 0;
                 foreach ($auths as $authItem) {
                     $authCodes = $this->auth_model->getAuthOrdersByAuthId($authItem->id);
-                    if (count($authCodes)==0) continue;
+                    if (count($authCodes) == 0) continue;
                     foreach ($authCodes as $codeItem) {
                         $authcodelist[$i] = [
                             'id' => $i,

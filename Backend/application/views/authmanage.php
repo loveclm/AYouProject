@@ -88,7 +88,7 @@
                                 <?php
                                 if ($item->status == 0 && $shop_manager_number == '') {
                                     ?>
-                                    <a href="#" onclick="showSelect(<?php echo $item->id; ?>);"> 付款方式 &nbsp;</a>
+                                    <a  onclick="showSelect(<?php echo $item->id; ?>);"> 付款方式 &nbsp;</a>
                                     <?php
                                 }
                                 ?>

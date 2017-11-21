@@ -20,9 +20,18 @@ class shop_model extends CI_Model
         } elseif ($status == 2) {
             $this->db->where('status', 1);
         }
-        if ($address != 'all') {
-            $likeCriteria = "(address_1  LIKE '%" . $address . "%')";
-            $this->db->where($likeCriteria);
+        $addr = explode(',', $address);
+        if (count($addr) == 0) $addr = ['', ''];
+        if (count($addr) == 1) $addr[1] = '';
+        if ($addr[1] == '中国') {
+            $this->db->where('isforeign', 1);
+        } else {
+            if ($addr[0] != '') {
+                $this->db->where('address', $addr[0]);
+            }
+            if ($addr[1] != '') {
+                $this->db->where('address_1', $addr[1]);
+            }
         }
         if ($shopnumber != '')
             $this->db->where('phonenumber', $shopnumber);
@@ -87,26 +96,13 @@ class shop_model extends CI_Model
      */
     function add($shopInfo)
     {
-        $ran = rand(1, 10);
-        if ($ran < 50) {
-            $db = $this->db;
-        } else {
-            $db = $this->db_bk;
-        }
 
-        $db->where('address_1', '试听')
-            ->delete('shop');
-        $db->trans_start();
-        $shopInfo = json_decode($shopInfo);
-        foreach ($shopInfo as $item) {
-            $result = $db->insert('shop', $item);
-        }
+        $this->db->trans_start();
+        $this->db->insert('shop', $shopInfo);
+        $insert_id = $this->db->insert_id();
+        $this->db->trans_complete();
+        return $insert_id;
 
-        $insert_id = $db->insert_id();
-
-        $db->trans_complete();
-
-        return count($shopInfo);
     }
 
     /**

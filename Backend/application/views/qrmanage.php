@@ -80,8 +80,8 @@
                             <td><?php echo $qr['target']; ?></td>
                             <td><?php echo $qr['time']; ?></td>
                             <td>
-                                <a href="#"
-                                   onclick="showQR('<?php echo '?shopid=' . $qr['shopid'] .'&type=' . $qr['areatype'] . '&targetid=' . $qr['targetid']; ?>');">查看</a>
+                                <a onclick="showQR('<?php echo '?shopid=' . $qr['shopid'] . '&type=' . $qr['areatype']
+                                    . '&targetid=' . $qr['targetid'] . '&map_type=' . (intval($qr['isforeign']) - 1); ?>');">查看</a>
                             </td>
                         </tr>
                     <?php } ?>

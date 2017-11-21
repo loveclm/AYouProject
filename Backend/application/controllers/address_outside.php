@@ -27,6 +27,9 @@ class address_outside extends BaseController
     public function index()
     {
         $this->global['pageTitle'] = '国外地区';
+        $this->global['countryList']=$this->address_model->getCountryNameList();
+        $this->global['hot_area']=$this->address_model->getHotArea();
+        $this->global['area_search_list']=$this->address_model->getAreaSearchList();
         $this->loadViews("address_outside", $this->global, NULL, NULL);
     }
 
@@ -38,12 +41,12 @@ class address_outside extends BaseController
         );
         if (!empty($_POST)) {
 
-            $name = $_POST['name'];
-            $address = $_POST['address'];
+            $continent = $_POST['continent'];
+            $country = $_POST['country'];
             $status = 0;
 
-            $areaList = $this->address_model->getLists($name, $address);
-            $ret['data'] = $this->output_area($areaList);
+            $countryList = $this->address_model->getCountryLists($continent, $country);
+            $ret['data'] = $this->output_area($countryList);
             $ret['status'] = 'success';
         }
         echo json_encode($ret);
@@ -53,9 +56,12 @@ class address_outside extends BaseController
     {
         $output_html = '';
         $i = 0;
+        $continentList = ['亚洲', '美洲', '非洲', '欧洲', '大洋洲'];
         foreach ($areas as $area):
+            $address[0] = $continentList[$area->continent - 1];
+            $address[1] = $area->country;
+            if($address[1]=='中国') continue;
             $i++;
-            $address = explode(",", $area->address);
             $output_html .= '<tr>';
             $output_html .= '<td>' . $i . '</td>';
             $output_html .= '<td>' . $address[0] . '</td>';
@@ -64,23 +70,28 @@ class address_outside extends BaseController
             $output_html .= '<td>' . (($area->course == 1) ? '是' : '否') . '</td>';
             $output_html .= '<td>';
 
-            $output_html .= '<a href="'.base_url().'editarea/'.$area->id.'">编辑 &nbsp;</a>';
-            if(($area->area=='0' && $area->course=='0')||($area->area=='2' && $area->course=='2')){
-                $output_html .= '<a href="#" onclick="deleteAreaConfirm_jingqu('.$area->id.')">删除 &nbsp;</a>';
-            }else{
+
+            if (!($area->area == '1' || $area->course == '1')) {
+                $output_html .= '<a  ';
+                $output_html .= ' onclick="editAreaConfirm_jingqu(' . $area->id . ',';
+                $output_html .= $area->continent . ',\'' . $address[1] . '\')">编辑 &nbsp;</a>';
+                $output_html .= '<a  onclick="deleteAreaConfirm_jingqu(' . $area->id . ')">删除 &nbsp;</a>';
+            } else {
+                $output_html .= '<a style="color:darkgrey">编辑 &nbsp;</a>';
                 $output_html .= '<a style="color:darkgrey">删除 &nbsp;</a>';
             }
+
             if ($area->area == '0') {
-                $output_html .= '<a href="#" onclick="deployAreaConfirm_jingqu(\'' . $address[1] . '\',2)">设为热门景区 &nbsp;</a>';
+                $output_html .= '<a  onclick="deployAreaConfirm_jingqu(\'' . $address[1] . '\',2)">设为热门景区 &nbsp;</a>';
             } else if ($area->area == '1') {
-                $output_html .= '<a href="#" onclick="undeployAreaConfirm_jingqu(\'' . $address[1] . '\',2)">取消热门景区 &nbsp;</a>';
+                $output_html .= '<a  onclick="undeployAreaConfirm_jingqu(\'' . $address[1] . '\',2)">取消热门景区 &nbsp;</a>';
             } else {
                 $output_html .= '<a style="color:darkgrey">设为热门景区 &nbsp;</a>';
             }
             if ($area->course == '0') {
-                $output_html .= '<a href="#" onclick="deployAreaConfirm_jingqu(\'' . $address[1] . '\',1)">设为热门线路 &nbsp;</a>';
+                $output_html .= '<a  onclick="deployAreaConfirm_jingqu(\'' . $address[1] . '\',1)">设为热门线路 &nbsp;</a>';
             } else if ($area->course == '1') {
-                $output_html .= '<a href="#" onclick="undeployAreaConfirm_jingqu(\'' . $address[1] . '\',1)">取消热门线路 &nbsp;</a>';
+                $output_html .= '<a  onclick="undeployAreaConfirm_jingqu(\'' . $address[1] . '\',1)">取消热门线路 &nbsp;</a>';
             } else {
                 $output_html .= '<a style="color: darkgrey">设为热门线路 &nbsp;</a>';
             }
@@ -104,60 +115,36 @@ class address_outside extends BaseController
         }
     }
 
-    function course_listing()
+    /**
+     * This function is used to load the add Course form
+     */
+    function addCountry2DB()
     {
-        $ret = array(
-            'data' => '',
-            'status' => 'fail'
-        );
-        if (!empty($_POST)) {
-
-            $name = $_POST['name'];
-            $status = $_POST['status'];
-
-            $courseList = $this->area_model->getCourses($name, $status);
-            $ret['data'] = $this->output_course($courseList);
-            $ret['status'] = 'success';
+        if ($this->isAdmin() == TRUE) {
+            $this->loadThis();
+        } else {
+            $id = $_POST['id'];
+            $countryInfo = [
+                'continent' => $_POST['continent'],
+                'country' => $_POST['country'],
+                'type' => $_POST['type'],
+            ];
+            $result = $this->address_model->addCountry2DB($countryInfo, $id);
+            echo json_encode(['status' => true, 'message' => $result]);
         }
-        echo json_encode($ret);
     }
 
-    function output_course($courseList)
+    function removeCountry($id = NULL)
     {
-        $output_html = '';
-
-        $courseCount = count($courseList);
-
-        for ($i = 0; $i < $courseCount; $i++) {
-            $course = $courseList[$i];
-            $areas = json_decode($courseList[$i]->point_list);
-            $areaCount = count($areas);
-            $courseName = '';
-            foreach ($areas as $areaItem) {
-                if ($courseName == '') $courseName = $areaItem->name;
-                else $courseName = $courseName . ' - ' . $areaItem->name;
-            }
-
-            $output_html .= '<tr>';
-            $output_html .= '<td>' . $course->name . '</td>';
-            $output_html .= '<td>' . $courseName . '</td>';
-            $output_html .= '<td>' . floatval($course->price) * floatval($course->discount_rate) . '</td>';
-            $output_html .= '<td>' . ($course->status == 1 ? '已上架' : '未上架') . '</td>';
-            $output_html .= '<td>';
-            $output_html .= '<a href="' . base_url() . 'editcourse/' . $course->id . '">查看 &nbsp;</a>';
-            if ($course->status == '0') {
-                $output_html .= '<a href="#" onclick="deleteAreaConfirm(' . $course->id . ')">删除 &nbsp;</a>';
-            }
-            if ($course->status == '0') {
-                $output_html .= '<a href="#" onclick="deployAreaConfirm(' . $course->id . ')">上架 &nbsp;</a>';
+        if (false) {//$this->address_model->getParentCourseByAreaId($id)) {
+            $this->response(array('status' => false, 'message' => sprintf('Country #%d is using now.', $id)), 200);
+        } else {
+            if ($this->address_model->deleteCountry($id)) {
+                $this->response(array('status' => true, 'message' => sprintf('Country #%d has been deleted.', $id)), 200);
             } else {
-                $output_html .= '<a href="#" onclick="undeployAreaConfirm(' . $course->id . ')">下架 &nbsp;</a>';
+                $this->response(array('status' => false, 'message' => 'This Country does not exist!'), 404);
             }
-            $output_html .= '</td>';
-            $output_html .= '</tr>';
         }
-
-        return $output_html;
     }
 
     /**
@@ -196,7 +183,8 @@ class address_outside extends BaseController
     /**
      * This function used to load the first screen of the course
      */
-    public function course()
+    public
+    function course()
     {
         $this->global['pageTitle'] = '旅游线路管理';
         $this->global['courseList'] = $this->area_model->getCourses();

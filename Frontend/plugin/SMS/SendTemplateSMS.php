@@ -1,4 +1,5 @@
 <?php
+header('Access-Control-Allow-Origin: *');
 /*
  *  Copyright (c) 2014 The CCP project authors. All Rights Reserved.
  *
@@ -13,6 +14,7 @@
  */
 
     include_once("./CCPRestSmsSDK.php");
+
 
     //主帐号,对应开官网发者主账号下的 ACCOUNT SID
     $accountSid= '8a216da85df4d436015e02d26bea01a4';
@@ -38,6 +40,7 @@
 
     $phone_num = $_POST['phone_num'];
     $sms_code =  mt_rand(100000,999999);
+    //$message = [$sms_code];
     $message = [$sms_code];
     //手机号码，替换内容数组，模板ID
     sendTemplateSMS($phone_num, $message, 200171);

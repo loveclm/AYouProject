@@ -35,7 +35,7 @@ $(document).ready(function(){
     if(target_type == "1"){
         // show course information
         if(targetid !="0"){
-            window.location.href = "tourism.php?shopid=" + shop_id + "&targetid=" + targetid;
+            window.location.href = "tourism_new.php?shopid=\'" + shop_id + "\'&targetid=" + targetid + "&map_type=" + map_type;
             sessionStorage.setItem('qr_areaid', targetid);
         }
                         
@@ -53,7 +53,8 @@ $(document).ready(function(){
     // if phone was not verified then show verification dialog
     if(bLogin == 0) {
         // if all paid then don't show login dialog
-	sessionStorage.setItem('qr_areaid', targetid);
+
+	sessionStorage.setItem('qr_areaid', targetid);
         //$('#login').show();
         //sessionStorage.setItem('login_state', 1);
         showDialogToCenter('login-dialog');
@@ -141,8 +142,9 @@ function showScenicareaInformation(){
         getScenicareafromID(new_scenic_id);
     }else {
         // change title with the current scenic area name.
-        document.title = cur_scenic_data['name'];
         if(cur_scenic_data != null) {
+            document.title = cur_scenic_data['name'];
+
             var real_cost = 0;
             for (var i = 0; i < cur_scenic_data.attractions.length; i++) {
                 if (cur_scenic_data.attractions[i].buy_state == 3) {
@@ -159,10 +161,12 @@ function showScenicareaInformation(){
         start_explain_area();
         if(bCommentaryState == 1) explain_area_control('stop');
         //show attractions
-        map.clearMap();
         setOverlay();           // add overlay image in gaoMap
-	weixinConfigure();
+	    weixinConfigure();
         showAttractionInfos();  // show all the attraction marks
+
+        if(DetectIOSDevice())
+            setTimeout(showMessage('该浏览器不支持景区简介自动播放，请手动点击右侧的“简介”按钮进行播放。', 2), 1000);
 
         if(bLogin == 0){
             //sessionStorage.setItem('qr_areaid', targetid);
@@ -333,6 +337,7 @@ function resize(){
     //$('#btn-follow').css({display:'block', top:map_top + dh + delta, right:content_margin, width: btn_height, height: btn_height});
     $('#btn-order').css({display:'block', top:map_top + dh + delta, right:content_margin, width: btn_height, height: btn_height});
     $('#btn-scenic').css({display:'block', top:map_top + dh*2 + delta, right:content_margin, width: btn_height, height: btn_height});
+    $('#btn-login').css({display:'block', bottom:map_bottom + 2*dh + delta, right:content_margin, width: btn_height, height: btn_height});
     $('#btn-commentary').css({display:'block', bottom:map_bottom + dh + delta/2, right:content_margin, width: btn_height, height: btn_height});
     $('#btn-automatic').css({display:'block', bottom:map_bottom + delta, right:content_margin, width: btn_height, height: btn_height});
     //$('#btn-position').css({display:'block', bottom:map_bottom + delta, right:content_margin, width: btn_height, height: btn_height});

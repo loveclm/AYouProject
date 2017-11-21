@@ -1,13 +1,11 @@
 <?php
-    require_once "jssdk.php";
-    $jssdk = new JSSDK("wxb042726847dca8d3", "70e43300732636e813e59f8b2199dfc9");
-    $signPackage = $jssdk->GetSignPackage();
-
     $shop_id = 0;
     $target_id = 0;
+    $map_type = 0;
 
     if(isset($_GET['shopid']))  $shop_id = $_GET['shopid'];
     if(isset($_GET['targetid'])) $target_id = $_GET['targetid'];
+    if(isset($_GET['map_type'])) $map_type = $_GET['map_type'];
 ?>
 <!DOCTYPE html>
 <html>
@@ -21,15 +19,13 @@
     <meta name="format-detection" content="telephone=no">
 
     <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"/>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="css/font-awesome/css/font-awesome.min.css">
     <link rel="stylesheet" href="css/AdminLTE.min.css">
     <link rel="stylesheet" href="css/skins/_all-skins.min.css">
     <link rel="stylesheet" href="css/style.css">
 
     <script type="text/javascript" src="js/plugins/jquery.min.js"></script>
     <script type="text/javascript" src="js/plugins/bootstrap.min.js"></script>
-    <script type="text/javascript" src="js/global.js"></script>
-    <script type="text/javascript" src="js/tourism.js"></script>
 </head>
 
 <body>
@@ -119,52 +115,34 @@
     </div>
     <!-- /.modal-dialog -->
 </div>
+<div class="modal custom-modal" id="message_dialog">
+    <div class="modal-dialog" id="alert_message_dialog">
+        <div class="modal-content" style="border-radius: 12px;">
+            <div class="modal-body" style="padding-bottom: 0px;">
+            </div>
+            <div class="modal-footer" style="border: none; padding-top: 0px;">
+                <button id="msg_cancel" type="button" class="btn_custom btn-default"
+                        onclick="$('#message_dialog').modal('hide');">取消
+                </button>
+                <button id="msg_ok" type="button" class="btn_custom"
+                        onclick="onOk()">确定
+                </button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
 
 </body>
-</html>
-<script src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+
+<?php include('footer.php'); ?>
+
 <script type="text/javascript">
     var shop_id = <?php echo $shop_id?>;
     var cur_tourism_id = <?php echo $target_id?>;
-function weixinConfigure1(){
-    wx.config({
-	debug: false,
-	appId: '<?php echo $signPackage["appId"];?>',
-	timestamp: <?php echo $signPackage["timestamp"];?>,
-	nonceStr: '<?php echo $signPackage["nonceStr"];?>',
-	signature: '<?php echo $signPackage["signature"];?>',
-	jsApiList: [
-	    // 所有要调用的 API 都要加到这个列表中
-	    'checkJsApi',
-	    'onMenuShareTimeline',//
-	    'onMenuShareAppMessage',
-	    'onMenuShareQQ',
-	    'onMenuShareWeibo'
-	]
-    });
+    var map_type = <?php echo $map_type?>;
 
-    window.share_config = {
-	"share": {
-	    "imgUrl": "http://www.ayoubc.com/tour/plugin/Wxpay/resource/image/logo.png",//分享图，默认当相对路径处理，所以使用绝对路径的的话，“http://”协议前缀必须在。
-	    "desc" : window.location.href, //摘要,如果分享到朋友圈的话，不显示摘要。
-	    "title" : 'A游不错(' + document.title + ')',//分享卡片标题
-	    "link": window.location.href,//分享出去后的链接，这里可以将链接设置为另一个页面。
-	    "success":function(){//分享成功后的回调函数
-		},
-	    'cancel': function () { 
-		// 用户取消分享后执行的回调函数
-	    }
-	}
-    };
-    
-    wx.ready(function () {
-	// 在这里调用 API
-	wx.onMenuShareAppMessage(share_config.share);//分享给好友
-	wx.onMenuShareTimeline(share_config.share);//分享到朋友圈
-	wx.onMenuShareQQ(share_config.share);//分享给手机QQ
-    });
-}    
-    
     function buy_course_dialog_close(){
         $('#buy_course').hide();
     }
@@ -172,5 +150,8 @@ function weixinConfigure1(){
     function code_auth_dialog_close(){
         $('#code_auth').hide();
     }
-
 </script>
+<script type="text/javascript" src="js/global.js"></script>
+<script type="text/javascript" src="js/tourism.js"></script>
+
+</html>

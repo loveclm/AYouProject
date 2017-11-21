@@ -104,7 +104,7 @@ class settlemanage extends BaseController
                 '" style="vertical-align:middle;">' . $item['month_name'] . '</td>';
             foreach ($shops as $sh) {
                 $j++;
-                $price = floatval($sh->address_2->price);
+                $price = floatval($sh->address->price);
                 $status = $sh->status != "" ? $sh->status->status : "";
                 $fee = $price * floatval($sh->discount_rate);
                 $settle = $price - $fee;
@@ -123,10 +123,10 @@ class settlemanage extends BaseController
                 $output_html .= '<td>' . ($status == 0 ? '未结算' : '已结算') . '</td>';
 
                 $output_html .= '<td>';
-                $output_html .= '<a href="#" onclick="settleBuyDetail(\'' . base_url() . '\',\'' . $sh->id . '\')">查看订单&nbsp;&nbsp;</a>';
+                $output_html .= '<a  onclick="settleBuyDetail(\'' . base_url() . '\',\'' . $sh->id . '\')">查看订单&nbsp;&nbsp;</a>';
 
                 if ($this->global['shop_manager_number'] == '' && $status == 0) {
-                    $output_html .= '<a href="#" onclick="showConfirmBuy(\'' . $item['month_name'] . '\',\'' . $sh->id . '\')">结算&nbsp;&nbsp;</a>';
+                    $output_html .= '<a  onclick="showConfirmBuy(\'' . $item['month_name'] . '\',\'' . $sh->id . '\')">结算&nbsp;&nbsp;</a>';
                 }
                 $output_html .= '</td>';
                 $output_html .= (($j != 1) ? '</tr>' : '');
@@ -220,10 +220,10 @@ class settlemanage extends BaseController
                 '" style="vertical-align:middle;">' . $item['month_name'] . '</td>';
             foreach ($shops as $sh) {
                 $j++;
-                $price = floatval($sh->address_2->price);
+                $price = floatval($sh->address->price);
                 $status = $sh->status != "" ? $sh->status->status : "";
-                if (isset($sh->address_2->codeCount))
-                    $codeCount = floatval($sh->address_2->codeCount);
+                if (isset($sh->address->codeCount))
+                    $codeCount = floatval($sh->address->codeCount);
                 else
                     $codeCount = 0;
                 $sumTotal += $price;
@@ -239,10 +239,10 @@ class settlemanage extends BaseController
                 $output_html .= '<td>' . ($status == 0 ? '未结算' : '已结算') . '</td>';
 
                 $output_html .= '<td>';
-                $output_html .= '<a href="#" onclick="settleAuthDetail(\'' . base_url() . '\',\'' . $sh->id . '\')">查看订单&nbsp;&nbsp;</a>';
+                $output_html .= '<a  onclick="settleAuthDetail(\'' . base_url() . '\',\'' . $sh->id . '\')">查看订单&nbsp;&nbsp;</a>';
 
                 if ($this->global['shop_manager_number'] == '' && $status == 0) {
-                    $output_html .= '<a href="#" onclick="showConfirmAuth(\'' . $item['month_name'] . '\',\'' . $sh->id . '\')">结算&nbsp;&nbsp;</a>';
+                    $output_html .= '<a  onclick="showConfirmAuth(\'' . $item['month_name'] . '\',\'' . $sh->id . '\')">结算&nbsp;&nbsp;</a>';
                 }
                 $output_html .= '</td>';
                 $output_html .= (($j != 1) ? '</tr>' : '');

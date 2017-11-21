@@ -8,6 +8,113 @@ var sms_code = "";
 var shop_id = "";
 var cur_scenic_data = null;
 
+// this function is used to the information for course and area manage page
+function getMenuAndAreaInfos(){
+    $.ajax({
+        type: 'POST',
+        url: SERVER_URL + 'api/Areas/getFirstDatas', //rest API url
+        dataType: 'json',
+        //data: { 'phone': phone_num, 'id': order_id}, // set function name and parameters
+        success: function (data) {
+            if (data.status == false) {
+                //alert('服务器错误');
+                return;
+            }else{
+                sessionStorage.setObject('home_data', data.data);
+                showHomeData();
+            }
+        },
+        error: function (data) {
+            //alert('服务器错误。');
+        }
+    });
+
+}
+
+// this function is used to get area or course information from string
+function searchAreaInfos(type, str){
+   var search_type = 0;
+    if( type == 0)
+        search_type = 2;
+    else
+        search_type = 3;
+
+    if(str.indexOf('洲') < 0) str = '中国·' + str;
+
+   $.ajax({
+       type: 'POST',
+       url: SERVER_URL + 'api/Areas/getHotObjectInfos', //rest API url
+       dataType: 'json',
+       data: {'search_type': search_type, 'search_text': str}, // set function name and parameters( 0-area search, 1- course search)
+       success: function (data) {
+           if (data.status == false) {
+               //alert('服务器错误');
+           } else {
+               display_area_infos(data.data[0]['data']);
+           }
+       },
+       error: function (data) {
+           //alert('服务器错误。');
+       }
+   });
+
+}
+
+// this function is used to get area or course information from string
+function getAreaCourseByText(type, str){
+    var search_type = 0;
+    if( type == 0)
+        search_type = 2;
+    else
+        search_type = 3;
+
+    $.ajax({
+        type: 'POST',
+        url: SERVER_URL + 'api/Areas/getAreaCoursesByText', //rest API url
+        dataType: 'json',
+        data: {'search_type': search_type, 'search_text': str}, // set function name and parameters( 0-area search, 1- course search)
+        success: function (data) {
+            if (data.status == false) {
+                //alert('服务器错误');
+            } else {
+                display_area_infos(data.data['data']);
+            }
+        },
+        error: function (data) {
+            //alert('服务器错误。');
+        }
+    });
+
+}
+
+// this function is used to get tourism infromation of tourism_id
+function getTourismCourseInfo(cur_tourism_id){
+    phone = localStorage.getItem('phone_number');
+    $.ajax({
+        type: 'POST',
+        url: SERVER_URL + 'api/Areas/getCourseInfoById',
+        dataType: 'json',
+        data: {'phone' : phone, 'id' : cur_tourism_id},
+        success: function (data) {
+            if( run_mode == "SIMULATE_MODE") {
+                // simulate data
+                //tourism_list = simulate_tourismCourseList();
+            }else {
+                if (data.status == true) {
+                    cur_tourism = data['result'];
+                }
+            }
+            sessionStorage.setObject('cur_course', cur_tourism);
+            display_tourism_data();
+        },
+        error: function (data) {
+            sessionStorage.removeObject('cur_course');
+            //display_tourism_data();
+        }
+    });
+}
+
+
 // send cancel order request
 function SendOrderCancelRequest() {
     // when user cancels his/her order, must send it to server
@@ -26,7 +133,7 @@ function SendOrderCancelRequest() {
         data: { 'phone': phone_num, 'id': order_id}, // set function name and parameters
         success: function (data) {
             if (data.status == false) {
-                alert('取消订单失败。');
+                showMessage('取消订单失败。', 2);
                 return;
             }else{
                 //sessionStorage.setObject('cur_order', data.result[0]);
@@ -34,7 +141,7 @@ function SendOrderCancelRequest() {
             }
         },
         error: function (data) {
-            alert('取消订单失败。');
+            showMessage('取消订单失败。', 2);
         }
     });
 }
@@ -47,7 +154,7 @@ function checkCurrentLocation(pos){
         dataType: 'json',
         // username:'admin',
         // password:'1234',
-        data: {'pos':pos},
+        data: {'pos':pos, 'map_type':map_type },
         success: function (data) {
             if(run_mode == "SIMULATE_MODE"){
                 new_scenic_id = 1;
@@ -68,7 +175,7 @@ function checkCurrentLocation(pos){
             sessionStorage.setItem('geo_scenic_id', new_scenic_id);
 
             var shopid = sessionStorage.getItem('shopid');
-            window.location.href = 'home.php?shopid=' + shopid + '&type=2&targetid=' + new_scenic_id;
+            window.location.href = 'home.php?shopid=' + shopid + '&type=2&targetid=' + new_scenic_id + '&map_type=' + map_type;
             //getScenicareafromID(new_scenic_id);
         },
         error: function (data) {
@@ -94,12 +201,19 @@ function preparePayment() {
             buy_type = '购买景点';
             break;
     }
-    location.href = 'http://www.ayoubc.com/tour/plugin/Wxpay/payment.php?cost='+ parseFloat(payment_data['real_cost']).toFixed(2) + '&type=' + buy_type + '&product='+ payment_data['name'];
+    
+    sessionStorage.setItem('paying', 0);
+    if(is_weixin())
+        location.href = 'http://www.ayoubc.com/tour/plugin/Wxpay/payment.php?cost='+ parseFloat(payment_data['real_cost']).toFixed(2) + '&type=' + buy_type + '&product='+ payment_data['name'];
+    else
+        //location.href = 'http://192.168.2.15/h5tourism/plugin/Wxpay/payment_h5.php?cost='+ parseFloat(payment_data['real_cost']).toFixed(2) + '&type=' + buy_type + '&product='+ payment_data['name'];
+        location.href = 'http://www.ayoubc.com/tour/plugin/Wxpay/payment_h5.php?cost='+ parseFloat(payment_data['real_cost']).toFixed(2) + '&title=' + buy_type + '&product='+ payment_data['name'];
 }
 
 // downloading the detail information of the scenic area from scenic id
 function getScenicareafromID(scenic_id){
     // initializing current scenic area information
+
     sessionStorage.removeItem('cur_scenic_area');
     cur_scenic_data = null;
 
@@ -285,7 +399,7 @@ function simulate_CurrentScenicArea(){
         {
             id : '1',
             name :'王老吉凉茶博物馆',
-            position : [116.402635,39.913155],
+            position : [39.913155,116.402635],
             cost : 10,
             discount_rate:0.8,
             buy_state : 1,
@@ -296,7 +410,7 @@ function simulate_CurrentScenicArea(){
         {
             id : '2',
             name :'胡蝶故居',
-            position : [116.391541,39.92223931],
+            position : [39.92223931, 116.391541],
             cost : 20,
             discount_rate:0.8,
             buy_state : 2, // 1: hear testing, 2:paid, 3:unpaid
@@ -306,7 +420,7 @@ function simulate_CurrentScenicArea(){
         {
             id : '3',
             name :'李家成故居',
-            position : [116.391541,39.913155],
+            position : [39.913155, 116.391541],
             cost : 30,
             discount_rate:0.8,
             buy_state : 2,
@@ -316,7 +430,7 @@ function simulate_CurrentScenicArea(){
         {
             id : '4',
             name :'树下行人',
-            position : [116.402635,39.92223931],
+            position : [39.92223931,116.402635],
             cost : 15,
             discount_rate:0.8,
             buy_state : 3,
@@ -326,7 +440,7 @@ function simulate_CurrentScenicArea(){
         {
             id : '5',
             name :'横海浪荷花世界',
-            position : [116.396991, 39.91829],
+            position : [ 39.91829,116.396991],
             cost : 25,
             discount_rate:0.8,
             buy_state : 3,
@@ -338,9 +452,9 @@ function simulate_CurrentScenicArea(){
     scenic_area ={
         id: '1',
         name : '故宫',
-        position : [116.396991, 39.91829],
-        top_right : [116.402635,39.92223931],
-        bottom_left: [116.391541,39.913155],
+        position : [ 39.91829,116.396991],
+        top_right : [39.92223931,116.402635],
+        bottom_left: [39.913155, 116.391541],
         overlay:'resource/image/overlay.png',
         image:'resource/image/logo.png',
         audio: 'resource/audio/4.wav',
@@ -348,7 +462,8 @@ function simulate_CurrentScenicArea(){
         cost:100,
         discount_rate:0.8,
         attractionCnt:5,
-        attractions : tmp_attractionlist
+        attractions : tmp_attractionlist,
+        zoom : 15
     };
 
     return scenic_area;
@@ -644,7 +759,7 @@ function sendSMSToPhone(){
     //phone number validation
     if(phone_num == '' || phone_num.length != 11)
     {
-        alert('手机号码错了。 再次输入。');
+        showMessage('手机号码错了。 再次输入。', 2);
         return;
     }
 
@@ -680,7 +795,7 @@ function sendSMSToPhone(){
                  sms_code = data['code'];
              }else{
                  sms_code = "";
-                 alert(data.error['0']);
+                 showMessage(data.error['0'], 2);
              }
          },
          fail: function(){
@@ -694,13 +809,13 @@ function sendSMSToPhone(){
 function confirm_verify_phone(){
     if(sms_code == "")
     {
-        alert('请确认您正确输入手机号码并重新发送请求。再次击点"获取验证码"。');
+        showMessage('请确认您正确输入手机号码并重新发送请求。再次击点"获取验证码"。', 2);
         return;
     }
     // verify SMS code accuracy
     var code = $('#verify_code').val();
     if( sms_code != code || code == "") {
-        alert('验证码错了。 再次输入。');
+        showMessage('验证码错了。 再次输入。', 2);
         return;
     }
 
@@ -750,7 +865,7 @@ function OnConfirmauthCode(){
 
     if(auth_code == "")
     {
-        alert('请输入授权码。');
+        showMessage('请输入授权码。', 2);
         return;
     }
 
@@ -764,7 +879,7 @@ function OnConfirmauthCode(){
         data: { 'shop' : shop_id ,'phone' : phone_num, 'id': auth_code, 'type' : 4, 'cost':''},
         success: function (data) {
             if (data.status == false) {
-                alert('授权码有误，请重新输入!');
+                showMessage('授权码有误，请重新输入!', 2);
                 return;
             }
             $('#code_auth').hide();
@@ -772,12 +887,12 @@ function OnConfirmauthCode(){
 
             if(cur_scenic_data != null) {
                 getScenicareafromID(cur_scenic_data.id);
-                alert('您已解锁景区，点击景区开启导游之旅！');
+                showMessage('您已解锁景区，点击景区开启导游之旅！', 2);
             }
             location.reload(true);
         },
         error: function (data) {
-            alert('授权失败。');
+            showMessage('授权失败。', 2);
         }
     });
 }
@@ -855,6 +970,55 @@ function getDetailInfofromTime(tmpTime){
     info['expiration_time'] += expired_date.getDate();
 
     return info;
+}
+
+
+function DetectIOSDevice(){
+    if( is_weixin()) return false;
+        
+    var uagent = navigator.userAgent.toLowerCase();
+    if (uagent.search("iphone") > -1)
+        return true;
+    else if (uagent.search("ipad") > -1)
+        return true;
+    else if (uagent.search("ipod") > -1)
+        return true;
+    else
+        return false;
+}
+                                                            
+function is_weixin(){
+    var ua = navigator.userAgent.toLowerCase();
+    if(ua.match(/MicroMessenger/i)=="micromessenger") {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+function showMessage(message, isShowbtn) {
+    if(isShowbtn==2){
+        $('#msg_cancel').hide();
+        $('#msg_ok').attr('onclick',"$('#message_dialog').hide();");
+    }else{
+        $('#msg_cancel').show();
+        $('#msg_ok').attr('onclick',"onOk();");
+    }
+    isShowbtn = (isShowbtn == undefined) ? false : true;
+    message = (isShowbtn == false) ? message = '<br>' + message : message;
+    $('#message_dialog .modal-body').html('<br><b><center>' + message + '</center></b><br>');
+    $('#message_dialog').show();
+    if (!isShowbtn) {
+        $('#message_dialog .modal-footer').css({'display': 'none'});
+        clearTimeout(app_data.notifyTimer);
+        app_data.notifyTimer = setTimeout(function () {
+            $('#message_dialog').hide();
+        }, 3000);
+    } else {
+        $('#message_dialog .modal-footer').css({'display': 'block'});
+    }
+
+    showDialogToCenter('alert_message_dialog');
 }
 
 // In this part, get Device Screen Information

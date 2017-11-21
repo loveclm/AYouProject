@@ -32,11 +32,11 @@ class settle_model extends CI_Model
                 $j = 0;
                 foreach ($shops as $sh) {
                     // get buy price paid
-                    $sh->address_2 = $this->getBuyPriceByShopId($sh->id,
+                    $sh->address = $this->getBuyPriceByShopId($sh->id,
                         date_format($date_s, "Y-m-d"), date_format($date_e, "Y-m-d"));
                     // get buy status
                     $sh->status = $this->getBuyStatus($sh->id, $month_name);
-                    if ($sh->address_2->price != '') {
+                    if ($sh->address->price != '') {
                         $shopList[$j] = $sh;
                         $j++;
                     }
@@ -84,13 +84,13 @@ class settle_model extends CI_Model
                 $j = 0;
                 foreach ($shops as $sh) {
                     // get code count paid
-                    $sh->address_2 = $this->getAuthCountByShopId($sh->id,
+                    $sh->address = $this->getAuthCountByShopId($sh->id,
                         date_format($date_s, "Y-m-d"), date_format($date_e, "Y-m-d"));
                     $settlePrice = $this->getAuthSettlePrice($sh->id, $month_name);
                     // get status
                     $sh->status = $this->getAuthStatus($sh->id, $month_name);
-                    if (isset($sh->address_2->price)|| $settlePrice!= '0') {
-                        $sh->address_2->price=$settlePrice;
+                    if (isset($sh->address->price)|| $settlePrice!= '0') {
+                        $sh->address->price=$settlePrice;
                         $shopList[$j] = $sh;
                         $j++;
                     }

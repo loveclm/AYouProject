@@ -2,7 +2,7 @@
     <!-- Content Header (Page header) -->
     <section class="content-header">
         <h1>
-            <a href="#" onclick="test_api();">景区列表</a>
+            <a onclick="test_api();">景区列表</a>
         </h1>
     </section>
 
@@ -13,7 +13,8 @@
                     <div class="form-group area-search-name-view">
                         <label>景区名称 : </label>
                         <input type="text" id="searchName"
-                               value="<?php echo $searchName == 'all' ? '' : $searchName; ?>" class="form-control">
+                               value="<?php echo $searchName == 'all' ? '' : $searchName; ?>"
+                               class="form-control" style="width: 50%;">
                     </div>
 
                 </div>
@@ -60,7 +61,7 @@
 
                 <div class="col-xs-12 col-sm-2 form-inline">
                     <div class="form-group area-search-control-view">
-                        <a href="#" class="btn btn-primary" onclick="searchArea_jingqu('<?php echo base_url(); ?>');">查询</a>
+                        <a class="btn btn-primary" onclick="searchArea_jingqu('<?php echo base_url(); ?>');">查询</a>
 
                         <a class="btn btn-primary" href="<?php echo base_url(); ?>addarea">
                             <span>新增</span>
@@ -91,28 +92,29 @@
                         $area = $areaList[$i];
                         $points = json_decode($areaList[$i]->point_list);
                         $pointCount = sizeof($points);
+                        if($area->isforeign!='1') continue;
                         ?>
                         <tr>
                             <td><?php echo $area->name; ?></td>
                             <td><?php echo $pointCount; ?></td>
-                            <td><?php echo floatval($area->price)*floatval($area->discount_rate); ?></td>
-                            <td><?php echo $area->address; ?></td>
+                            <td><?php echo floatval($area->price) * floatval($area->discount_rate); ?></td>
+                            <td><?php echo $area->address . ',  &nbsp;' . $area->address_1; ?></td>
                             <td><?php echo $area->status == 1 ? '已上架' : '未上架'; ?></td>
                             <td>
-                                <a href="<?php echo base_url(); ?>editarea/<?php echo $area->id; ?>">查看&nbsp;</a>
+                                <a href="<?php echo base_url(); ?>editarea/<?php echo $area->id; ?>">编辑&nbsp;</a>
                                 <?php
                                 if ($area->status == 0) {
                                     ?>
-                                    <a href="#" onclick="deleteAreaConfirm_jingqu(<?php echo $area->id; ?>);">删除&nbsp;</a>
+                                    <a onclick="deleteAreaConfirm_jingqu(<?php echo $area->id; ?>);">删除&nbsp;</a>
                                     <?php
                                 }
                                 if ($area->status == 0) {
                                     ?>
-                                    <a href="#" onclick="deployAreaConfirm_jingqu(<?php echo $area->id; ?>);">上架&nbsp;</a>
+                                    <a onclick="deployAreaConfirm_jingqu(<?php echo $area->id; ?>);">上架&nbsp;</a>
                                     <?php
                                 } else {
                                     ?>
-                                    <a href="#" onclick="undeployAreaConfirm_jingqu(<?php echo $area->id; ?>);">下架</a>
+                                    <a onclick="undeployAreaConfirm_jingqu(<?php echo $area->id; ?>);">下架</a>
                                     <?php
                                 }
                                 ?>
@@ -128,8 +130,12 @@
                         </p>
 
                         <div class="form-group">
-                            <button class="btn btn-default" onclick="deleteArea_jingqu('<?php echo base_url(); ?>', 0);">取消</button>
-                            <button class="btn btn-primary" onclick="deleteArea_jingqu('<?php echo base_url(); ?>', 1);">确定</button>
+                            <button class="btn btn-default"
+                                    onclick="deleteArea_jingqu('<?php echo base_url(); ?>', 0);">取消
+                            </button>
+                            <button class="btn btn-primary"
+                                    onclick="deleteArea_jingqu('<?php echo base_url(); ?>', 1);">确定
+                            </button>
                         </div>
 
                     </div>
@@ -139,8 +145,12 @@
                         </p>
 
                         <div class="form-group">
-                            <button class="btn btn-default" onclick="deployArea_jingqu('<?php echo base_url(); ?>', 0);">取消</button>
-                            <button class="btn btn-primary" onclick="deployArea_jingqu('<?php echo base_url(); ?>', 1);">确定</button>
+                            <button class="btn btn-default"
+                                    onclick="deployArea_jingqu('<?php echo base_url(); ?>', 0);">取消
+                            </button>
+                            <button class="btn btn-primary"
+                                    onclick="deployArea_jingqu('<?php echo base_url(); ?>', 1);">确定
+                            </button>
                             <input id="current-areaid" style="display: none;"/>
                             <input id="current-areastatus" style="display: none;"/>
                         </div>
@@ -154,6 +164,6 @@
 </div>
 <script type="text/javascript" src="<?php echo base_url(); ?>assets/js/area.js" charset="utf-8"></script>
 <script
-    src="http://webapi.amap.com/maps?v=1.3&key=0250860ccb5953fa5d655e8acf40ebb7&plugin=AMap.PolyEditor,AMap.MouseTool,AMap.DistrictSearch"></script>
+        src="http://webapi.amap.com/maps?v=1.3&key=0250860ccb5953fa5d655e8acf40ebb7&plugin=AMap.PolyEditor,AMap.MouseTool,AMap.DistrictSearch"></script>
 <script src="http://webapi.amap.com/ui/1.0/main.js?v=1.0.10"></script>
 <script type="text/javascript" src="<?php echo base_url(); ?>assets/js/map.js" charset="utf-8"></script>

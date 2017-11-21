@@ -21,6 +21,7 @@ $(function(){
     //cur_tourism_id = sessionStorage.getItem('targetid');
     if(cur_tourism_id == "0")   return;
     sessionStorage.removeItem('cur_scenic_area');
+    // data request
     getTourismCoursesFromServer();
 });
 
@@ -65,7 +66,7 @@ function display_tourism_data(){
 function showcourse(index){
     // initialize dialog
     document.title = tourism_list[index]['name'];
-    weixinConfigure1();
+    weixinConfigure();
     
     var content_html = "";
 

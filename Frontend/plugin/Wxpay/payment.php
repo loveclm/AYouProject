@@ -1,4 +1,7 @@
 <?php
+header('Access-Control-Allow-Origin: *');
+//header('Content-type: text/plain');
+
     ini_set('date.timezone','Asia/Shanghai');
     //error_reporting(E_ERROR);
     require_once "lib/WxPay.Api.php";
@@ -16,7 +19,7 @@
     $total_fee = floatval($_GET['cost'])*100;
     $buy_type = $_GET['type'];
     $product_name = $_GET['product'];
-                
+
     //②、统一下单
     $input = new WxPayUnifiedOrder();
     $input->SetBody($buy_type.'('.$product_name.')');
@@ -32,9 +35,6 @@
     $order = WxPayApi::unifiedOrder($input);
 
     $jsApiParameters = $tools->GetJsApiParameters($order);
-
-    //获取共享收货地址js函数参数
-    $editAddress = $tools->GetEditAddressParameters();
 ?>
 
 <html>
@@ -48,7 +48,7 @@
     <meta name="format-detection" content="telephone=no">
 
     <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"/>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="css/font-awesome/css/font-awesome.min.css">
     <link rel="stylesheet" href="css/AdminLTE.min.css">
     <link rel="stylesheet" href="css/skins/_all-skins.min.css">
     <link rel="stylesheet" href="css/style.css">
@@ -151,10 +151,29 @@
         <!-- /.modal-dialog -->
     </div>
 
+    <div class="modal custom-modal" id="message_dialog">
+        <div class="modal-dialog" id="alert_message_dialog">
+            <div class="modal-content" style="border-radius: 12px;">
+                <div class="modal-body" style="padding-bottom: 0px;">
+                </div>
+                <div class="modal-footer" style="border: none; padding-top: 0px;">
+                    <button id="msg_cancel" type="button" class="btn_custom btn-default"
+                            onclick="$('#message_dialog').modal('hide');">取消
+                    </button>
+                    <button id="msg_ok" type="button" class="btn_custom"
+                            onclick="onOk()">确定
+                    </button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+
     <div class="footer" id="app_footer">
         <h5 style="padding-right: 0px;">支付金额 :</h5>
         <h5 id="real_price" style="color: red">¥19.00</h5>
-        <div onclick="OnPay()"><h5>立即支付</h5></div>
+        <div onclick="sendOrder()"><h5>立即支付</h5></div>
     </div>
 </div>
 </body>
@@ -178,10 +197,10 @@
                         sendPaidOrderRequest();
                         break;
                     case 'get_brand_wcpay_request:cancel':
-                        alert('支付未完成');
+                        showMessage('支付未完成', 2);
                         break;
                     case 'get_brand_wcpay_request:fail':
-                        alert('支付失败');
+                        showMessage('支付失败', 2);
                         break;
                 }
                 //alert(res.err_code+res.err_desc+res.err_msg);
@@ -205,7 +224,7 @@
 
     $(function(){
         bPhoneverified = parseInt(localStorage.getItem('phone_verified'));
-        if(bPhoneverified == 0)
+        if(bPhoneverified != '1')
             localStorage.setItem('phone_number', "");
         else
             phone_num = localStorage.getItem('phone_number');
@@ -223,21 +242,10 @@
         history.back();
     }
 
-    // send order to server and pay via weixin
-    function OnPay() {
-        if( bPhoneverified == 0){
-            sessionStorage.setItem('purchage_state', "payment ready");
-            bAuthorizing = 0;
-            verifyPhone();
-            return;
-        }
-        console.log('payment start');
-        sendOrder();
-    }
-
     function sendOrder(){
         // send the order information to back-end
         var phone_num = localStorage.getItem('phone_number');
+        //alert(phone_num);
         var shop_id = sessionStorage.getItem('shopid');
 
         var order_status = sessionStorage.getItem('order_status');
@@ -260,7 +268,7 @@
             data: {'shop':shop_id,'phone' : phone_num, 'id':payment_data['id'], 'type':payment_data['type'], 'cost':payment_data['real_cost']},
             success: function (data) {
                 if (data.status == false) {
-                    alert('订单取消了。');
+                    showMessage('订单取消了。', 2);
                     return;
                 }
                 new_orderID = data['result'];
@@ -269,14 +277,13 @@
                 callpay();
             },
             error: function (data) {
-                alert('订单失败了。');
+                showMessage('订单失败了。', 2);
             }
         });
     }
 
-	var callCnt=0;
-    
-	function  sendPaidOrderRequest() {
+var kkkk=0;
+    function  sendPaidOrderRequest() {
         var phone_num = localStorage.getItem('phone_number');
         var shop_id = sessionStorage.getItem('shopid');
         var qr_areaid = sessionStorage.getItem('qr_areaid');
@@ -292,27 +299,19 @@
                 new_orderID = "";
                 // receive order detail information
                 sessionStorage.setObject('cur_order', data.result);
-                callCnt=0;
-                
-				window.location.href = 'views/payment_success.html';
+                kkkk=0;
+                window.location.href = 'views/payment_success.html';
             }
-        
-		}).fail(function(res){
-        	
-			callCnt++;
-        	
-			if(callCnt<5){
-                    
-				setTimeout(function(){setsendPaidOrderRequest();}, 2000);
-            }else{
-		    
-				callCnt=0;
-		    
-				alert('网络正忙.');
-		
-			}    
-        
-		});
+        }).fail(function(res){
+        	kkkk++;
+        	if(kkkk<5){
+                    setTimeout(function(){setsendPaidOrderRequest();}, 2000);
+                }
+		else{
+		    kkkk=0;
+		    showMessage('网络正忙.', 2);
+		}    
+        });
     }
 
     // loading payment page
@@ -361,36 +360,5 @@
     }
 
 </script>
-<script type="text/javascript">
-    //获取共享地址
-    function editAddress()
-    {
-        WeixinJSBridge.invoke(
-            'editAddress',
-            <?php echo $editAddress; ?>,
-            function(res){
-                var value1 = res.proviceFirstStageName;
-                var value2 = res.addressCitySecondStageName;
-                var value3 = res.addressCountiesThirdStageName;
-                var value4 = res.addressDetailInfo;
-                var tel = res.telNumber;
-                //alert(value1 + value2 + value3 + value4 + ":" + tel);
-            }
-        );
-    }
 
-    window.onload = function(){
-        if (typeof WeixinJSBridge == "undefined"){
-            if( document.addEventListener ){
-                document.addEventListener('WeixinJSBridgeReady', editAddress, false);
-            }else if (document.attachEvent){
-                document.attachEvent('WeixinJSBridgeReady', editAddress);
-                document.attachEvent('onWeixinJSBridgeReady', editAddress);
-            }
-        }else{
-            editAddress();
-        }
-    };
-
-</script>
 </html>

@@ -20,7 +20,7 @@ function deleteArea_jingqu(url, type) {
             if (result['status'] == false)
                 window.alert(result['message']);
             else
-                location.href = url + 'area';
+                searchArea_jingqu(baseURL);
         });
     }
 }
@@ -56,7 +56,7 @@ function deployArea_jingqu(url, type) {
             if (result['status'] == false)
                 window.alert(result['message']);
             else
-                location.href = url + 'area';
+                searchArea_jingqu(baseURL);
         });
     }
 }
@@ -69,7 +69,8 @@ function searchArea_jingqu(url) {
     var provinceText = $('#provinceName').html();
     var cityText = $('#cityName').html();
     var districtText = $('#districtName').html();
-    var address = provinceText + "_" + cityText + "_" + districtText;
+    var address = provinceText + "_" + cityText;
+    console.log(address);
 //    location.href = url + 'area/listing/' + name + '/' + JSON.stringify(address) + '/' + status;
 
     $.ajax({
@@ -91,16 +92,18 @@ function searchArea_jingqu(url) {
 }
 
 
-function test_api2345() {
+function test_api() {
 //    var posi = [116.404845, 39.898345];
     //var id = '00700100002';
 
-    var phone = '18588209031';
-    var cost = 1;
-//    var type = '3';
-    var id = '67013054569';
+    var phone = '13130545612';
+    var phone = '';
+    var cost = 0.22;
+    var type = '1';
+    var id = '125';
     var shopid = 26;
-    var qr_areaid = 111;
+    var qr_areaid = 121;
+    var txt = '亚洲·印度尼西亚';
     $.ajax({
         type: 'POST',
         //url: 'http://www.ayoubc.com/backend/api/Areas/getAllCourseInfos',
@@ -108,17 +111,18 @@ function test_api2345() {
 //        url: 'http://192.168.2.18/backend/api/Areas/setPayOrder',
 //        url: 'http://192.168.2.18/backend/api/Areas/setAreaBuyOrder',
 //        url: 'http://www.ayoubc.com/backend/api/Areas/setAreaBuyOrder',
-        url: 'http://www.ayoubc.com/backend/api/Areas/setPayOrder',
+        url: 'http://192.168.2.18/backend/api/Areas/getHotObjectInfos',
         dataType: 'json',
-        username: 'admin',
-        password: '1234',
+//        contentType: "application/json; charset=utf-8",
         data: {
-            'id': id,
-            'phone': phone,
-            'cost': cost,
-//            'type': type,
-            'qr_areaid': qr_areaid,
-            'shop': shopid,
+            // 'id': id,
+             'search_text': txt,
+             'search_type': 3,
+            // 'phone': phone,
+            // 'cost': cost,
+            // 'type': type,
+            // 'qr_areaid': qr_areaid,
+            // 'shop': shopid,
 //            'pos':posi
         },
         success: function (data, textStatus, jqXHR) {
@@ -132,7 +136,7 @@ function test_api2345() {
     });
 }
 
-function test_api() {
+function test_api3456() {
 //    var posi = [116.404845, 39.898345];
     //var id = '00700100002';
 

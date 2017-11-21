@@ -46,7 +46,7 @@ function display_minescenic_data(){
         tmp_content_html="";
         tmp_content_html += '<div class="order '+state_class_List[minescenic_List[i]['state']-1] +'">';
         tmp_content_html += '<div class="order_body" onclick="showScenicArea('+ i +')">';
-        tmp_content_html += '   <img src="../resource/image/logo.png">';
+        tmp_content_html += '   <img src="'+minescenic_List[i]['image']+'">';//'   <img src="../resource/image/logo.png">';
         tmp_content_html += '   <div class="scenic_content" style="position: relative">';
         if(minescenic_List[i]['state'] == 1)
             tmp_content_html += '      <h5 style="position: absolute; color: red; right: 0px">'+state_string_List[minescenic_List[i]['state']-1]+'</h5>';
@@ -117,7 +117,7 @@ function showScenicArea(index){
     }
 
     var shopid = sessionStorage.getItem('shopid');
-    window.location.href = '../home.php?shopid=' + shopid + '&type=2&targetid=' + new_scenic_id;
+    window.location.href = '../home.php?shopid=' + shopid + '&type=2&targetid=' + new_scenic_id +"&map_type=" + minescenic_List[index].map_type;
 }
 function resize_minesceniclist(){
     initRatio = getDevicePixelRatio();

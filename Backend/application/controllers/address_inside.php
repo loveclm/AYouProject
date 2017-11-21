@@ -27,6 +27,8 @@ class address_inside extends BaseController
     public function index()
     {
         $this->global['pageTitle'] = '国内地区';
+        $this->global['hot_area']=$this->address_model->getHotArea();
+        $this->global['area_search_list']=$this->address_model->getAreaSearchList();
         $this->loadViews("address_inside", $this->global, NULL, NULL);
     }
 
@@ -42,6 +44,7 @@ class address_inside extends BaseController
             $address = $_POST['address'];
             $status = 0;
 
+
             $areaList = $this->address_model->getLists($name, $address);
             $ret['data'] = $this->output_area($areaList);
             $ret['status'] = 'success';
@@ -55,7 +58,7 @@ class address_inside extends BaseController
         $i = 0;
         foreach ($areas as $area):
             $i++;
-            $address = explode(",", $area->address);
+            $address = [$area->address, $area->address_1];
             $output_html .= '<tr>';
             $output_html .= '<td>' . $i . '</td>';
             $output_html .= '<td>' . $address[0] . '</td>';
@@ -64,16 +67,16 @@ class address_inside extends BaseController
             $output_html .= '<td>' . (($area->course == 1) ? '是' : '否') . '</td>';
             $output_html .= '<td>';
             if ($area->area == '0') {
-                $output_html .= '<a href="#" onclick="deployAreaConfirm_jingqu(\'' . $address[1] . '\',2)">设为热门景区 &nbsp;</a>';
+                $output_html .= '<a  onclick="deployAreaConfirm_jingqu(\'' . $address[1] . '\',2)">设为热门景区 &nbsp;</a>';
             } else if ($area->area == '1') {
-                $output_html .= '<a href="#" onclick="undeployAreaConfirm_jingqu(\'' . $address[1] . '\',2)">取消热门景区 &nbsp;</a>';
+                $output_html .= '<a  onclick="undeployAreaConfirm_jingqu(\'' . $address[1] . '\',2)">取消热门景区 &nbsp;</a>';
             } else {
                 $output_html .= '<a style="color:darkgrey">设为热门景区 &nbsp;</a>';
             }
             if ($area->course == '0') {
-                $output_html .= '<a href="#" onclick="deployAreaConfirm_jingqu(\'' . $address[1] . '\',1)">设为热门线路 &nbsp;</a>';
+                $output_html .= '<a  onclick="deployAreaConfirm_jingqu(\'' . $address[1] . '\',1)">设为热门线路 &nbsp;</a>';
             } else if ($area->course == '1') {
-                $output_html .= '<a href="#" onclick="undeployAreaConfirm_jingqu(\'' . $address[1] . '\',1)">取消热门线路 &nbsp;</a>';
+                $output_html .= '<a  onclick="undeployAreaConfirm_jingqu(\'' . $address[1] . '\',1)">取消热门线路 &nbsp;</a>';
             } else {
                 $output_html .= '<a style="color: darkgrey">设为热门线路 &nbsp;</a>';
             }
@@ -139,12 +142,12 @@ class address_inside extends BaseController
             $output_html .= '<td>';
             $output_html .= '<a href="' . base_url() . 'editcourse/' . $course->id . '">查看 &nbsp;</a>';
             if ($course->status == '0') {
-                $output_html .= '<a href="#" onclick="deleteAreaConfirm(' . $course->id . ')">删除 &nbsp;</a>';
+                $output_html .= '<a  onclick="deleteAreaConfirm(' . $course->id . ')">删除 &nbsp;</a>';
             }
             if ($course->status == '0') {
-                $output_html .= '<a href="#" onclick="deployAreaConfirm(' . $course->id . ')">上架 &nbsp;</a>';
+                $output_html .= '<a  onclick="deployAreaConfirm(' . $course->id . ')">上架 &nbsp;</a>';
             } else {
-                $output_html .= '<a href="#" onclick="undeployAreaConfirm(' . $course->id . ')">下架 &nbsp;</a>';
+                $output_html .= '<a  onclick="undeployAreaConfirm(' . $course->id . ')">下架 &nbsp;</a>';
             }
             $output_html .= '</td>';
             $output_html .= '</tr>';

@@ -55,7 +55,7 @@ function selectScenicArea(index){
     }
 
     var shopid = sessionStorage.getItem('shopid');
-    window.location.href = 'home.php?shopid=' + shopid + '&type=2&targetid=' + new_scenic_id;
+    window.location.href = 'home.php?shopid=' + shopid + '&type=2&targetid=' + new_scenic_id+"&map_type="+scenic_list[index]['map_type'];
 }
 
 function filter_scenic(search_text){

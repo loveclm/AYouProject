@@ -11,7 +11,7 @@ class auth_model extends CI_Model
     {
         $this->db->select('au.id as id, sh.name as shopName, tr.name as tourName, ' .
             ' au.created_time as created, au.targetid as targetid, au.price as money, ' .
-            ' sh.address_1 as total, au.codecount as count, sh.address_2 as used, ' .
+            ' sh.address_1 as total, au.codecount as count, sh.address_1 as used, ' .
             ' au.status as status, sh.phonenumber as shopnumber');
         $this->db->from('tbl_authcode as au');
         $this->db->join('shop as sh', 'au.shopid = sh.id');
@@ -166,10 +166,11 @@ class auth_model extends CI_Model
         $this->db->select('id, code, status, ordered_time');
         $this->db->from('tbl_order');
         $this->db->where('authid', $id);
-        if ($status == '1')
-            $this->db->where('status', $status);
-        else if ($status != '0')
-            $this->db->where("status <> '1'");
+        if ($status == 2)
+            $this->db->where('status', 0);
+        else if ($status != 0)
+            $this->db->where("status > 0");
+        //var_dump($id.','.$status);
         $this->db->where("ordertype","4");
         $this->db->order_by('ordered_time', 'desc');
         $query = $this->db->get();

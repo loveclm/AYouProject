@@ -85,14 +85,16 @@ class qrmanage extends BaseController
                     && $this->global['shop_manager_number'] != $list->shopnumber
                 ) continue;
 
-                $info = array('target' => $areaInfo->name,
+                $info = array(
+                    'target' => $areaInfo->name,
                     'shop' => $list->name,
                     'type' => $list->type == '1' ? '旅游线路' : '景区',
                     'time' => $list->created_time,
                     'id' => $list->id,
                     'targetid' => $areaid,
                     'areatype' => $list->type,
-                    'shopid' => $list->shopid
+                    'shopid' => $list->shopid,
+                    'isforeign' => $areaInfo->isforeign
                 );
                 array_push($qrList, $info);
             }
@@ -205,7 +207,7 @@ class qrmanage extends BaseController
             $output_html .= '<td>' . $qr['target'] . '</td>';
             $output_html .= '<td>' . $qr['time'] . '</td>';
             $output_html .= '<td>';
-            $output_html .= '<a href="#" onclick="showQR(\'' . base_url() . '\',\'' . $qr['id'] . '\')">查看 &nbsp;</a>';
+            $output_html .= '<a  onclick="showQR(\'' . base_url() . '\',\'' . $qr['id'] . '\')">查看 &nbsp;</a>';
             $output_html .= '</td>';
             $output_html .= '</tr>';
         }

@@ -23,7 +23,7 @@
         <div class="tab-content">
             <div id="tab_content1" class="tab-pane <?php echo $showList == '1' ? 'active' : ''; ?>">
                 <div class="content" style="min-height: 800px;">
-                    <div class="container">
+                    <div >
                         <div class="row">
                             <div class="col-xs-4 col-sm-4 form-inline">
                                 <div class="form-group area-search-name-view">
@@ -82,7 +82,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="container">
+                    <div>
                         <div class="row">
                             <table class="table table-bordered area-result-view">
                                 <thead>
@@ -174,7 +174,7 @@
 
             <div id="tab_content2" class="tab-pane <?php echo $showList == '1' ? '' : 'active'; ?>">
                 <div class="content" style="min-height: 800px;">
-                    <div class="container">
+                    <div>
                         <div class="row">
                             <div class="col-xs-4 col-sm-4 form-inline">
                                 <div class="form-group area-search-name-view">
@@ -229,7 +229,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="container">
+                    <div>
                         <div class="row">
                             <table class="table table-bordered area-result-view">
                                 <thead>

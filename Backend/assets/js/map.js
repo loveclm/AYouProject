@@ -40,7 +40,7 @@ var zoom_data;
  */
 function initMap(center) {
     zoom_data = parseInt($("#map_zoom_data").val());
-    if($("#map_zoom_data").val()==undefined) zoom_data=13;
+    if ($("#map_zoom_data").val() == undefined) zoom_data = 13;
     map = new AMap.Map('custom-map-container', {
         resizeEnable: true,
         zoom: zoom_data,
@@ -64,7 +64,7 @@ function initMap(center) {
     googleLayer = new AMap.TileLayer({
         // 图块取图地址
         tileUrl: 'https://mt{1,2,3,0}.google.cn/vt/lyrs=m@142&hl=zh-CN&gl=cn&x=[x]&y=[y]&z=[z]&s=Galil',
-        zIndex:100
+        zIndex: 100
     });
     googleLayer.setMap(map);
 
@@ -104,32 +104,32 @@ function getData(data, level) {
             map.setFitView();//地图自适应
             setTimeout(function () {
                 var pos = map.getCenter();
-                currentLocation = [pos['lng'], pos['lat']];
-                console.log(currentLocation);
-                var position = currentLocation;
-
-                leftBottom = [position[0] - .01, position[1] - .01];
-                rightTop = [position[0] + .01, position[1] + .01];
-
-                imageLayer.setBounds(new AMap.Bounds(leftBottom, rightTop));
-                cornerLocation = [rightTop[0], leftBottom[1]];
-                mapMarker.setPosition(currentLocation);
-                mapMarker1.setPosition(cornerLocation);
-                var arr = [leftBottom, rightTop];
-                $('#area-position').val(JSON.stringify(arr));
-
-                for (var i = 0; i < markList.length; i++) {
-
-                    //pos1 = JSON.parse($('#pointposition-' + markList[i]['G']['id']).val());
-
-                    markPosition = currentLocation;
-
-                    $('#pointposition-' + markList[i]['G']['id']).val(JSON.stringify(markPosition));
-
-                    markList[i].setPosition(markPosition);
-                }
-
-
+                //currentLocation = [pos['lng'], pos['lat']];
+                // console.log(currentLocation);
+                // var position = currentLocation;
+                //
+                // leftBottom = [position[0] - .01, position[1] - .01];
+                // rightTop = [position[0] + .01, position[1] + .01];
+                //
+                // imageLayer.setBounds(new AMap.Bounds(leftBottom, rightTop));
+                // cornerLocation = [rightTop[0], leftBottom[1]];
+                // mapMarker.setPosition(currentLocation);
+                // mapMarker1.setPosition(cornerLocation);
+                // var arr = [leftBottom, rightTop];
+                // $('#area-position').val(JSON.stringify(arr));
+                //
+                // for (var i = 0; i < markList.length; i++) {
+                //
+                //     //pos1 = JSON.parse($('#pointposition-' + markList[i]['G']['id']).val());
+                //
+                //     markPosition = currentLocation;
+                //
+                //     $('#pointposition-' + markList[i]['G']['id']).val(JSON.stringify(markPosition));
+                //
+                //     markList[i].setPosition(markPosition);
+                // }
+                var position = [pos['lng'], pos['lat']];
+                setLayerPosition(position, 0);
             }, 1000);
         }
 
@@ -170,7 +170,7 @@ function getData(data, level) {
     }
 
     if (subList) {
-        switch (level){
+        switch (level) {
             case 'province':
                 contentSub = new Option('--选择市--');
                 break
@@ -200,6 +200,7 @@ function getData(data, level) {
     }
 
 }
+
 function search(obj) {
     //清除地图上所有覆盖物
     for (var i = 0, l = polygons.length; i < l; i++) {
@@ -218,6 +219,8 @@ function search(obj) {
         $("#cityName").html('');
         $("#districtName").html('');
     }
+    if ($('#page_Id').html() == '编辑旅游线路' || $('#page_Id').html() == '新增旅游线路')
+        showAreaList($("#provinceName").html(), $("#cityName").html(), 1);
     district.setExtensions('all');
     //行政区查询
     //按照adcode进行查询可以保证数据返回的唯一性
@@ -232,9 +235,65 @@ function setCenter(obj) {
     map.setCenter(obj[obj.options.selectedIndex].center);
 }
 
+function setLayerPosition(position, mode) {
+
+    //var target = e['target']['G'];
+    var pos1 = [];
+    var markPosition = [];
+    if (mode == 0) { // move center point
+        // calculate moving amount
+        var dx = position[0] - currentLocation[0];
+        var dy = position[1] - currentLocation[1];
+        currentLocation = position;
+        // move overlay
+        leftBottom[0] += dx;
+        leftBottom[1] += dy;
+        rightTop[0] += dx;
+        rightTop[1] += dy;
+        for (var i = 0; i < markList.length; i++) {
+
+            pos1 = JSON.parse($('#pointposition-' + markList[i]['G']['id']).val());
+
+            markPosition = [pos1[0] + dx, pos1[1] + dy];
+
+            $('#pointposition-' + markList[i]['G']['id']).val(JSON.stringify(markPosition));
+
+            markList[i].setPosition(markPosition);
+        }
+        cornerLocation = [rightTop[0], leftBottom[1]];
+        mapMarker.setPosition(position);
+        mapMarker1.setPosition(cornerLocation);
+    } else if (mode == 1) {
+        // move overlay
+        originalLocation = [rightTop[0], leftBottom[1]];
+        rightTop[0] = position[0];
+        leftBottom[1] = position[1];
+        leftBottom[0] = currentLocation[0] - (position[0] - currentLocation[0]);
+        rightTop[1] = currentLocation[1] - (position[1] - currentLocation[1]);
+
+        var rate = [(originalLocation[0] - currentLocation[0]) / (position[0] - currentLocation[0]),
+            (originalLocation[1] - currentLocation[1]) / (position[1] - currentLocation[1])];
+
+        for (var i = 0; i < markList.length; i++) {
+
+            pos1 = JSON.parse($('#pointposition-' + markList[i]['G']['id']).val());
+            markPosition = [currentLocation[0] + (pos1[0] - currentLocation[0]) / rate[0],
+                currentLocation[1] + (pos1[1] - currentLocation[1]) / rate[1]];
+            //if(pos1[0]-currentLocation[0]<.0001) markPosition[0] = pos1[0];
+            //if(pos1[1]-currentLocation[1]<.000001) markPosition[1] = pos1[1];
+            $('#pointposition-' + markList[i]['G']['id']).val(JSON.stringify(markPosition));
+            markList[i].setPosition(markPosition);
+        }
+    }
+    imageLayer.setBounds(new AMap.Bounds(leftBottom, rightTop));
+    var arr = [leftBottom, rightTop];
+    $('#area-position').val(JSON.stringify(arr));
+}
+
 
 AMapUI.loadUI(['misc/PoiPicker'], function (PoiPicker) {
     $('#city_Name').on('change', searchCity);
+
     function searchCity(event) {
         var poiPicker = new PoiPicker({
             input: 'city_Name',
@@ -258,17 +317,20 @@ AMapUI.loadUI(['misc/PoiPicker'], function (PoiPicker) {
 
                 //console.log(poi);
             }
-            currentLocation = [poi['location']['lng'], poi['location']['lat']];
-            map.setCenter(currentLocation);
-            var position = currentLocation;
-
-            leftBottom = [position[0] - .01, position[1] - .01];
-            rightTop = [position[0] + .01, position[1] + .01];
-
-            imageLayer.setBounds(new AMap.Bounds(leftBottom, rightTop));
-            cornerLocation = [rightTop[0], leftBottom[1]];
-            mapMarker.setPosition(currentLocation);
-            mapMarker1.setPosition(cornerLocation);
+            var position = [poi['location']['lng'], poi['location']['lat']];
+            map.setCenter(position);
+            // currentLocation = [poi['location']['lng'], poi['location']['lat']];
+            // map.setCenter(currentLocation);
+            // var position = currentLocation;
+            //
+            // leftBottom = [position[0] - .01, position[1] - .01];
+            // rightTop = [position[0] + .01, position[1] + .01];
+            //
+            // imageLayer.setBounds(new AMap.Bounds(leftBottom, rightTop));
+            // cornerLocation = [rightTop[0], leftBottom[1]];
+            // mapMarker.setPosition(currentLocation);
+            // mapMarker1.setPosition(cornerLocation);
+            setLayerPosition(position, 0);
             var arr = [leftBottom, rightTop];
             $('#area-position').val(JSON.stringify(arr));
         });
@@ -301,31 +363,13 @@ $(document).ready(function () {
         cornerLocation = [rightTop[0], leftBottom[1]];
         currentLocation = [(leftBottom[0] + rightTop[0]) / 2, (leftBottom[1] + rightTop[1]) / 2];
         var overlay = $('#area-overlay').val();
-        //var imageLayer = new AMap.ImageLayer({
-        //    url: url + 'uploads/' + overlay,
-        //    bounds: new AMap.Bounds(
-        //        leftBottom,   //左下角
-        //        rightTop    //右上角
-        //    ),
-        //    zooms: [5, 18]
-        //});
+
         map = new AMap.Map('custom-map-container', {
             resizeEnable: true,
             center: currentLocation,
             zoom: zoom_data,
             scrollWheel: true
-            //layers: [
-            //    new AMap.TileLayer(),
-            //    imageLayer
-            //]
         });
-
-        googleLayer = new AMap.TileLayer({
-            // 图块取图地址
-            tileUrl: 'https://mt{1,2,3,0}.google.cn/vt/lyrs=m@142&hl=zh-CN&gl=cn&x=[x]&y=[y]&z=[z]&s=Galil',
-            zIndex:100
-        });
-        googleLayer.setMap(map);
 
         imageLayer = new AMap.ImageLayer({
             url: url + 'uploads/' + overlay,
@@ -356,7 +400,8 @@ $(document).ready(function () {
         });
         mapMarker.on('mousemove', function (e) {
             if (dragging) {
-                setLayerPosition(e, 0);
+                var position = [e['lnglat']['lng'], e['lnglat']['lat']];
+                setLayerPosition(position, 0);
             }
         });
         dragging1 = false;
@@ -377,7 +422,8 @@ $(document).ready(function () {
         });
         mapMarker1.on('mousemove', function (e) {
             if (dragging1) {
-                setLayerPosition(e, 1);
+                var position = [e['lnglat']['lng'], e['lnglat']['lat']];
+                setLayerPosition(position, 1);
             }
         });
         addPointFromArea(url);
@@ -401,7 +447,7 @@ $(document).ready(function () {
         googleLayer = new AMap.TileLayer({
             // 图块取图地址
             tileUrl: 'https://mt{1,2,3,0}.google.cn/vt/lyrs=m@142&hl=zh-CN&gl=cn&x=[x]&y=[y]&z=[z]&s=Galil',
-            zIndex:100
+            zIndex: 100
         });
         googleLayer.setMap(map);
 
@@ -433,7 +479,8 @@ $(document).ready(function () {
         });
         mapMarker.on('mousemove', function (e) {
             if (dragging) {
-                setLayerPosition(e, 0);
+                var position = [e['lnglat']['lng'], e['lnglat']['lat']];
+                setLayerPosition(position, 0);
             }
         });
         mapMarker1 = new AMap.Marker({
@@ -453,64 +500,10 @@ $(document).ready(function () {
         });
         mapMarker1.on('mousemove', function (e) {
             if (dragging1) {
-                setLayerPosition(e, 1);
+                var position = [e['lnglat']['lng'], e['lnglat']['lat']];
+                setLayerPosition(position, 1);
             }
         });
-    }
-
-    function setLayerPosition(e, mode) {
-
-        var target = e['target']['G'];
-        var position = [e['lnglat']['lng'], e['lnglat']['lat']];
-        var pos1 = [];
-        var markPosition = [];
-        if (mode == 0) { // move center point
-            // calculate moving amount
-            var dx = position[0] - currentLocation[0];
-            var dy = position[1] - currentLocation[1];
-            currentLocation = position;
-            // move overlay
-            leftBottom[0] += dx;
-            leftBottom[1] += dy;
-            rightTop[0] += dx;
-            rightTop[1] += dy;
-            for (var i = 0; i < markList.length; i++) {
-
-                pos1 = JSON.parse($('#pointposition-' + markList[i]['G']['id']).val());
-
-                markPosition = [pos1[0] + dx, pos1[1] + dy];
-
-                $('#pointposition-' + markList[i]['G']['id']).val(JSON.stringify(markPosition));
-
-                markList[i].setPosition(markPosition);
-            }
-            cornerLocation = [rightTop[0], leftBottom[1]];
-            mapMarker1.setPosition(cornerLocation);
-        } else if (mode == 1) {
-            // move overlay
-            originalLocation = [rightTop[0], leftBottom[1]];
-            rightTop[0] = position[0];
-            leftBottom[1] = position[1];
-            leftBottom[0] = currentLocation[0] - (position[0] - currentLocation[0]);
-            rightTop[1] = currentLocation[1] - (position[1] - currentLocation[1]);
-
-            var rate = [(originalLocation[0] - currentLocation[0]) / (position[0] - currentLocation[0]),
-                (originalLocation[1] - currentLocation[1]) / (position[1] - currentLocation[1])];
-
-            for (var i = 0; i < markList.length; i++) {
-
-                pos1 = JSON.parse($('#pointposition-' + markList[i]['G']['id']).val());
-                markPosition = [currentLocation[0] + (pos1[0] - currentLocation[0]) / rate[0],
-                    currentLocation[1] + (pos1[1] - currentLocation[1]) / rate[1]];
-                //if(pos1[0]-currentLocation[0]<.0001) markPosition[0] = pos1[0];
-                //if(pos1[1]-currentLocation[1]<.000001) markPosition[1] = pos1[1];
-                $('#pointposition-' + markList[i]['G']['id']).val(JSON.stringify(markPosition));
-                markList[i].setPosition(markPosition);
-            }
-        }
-        imageLayer.setBounds(new AMap.Bounds(leftBottom, rightTop));
-        var arr = [leftBottom, rightTop];
-        $('#area-position').val(JSON.stringify(arr));
     }
 
     /*
@@ -546,12 +539,26 @@ $(document).ready(function () {
 
     /////////////////////////////////////////////////////
 
-
+    if ($('#pageId').html() == '国外地区') {
+        var country_list = (JSON.parse($('#countryList').val()));
+        $('#searchContinent').on('change', function () {
+            var continent = parseInt($('#searchContinent').val());
+            var country_html = '<option value="0" selected>选择国家</option>';
+            for (var i = 1; i <= country_list.length; i++) {
+                if (parseInt(country_list[i - 1].continent) == continent) {
+                    if (country_list[i - 1].country == '中国') continue;
+                    country_html += '<option value="' + i + '" >' + country_list[i - 1].country + '</option>';
+                }
+            }
+            $('#searchCountry').html(country_html);
+        })
+    }
     /*
      Event code that upload overlay image to Tourist Area
      */
     var files;
     $('#upload-overlay').on('change', prepareUpload);
+
     function prepareUpload(event) {
         event.stopPropagation(); // Stop stuff happening
         event.preventDefault(); // Totally stop stuff happening
@@ -622,8 +629,64 @@ $(document).ready(function () {
         });
     }
 
+    //upload image for Thumb
+    $('#upload-thumb-file').on('change', uploadThumbImage);
+
+    function uploadThumbImage(event) {
+        event.stopPropagation(); // Stop stuff happening
+        event.preventDefault(); // Totally stop stuff happening
+        files = event.target.files;
+        if (this.files[0].type != "image/jpeg" && this.files[0].type != "image/png") {
+            window.alert("图片格式不正确.");
+            return;
+        }
+        if (this.files[0].size > 1000000) {
+            window.alert("图片要不超过1M.");
+            return;
+        }
+        var data = new FormData();
+        $.each(files, function (key, value) {
+            data.append(key, value);
+        });
+        console.log(data);
+
+        $("#upload-thumb-msg").html('图片上传中...');
+        $("#upload-thumb-msg").show();
+
+        $.ajax({
+            url: baseURL + 'api/Areas/upload',
+            type: 'POST',
+            data: data,
+            cache: false,
+            dataType: 'json',
+            processData: false, // Don't process the files
+            contentType: false, // Set content type to false as jQuery will tell the server its a query string request
+            success: function (data, textStatus, jqXHR) {
+                if (typeof data.error === 'undefined') {
+                    if (data['status'] == true) {
+                        var url = baseURL + 'uploads/' + data['file'];
+                        $("#area-thumb-img").attr("src", url);
+                        $("#upload-thumb-msg").html(data['file']);
+                        $("#upload-thumb-msg").hide();
+                    }
+                }
+                else {
+                    // Handle errors here
+                    console.log('ERRORS: ' + data.error);
+                }
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                // Handle errors here
+                console.log('ERRORS: ' + textStatus);
+                // STOP LOADING SPINNER
+            }
+        });
+
+    }
+
     //upload image for attraction
     $('#upload-point-image').on('change', uploadPointImage);
+
     function uploadPointImage(event) {
         event.stopPropagation(); // Stop stuff happening
         event.preventDefault(); // Totally stop stuff happening
@@ -632,8 +695,8 @@ $(document).ready(function () {
             window.alert("图片格式不正确.");
             return;
         }
-        if (this.files[0].size > 10000000) {
-            window.alert("图片要不超过10M.");
+        if (this.files[0].size > 1000000) {
+            window.alert("图片要不超过1M.");
             return;
         }
         var data = new FormData();
@@ -679,6 +742,7 @@ $(document).ready(function () {
 
     //upload audio for attraction
     $('#upload-point-audio').on('change', uploadPointAudio);
+
     function uploadPointAudio(event) {
         event.stopPropagation(); // Stop stuff happening
         event.preventDefault(); // Totally stop stuff happening
@@ -734,6 +798,7 @@ $(document).ready(function () {
 
     //upload audio for attraction
     $('#upload-area-audio').on('change', uploadAreaAudio);
+
     function uploadAreaAudio(event) {
 
         event.stopPropagation(); // Stop stuff happening
@@ -809,6 +874,7 @@ $(document).ready(function () {
     }
 });
 var isNewPoint = 0;
+
 function showAddPoint() {
 
     showPointMarker();
@@ -830,6 +896,7 @@ function showAddPoint() {
 
 
 }
+
 var marker = null;
 
 function showPointMarker() {
@@ -844,7 +911,7 @@ function showPointMarker() {
     });
     var position = map.getCenter();
 
-    $('#point-position-temp').val(JSON.stringify([position['lng'],position['lat']]));
+    $('#point-position-temp').val(JSON.stringify([position['lng'], position['lat']]));
     marker.on('dragend', function (e) {
         var target = e['target']['G'];
         var position = [e['lnglat']['lng'], e['lnglat']['lat']];
@@ -852,6 +919,7 @@ function showPointMarker() {
         console.log($('#point-position-temp').val());
     });
 }
+
 // Add attraction to Tourist Area
 function addPointFromArea(url) {
 
@@ -904,8 +972,8 @@ function addPointFromArea(url) {
                 "<input style='display: none;' value='" + pointImage + "'/>" +
                 "<input style='display: none;' value='" + pointAudio + "'/>" +
                 "<input style='display: none;' value='" + pointFree + "'/>" +
-                "<div class='col-sm-3' data-id='" + markerId + "' onclick='editPoint(this);'><a href='#'>编辑</a></div>" +
-                "<div class='col-sm-3' data-id='" + markerId + "' onclick='deletePoint(this);'><a href='#'>删除</a></div>" +
+                "<div class='col-sm-3' data-id='" + markerId + "' onclick='editPoint(this);'><a>编辑</a></div>" +
+                "<div class='col-sm-3' data-id='" + markerId + "' onclick='deletePoint(this);'><a>删除</a></div>" +
                 "</li>");
         }
     });
@@ -936,7 +1004,7 @@ function addPoint(param) {
 
         var pointIndex = $('#point-view-index').val();
         var ptCenter = JSON.parse($('#point-position-temp').val());
-        console.log(ptCenter+",,,"+pointIndex);
+        console.log(ptCenter + ",,," + pointIndex);
         $('#point-position-temp').val('');
         if (pointIndex == '0') {
 
@@ -964,8 +1032,8 @@ function addPoint(param) {
                 "<input style='display: none;' value='" + pointImage + "'/>" +
                 "<input style='display: none;' value='" + pointAudio + "'/>" +
                 "<input style='display: none;' value='" + pointFree + "'/>" +
-                "<div class='col-sm-3' data-id='" + markerId + "' onclick='editPoint(this);'><a href='#'>编辑</a></div>" +
-                "<div class='col-sm-3' data-id='" + markerId + "' onclick='deletePoint(this);'><a href='#'>删除</a></div>" +
+                "<div class='col-sm-3' data-id='" + markerId + "' onclick='editPoint(this);'><a >编辑</a></div>" +
+                "<div class='col-sm-3' data-id='" + markerId + "' onclick='deletePoint(this);'><a>删除</a></div>" +
                 "</li>");
         }
         else {
@@ -983,6 +1051,7 @@ function addPoint(param) {
     }
     return marker;
 }
+
 // edit Attraction
 function editPoint(e) {
     isNewPoint = 0;
@@ -1045,20 +1114,25 @@ function deletePoint(e) {
 function addTouristArea(url, isEdit) {
     var area = $("#areaname").val();
     var rate = (parseFloat($("#arearate").val())) / 100;
+    var thumb = $('#upload-thumb-msg').html();
     var overlay = $('#area-overlay').val();
     var provinceText = $('#provinceName').html();
     var cityText = $('#cityName').html();
-    var districtText = $('#districtName').html();
+    // var districtText = $('#districtName').html();
     var pointText = $('#city_Name').val();
-    if (districtText == '' || cityText == '' || provinceText == '') {
+    var audioText = $('#area-audio-file').html().trim();
+    if (cityText == '' || provinceText == '') {
         window.alert("请选择地址");
         return;
     }
-    var address = provinceText + "," +
-        cityText + "," + districtText + "," + pointText;
 
     if (area == '') {
         window.alert("请请输入名称");
+        return;
+    }
+
+    if(audioText=='录音上传中...') {
+        window.alert('请稍候，录音文件正在上传');
         return;
     }
 
@@ -1067,10 +1141,14 @@ function addTouristArea(url, isEdit) {
         return;
     } else $("#custom-error-areaname").hide();
 
+
+
     var info = {
+        pointText: pointText,
         overay: overlay,
+        thumbnail: thumb.trim(),
         position: (($('#area-position').val() != '') ? JSON.parse($('#area-position').val()) : ''),
-        audio: $('#area-audio-file').html(),
+        audio: $('#area-audio-file').html().trim(),
         zoom: map.getZoom()
     };
     console.log(info);
@@ -1086,9 +1164,11 @@ function addTouristArea(url, isEdit) {
     var touristArea = {
         name: area,
         discount_rate: rate,
-        address: address,
+        address: provinceText,
+        address_1: cityText,
         status: 0,
         type: 2, // 1-course,     2-area
+        isforeign: 1, //1-foreign, 2-inside
         price: price,
         info: JSON.stringify(info),
         point_list: JSON.stringify(attraction_list)
@@ -1191,32 +1271,55 @@ function deployArea(url, type) {
 
 function uploadOverlay() {
     if ($("#page_loaded_status").val() == '1') {
+        $('#upload-overlay').val('');
         $('#upload-overlay').click();
     } else {
         alert("页加载中. 请等一下.");
     }
 }
+
+function uploadThumb() {
+    if ($("#page_loaded_status").val() == '1') {
+        $('#upload-thumb-file').val('');
+        $('#upload-thumb-file').click();
+    } else {
+        alert("页加载中. 请等一下.");
+    }
+}
+
+function deleteThumb() {
+    $('#upload-thumb-msg').html('');
+    $("#area-thumb-img").attr("src", baseURL + 'assets/images/default.png');
+}
+
 function uploadPointImage() {
     if ($("#page_loaded_status").val() == '1') {
+        $('#upload-point-image').val('');
         $('#upload-point-image').click();
     } else {
         alert("页加载中. 请等一下.");
     }
 }
+
 function uploadPointAudio() {
+
     if ($("#page_loaded_status").val() == '1') {
+        $('#upload-point-audio').val('');
         $('#upload-point-audio').click();
     } else {
         alert("页加载中. 请等一下.");
     }
 }
+
 function uploadAreaAudio() {
     if ($("#page_loaded_status").val() == '1') {
+        $('#upload-area-audio').val('');
         $('#upload-area-audio').click();
     } else {
         alert("页加载中. 请等一下.");
     }
 }
+
 function searchMapArea() {
     var city = $("#city_Name").val();
     $("#city_Name").val('');

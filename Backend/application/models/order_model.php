@@ -65,8 +65,8 @@ class order_model extends CI_Model
                 break;
         }
         $this->db->where($likeCriteria);
-        if ($stDate != '') $this->db->where("date(od.ordered_time) >= '" . date($stDate) . "'");
-        if ($enDate != '') $this->db->where("date(od.ordered_time) <= '" . date($enDate) . "'");
+        if ($stDate != '') $this->db->where("date(od.paid_time) >= '" . date($stDate) . "'");
+        if ($enDate != '') $this->db->where("date(od.paid_time) <= '" . date($enDate) . "'");
 
         if ($status != '0') $this->db->where('au.status', $status);
         //$this->db->where("(od.userphone)<>'0'");
@@ -296,15 +296,18 @@ class order_model extends CI_Model
                     $area_info = json_decode($areaitem->info);
                     $kind = $areaitem->type;
                     if ($item->attractionid != 0) $kind = 3;
+                    if ($kind == '2') $area_Image = $area_info->thumbnail;
+                    else $area_Image = $area_info->overay;
                     array_push(
                         $Auths,
                         array(
                             'id' => $item->value,
+                            'title' => $areaitem->name,
                             'name' => $this->area_model->getCourseNameByAreaId($item->areaid),
                             'areaid' => $item->areaid,
                             'attractionid' => $item->attractionid,
                             'order_kind' => $kind,
-                            'image' => base_url() . 'uploads/' . $area_info->overay,
+                            'image' => base_url() . 'uploads/' . $area_Image,
                             'pay_method' => 2, // auth order
                             'value' => $item->code,
                             'cost' => round((floatval($areaitem->price) - $this->calculateMyPrice($mobile, $item->areaid))
@@ -325,15 +328,18 @@ class order_model extends CI_Model
                     if (count($areaitem) == 0) continue;
                     $attritem = json_decode($areaitem->point_list);
                     $area_info = json_decode($areaitem->info);
+                    if ($Types == '2') $area_Image = $area_info->thumbnail;
+                    else $area_Image = $area_info->overay;
                     array_push(
                         $Auths,
                         array(
                             'id' => $item->value,
+                            'title' => $areaitem->name,
                             'name' => $this->area_model->getCourseNameByAreaId($item->areaid),
                             'areaid' => $item->areaid,
                             'attractionid' => $item->attractionid,
                             'order_kind' => $Types,
-                            'image' => base_url() . 'uploads/' . $area_info->overay,
+                            'image' => base_url() . 'uploads/' . $area_Image,
                             'pay_method' => 1, // buy order
                             'value' => $item->code,
                             'cost' => round((floatval($item->code) - $this->calculateMyPrice($mobile, $item->areaid)
@@ -354,6 +360,7 @@ class order_model extends CI_Model
                 } else { //buy attraction
                     $areaitem = $this->area_model->getAreaById($item->areaid);
                     if (count($areaitem) == 0) continue;
+                    $area_attr_info = json_decode($areaitem->info);
                     $attritem = json_decode($areaitem->point_list);
                     $attr_id = explode('_', $item->attractionid);
                     $attritem = $attritem[$attr_id[1] - 1];
@@ -367,7 +374,7 @@ class order_model extends CI_Model
                             'areaid' => $item->areaid,
                             'attractionid' => $item->attractionid,
                             'order_kind' => $Types,
-                            'image' => base_url() . 'uploads/' . $attritem->image,
+                            'image' => base_url() . 'uploads/' . $area_attr_info->thumbnail,
                             'pay_method' => 1, // buy order
                             'value' => $item->code,
                             'cost' => round((floatval($item->code)
@@ -607,15 +614,18 @@ class order_model extends CI_Model
                 $area_info = json_decode($areaitem->info);
                 $kind = $areaitem->type;
                 if ($item->attractionid != 0) $kind = 3;
+                if($areaitem->type==1) $image_data=$area_info->overay;
+                else $image_data=$area_info->thumbnail;
                 array_push(
                     $Auths,
                     array(
                         'id' => $item->value,
-                        'name' => $areaitem->name,
+                        'name' => $this->area_model->getCourseNameByAreaId($item->areaid),
+                        'title' => $areaitem->name,
                         'areaid' => $item->areaid,
                         'attractionid' => $item->attractionid,
                         'order_kind' => $kind,
-                        'image' => base_url() . 'uploads/' . $area_info->overay,
+                        'image' => base_url() . 'uploads/' . $image_data,
                         'pay_method' => 2, // auth order
                         'value' => $item->code,
                         'cost' => $this->calculateMyPrice($mobile, $item->areaid),
@@ -635,15 +645,18 @@ class order_model extends CI_Model
             if (count($areaitem) != 0) {
                 $attritem = json_decode($areaitem->point_list);
                 $area_info = json_decode($areaitem->info);
+                if($areaitem->type==1) $image_data=$area_info->overay;
+                else $image_data=$area_info->thumbnail;
                 array_push(
                     $Auths,
                     array(
                         'id' => $item->value,
+                        'title' => $areaitem->name,
                         'name' => $this->area_model->getCourseNameByAreaId($item->areaid),
                         'areaid' => $item->areaid,
                         'attractionid' => $item->attractionid,
                         'order_kind' => $Types,
-                        'image' => base_url() . 'uploads/' . $area_info->overay,
+                        'image' => base_url() . 'uploads/' . $image_data,
                         'pay_method' => 1, // buy order
                         'value' => $item->code,
                         'cost' => $this->calculateMyPrice($mobile, $item->areaid),
@@ -662,6 +675,7 @@ class order_model extends CI_Model
             $areaitem = $this->area_model->getAreaById($item->areaid);
             if (count($areaitem) != 0) {
                 $attritem = json_decode($areaitem->point_list);
+                $area_info = json_decode($areaitem->info);
                 $attr_id = explode('_', $item->attractionid);
                 $attritem = $attritem[$attr_id[1] - 1];
                 array_push(
@@ -672,7 +686,7 @@ class order_model extends CI_Model
                         'areaid' => $item->areaid,
                         'attractionid' => $item->attractionid,
                         'order_kind' => $Types,
-                        'image' => base_url() . 'uploads/' . $attritem->image,
+                        'image' => base_url() . 'uploads/' . $area_info->thumbnail,
                         'pay_method' => 1, // buy order
                         'value' => $item->code,
                         'cost' => $attritem->price,

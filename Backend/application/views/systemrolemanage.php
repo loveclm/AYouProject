@@ -10,7 +10,7 @@
             <div class="row">
                 <div class="col-xs-12">
                     <div class="col-xs-12 box-header">
-                        <a class="btn btn-primary" href="#" onclick="$('#custom-generate-auth-count-view').show();">
+                        <a class="btn btn-primary"   onclick="$('#custom-generate-auth-count-view').show();">
                             添加
                         </a>
                     </div>
@@ -44,13 +44,13 @@
                                     <div id="permission<?php echo $record->roleId ?>"
                                          style="display: none"><?php echo isset($record->permission) ? $record->permission : ''; ?></div>
                                     <td class="text-center">
-                                        <a href="#"
+                                        <a
                                            onclick="showRoleEdit('<?php echo $record->roleId; ?>');">
                                             操作设置 &nbsp;
                                         </a>
                                     </td>
                                     <td class="text-center">
-                                        <a href="#" style="<?= ($roleStatus == 1) ? 'color:grey;' : ''; ?>"
+                                        <a  style="<?= ($roleStatus == 1) ? 'color:grey;' : ''; ?>"
                                            data-userid="<?php echo $record->roleId; ?>"
                                            onclick="<?= ($roleStatus != 1) ? ('confirmDelete(\''. $record->roleId.' \')') : ''; ?>">
                                             删除 &nbsp;

@@ -62,5 +62,23 @@
         </div>
         <div id="panel" style="display: none"></div>
     </div>
+    <div class="modal custom-modal" id="message_dialog">
+        <div class="modal-dialog" id="alert_message_dialog">
+            <div class="modal-content" style="border-radius: 12px;">
+                <div class="modal-body" style="padding-bottom: 0px;">
+                </div>
+                <div class="modal-footer" style="border: none; padding-top: 0px;">
+                    <button id="msg_cancel" type="button" class="btn_custom btn-default"
+                            onclick="$('#message_dialog').modal('hide');">取消
+                    </button>
+                    <button id="msg_ok" type="button" class="btn_custom"
+                            onclick="onOk()">确定
+                    </button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
 </body>
 </html>

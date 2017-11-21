@@ -6,6 +6,58 @@
 // Code included inside $( document ).ready() will only run once the page Document Object Model (DOM) is ready for JavaScript code to execute
 $(document).ready(function () {
 
+    $('#searchContinent').on('change', function () {
+        var country_list = $('#countryList').val();
+        var continent = parseInt($('#searchContinent').val());
+        var country_html = '<option value="0" selected>选择国家</option>';
+        country_list = JSON.parse(country_list);
+        for (var i = 1; i <= country_list.length; i++) {
+            if (parseInt(country_list[i - 1].continent) == continent) {
+                //if (country_list[i - 1].country == '中国') continue;
+                country_html += '<option value="' + i + '" >' + country_list[i - 1].country + '</option>';
+            }
+        }
+        $('#searchCountry').html(country_html);
+        if ($('#searchCountry :selected').html() == '中国') $('#detail_addr').show();
+        else $('#detail_addr').hide();
+    });
+
+    $('#searchCountry').on('change', function () {
+        if ($('#searchCountry :selected').html() == '中国') $('#detail_addr').show();
+        else $('#detail_addr').hide();
+    });
+
+    if ($('#page_Id').html() == '商家列表') {
+        searchShop(baseURL);
+    } else if ($('#page_Id').html() == '编辑商家') {
+        if ($('#address_2').val() != '') {
+            var address_2 = $('#address_2').val().split(',');
+            if (address_2[2] == '1') {
+                $('#detail_addr').show();
+                var continent_view = $('#searchContinent').children();
+                var cur_cont = 0;
+                var country_view = '';
+                country_view += '<option value="0">选择国家</option>';
+                country_view += '<option value="1" selected>中国</option>';
+                $('#searchCountry').html(country_view);
+            } else {
+                var continent_view = $('#searchContinent').children();
+                var cur_cont = 0;
+                for (var i = 0; i < 6; i++) {
+                    if (address_2[0] == $(continent_view[i]).html()) {
+                        cur_cont = i;
+                    }
+                    $(continent_view[i])[0].selected = false;
+                }
+                $(continent_view[cur_cont])[0].selected = true;
+                var country_view = '';
+                country_view += '<option value="0">选择国家</option>';
+                if (address_2[1] != '')
+                    country_view += '<option value="1" selected>' + address_2[1] + '</option>';
+                $('#searchCountry').html(country_view);
+            }
+        }
+    }
 });
 
 // Search course on Course List Page
@@ -13,12 +65,11 @@ function searchShop(url) {
 
     var name = $('#searchName').val();
     var status = $('#searchStatus :selected').val();
-    name = name == '' ? 'all' : name;
-
-    var provinceText = $('#provinceName').html();
-    var cityText = $('#cityName').html();
-    var districtText = $('#districtName').html();
-    var address = provinceText + "_" + cityText + "_" + districtText;
+    //name = name == '' ? 'all' : name;
+    var continent = $('#searchContinent :selected').html();
+    var country = $('#searchCountry :selected').html();
+    if (continent == '选择洲') continent = '';
+    if (country == '选择国家') country = '';
 
     // location.href = url + 'shopListing/' + name + '/' + status;
 
@@ -26,7 +77,7 @@ function searchShop(url) {
         type: 'post',
         url: url + 'shop/shop_listing',
         dataType: 'json',
-        data: {name: name, address: address, status: status},
+        data: {name: name, address: continent + ',' + country, status: status},
         success: function (res) {
             if (res.status == 'success') {
 
@@ -38,6 +89,7 @@ function searchShop(url) {
             }
         }
     });
+    cancel(baseURL);
 }
 
 // Search course on Course List Page
@@ -92,17 +144,29 @@ function processShop(url, id) {
 
     var provinceText = $('#provinceName').html();
     var cityText = $('#cityName').html();
-    var districtText = $('#districtName').html();
-    if (districtText == '' || cityText == '' || provinceText == '') {
-        window.alert("请填写所有信息!.");
+    var continent = $('#searchContinent :selected').html();
+    var country = $('#searchCountry :selected').html();
+    if (continent == '选择洲') continent = '';
+    if (country == '选择国家') country = '';
+
+    var isforeign = 2;
+    if (country == '中国') {
+        if (cityText == '' || provinceText == '') {
+            window.alert("请选择地址。");
+            return;
+        }
+        continent = provinceText;
+        country = cityText;
+        isforeign = 1;
+    } else if (country == '' || continent == '') {
+        window.alert("请选择国家。");
         return;
     }
+
     if ($("#shoprate").val() == '' || rate <= 0 || type == '0') {
         window.alert("请填写所有信息!.");
         return;
     }
-    var address = provinceText + "," +
-        cityText + "," + districtText;
     if (name.length > 10) {
         $('#custom-error-shopname').show();
         return;
@@ -125,11 +189,12 @@ function processShop(url, id) {
             name: name,
             phonenumber: account,
             password: password,
-            address_1: address,
-            address_2: address,
+            address: continent,
+            address_1: country,
             type: type,
             discount_rate: rate,
-            status: 0
+            status: 0,
+            isforeign: isforeign
         };
         reqUrl = url + "api/Shops/saveAccount/" + id;
     }
@@ -138,11 +203,12 @@ function processShop(url, id) {
             name: name,
             phonenumber: account,
             password: password,
-            address_1: address,
-            address_2: address,
+            address: continent,
+            address_1: country,
             type: type,
             discount_rate: rate,
-            status: 0
+            status: 0,
+            isforeign: isforeign
         };
         reqUrl = url + "api/Shops/saveAccount";
     }
@@ -150,7 +216,7 @@ function processShop(url, id) {
     $.post(reqUrl, shopInfo, function (result) {
         console.log(result);
         window.alert(result['message']);
-        if (result['status'] == true) location.href = url + 'shop';
+        if (result['status'] == true) location.href = baseURL + 'shop';
     });
 
     return;
@@ -170,7 +236,7 @@ function deleteShop(url, type) {
     if (type == 1) {  // if ok button clicked
         $.post(url + "api/Shops/remove/" + $('#current-areaid').val(), function (result) {
             console.log(result);
-            location.href = url + 'shop';
+            searchShop(baseURL);
         });
     }
 }
@@ -202,15 +268,16 @@ function deployShop(url, type) {
         };
 
         $.post(url + "api/Shops/save/" + touristArea['id'], touristArea, function (result) {
-            location.href = url + 'shop';
+            searchShop(baseURL);
         });
     }
 }
 
-function showGenerateQR(id) {
+function showGenerateQR(id, isforeign) {
 
     $('#custom-generate-auth-view').show();
     $('#current-areaid').val(id);
+    $('#current-isforeign').val(isforeign);
     $('#current-codetype').val('qr');
 }
 
@@ -266,14 +333,15 @@ function generateAuth(url, confirm) {
 function showQR(url_suffix) {
     $('#custom-generate-qr-view').show();
     console.log('http://www.ayoubc.com/tour' + encodeURI(url_suffix));
-//    $('#qr-view').qrcode({text: 'http://www.ayoubc.com/tour/index.php' + url_suffix});
-    $('#qr-view').qrcode({text: 'http://www.ayoubc.com/test01' + url_suffix});
+    $('#qr-view').qrcode({text: 'http://www.ayoubc.com/tour/index.php' + url_suffix});
+//    $('#qr-view').qrcode({text: 'http://www.ayoubc.com/test01' + url_suffix});
 }
 
 function generateAuthFinal(url, confirm) {
     var authCount = parseInt($('#auth-count').val());
     var codeType = $('#current-codetype').val();
     var target = $('#current-targetid').val();
+    var isforeign = parseInt($('#current-isforeign').val());
     var type = $('#current-type').val();
     var shopid = $('#current-areaid').val();
     var targetname;
@@ -282,7 +350,8 @@ function generateAuthFinal(url, confirm) {
 
     if (codeType == 'qr') {
 
-        var data = 'http://www.ayoubc.com/tour/index.php?shopid=' + shopid + '&type=' + type + '&targetid=' + target;
+        var data = 'http://www.ayoubc.com/tour/index.php?shopid=' + shopid
+            + '&type=' + type + '&targetid=' + target + '&map_type=' + (isforeign - 1);
         var authInfo = {
             shopid: shopid,
             type: type,
@@ -297,7 +366,7 @@ function generateAuthFinal(url, confirm) {
 
             $('#qr-view').qrcode({text: data});
 
-            //location.href = url + 'shop';
+            searchShop(baseURL);
         });
 
     } else {
@@ -314,7 +383,7 @@ function generateAuthFinal(url, confirm) {
 
                 $.post(url + "api/Shops/generateAuth", authInfo, function (result) {
                     console.log(result);
-                    location.href = url + 'shop';
+                    searchShop(baseURL);
                 });
             }
         }
@@ -323,12 +392,18 @@ function generateAuthFinal(url, confirm) {
 
 //return previos page
 function cancel(url) {
-    location.href = url + 'shop';
+    $('#custom-generate-auth-view').hide();
+    $('#custom-confirm-deploy-view').hide();
+    $('#custom-generate-auth-count-view').hide();
+    $('#qr-view').html('');
+    $('#custom-generate-qr-view').hide();
 }
 
 //return previos page
 function cancelQR(url) {
-    location.href = url + 'qrmanage';
+    $('#qr-view').html('');
+    $('#custom-generate-qr-view').hide();
+    //location.href = url + 'qrmanage';
 }
 
 function findShopInList(url) {

@@ -54,9 +54,14 @@ function display_order_data(){
         tmp_content_html += '   <h5 class="order_state">'+state_string_List[order_List[i]['state']-1]+'</h5>';
         tmp_content_html += '</div>';
         tmp_content_html += '<div class="order_body" onclick="showOrderDetailInfo('+ i +')">';
-        tmp_content_html += '   <img src="../resource/image/logo.png">';
+        tmp_content_html += '   <img src="'+ order_List[i]['image'] +'">'; //'   <img src="../resource/image/logo.png">';
         tmp_content_html += '   <div>';
-        tmp_content_html += '       <h5>'+order_List[i]['name']+'</h5>';
+        if( order_List[i]['order_kind'] == 1)
+            tmp_content_html += '       <h5>'+order_List[i]['title']+'</h5>';
+	else
+            tmp_content_html += '       <h5>'+order_List[i]['name']+'</h5>';
+
+
 
         if(order_List[i]['pay_method'] == 1)
             tmp_content_html += '   <h5 style="color: red">¥' + parseFloat( order_List[i]['value']).toFixed(2)+ '</h5>';
@@ -165,7 +170,6 @@ function purchase_again_Order(index) {
     };
 
     sessionStorage.setObject('payment_data', payment_data);
-    //window.location.href = '../views/purchase.html';
     preparePayment();
 
 }
@@ -190,9 +194,7 @@ function resize_orderlist(){
         || window.innerHeight;
     var scale = Math.min(width/640,height/1010) * ratio;
 
-    //width = 640*scale;
     $('#content').css({width:width, height:height});
-    //$('#app_header').css({width:width});
 
     // resize map region
     var map_top = 0;//document.getElementById('app_header').clientHeight;

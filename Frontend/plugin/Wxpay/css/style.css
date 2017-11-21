@@ -58,6 +58,11 @@ html, body{
     height: 60px;
 }
 
+#btn-login{
+    background: url('../resource/image/login_on.png') no-repeat;
+    background-size: contain;
+}
+
 #btn-help{
     background: url('../resource/image/home_help.png') no-repeat;
     background-size: contain;
@@ -554,13 +559,16 @@ div.info-bottom img {
 #loading{ display: none;}
 
 
-.amap-touch-toolbar .amap-zoomcontrol:after{
+.amap-touch-toolbar
+.amap-zoomcontrol:after{
     top: 34px;
 }
-.amap-zoom-touch-minus, .amap-zoom-touch-plus{
+.amap-zoom-touch-minus,
+.amap-zoom-touch-plus{
     height: 29px;
 }
-.amap-zoom-touch-minus>div, .amap-zoom-touch-plus>div{
+.amap-zoom-touch-minus>div,
+.amap-zoom-touch-plus>div{
     font-size: 20px;
     line-height: 30px;
     color: #24c6d3;
@@ -581,3 +589,87 @@ div.info-bottom img {
     left: 80px;
     bottom: 50px;
 }
+
+#content_header span{
+    border: 1px solid #24c6d3;
+    margin: 0px -3px;
+    padding: 6px 21px;
+    border-radius: 3px;
+    color: #24c6d3;
+}
+
+#content_header{
+    padding: 15px;
+    background-color: #f6f6f6;
+    text-align: center;
+}
+
+#menu_body{
+    display: none;
+    position: absolute;
+    background-color: white;
+    width: 100%;
+    top: 100px;
+    margin: 0px;
+}
+
+#cssmenu{
+    z-index: 100;
+}
+
+.gmnoprint.gm-bundled-control.gm-bundled-control-on-bottom {
+    bottom: 120px!important;
+    left: 5px;
+}
+
+#note{
+    margin: 0px;
+    padding: 0px 10px;
+    padding-bottom: 10px;
+}
+#note .col-xs-3, #note .col-xs-4 {
+    padding: 0px;
+    margin: 0px;
+}
+
+.cmenu_item{
+    text-align: center;
+    color: #000000;
+}
+.cmenu_item span{
+    line-height: 2;
+    padding: 5px 10px;
+}
+
+.selected span{
+    color: #24c6d3;
+    border-bottom: 1px solid #24c6d3;
+}
+
+#cmenu_col0{
+    background-color: #ffffff;
+}
+
+#cmenu_col1{
+    background-color: #fafafa;
+}
+
+#cmenu_col2{
+    background-color: #f6f6f6;
+}
+
+#cmenu_col3{
+    background-color: #f2f2f2;//#eae8e9;
+}
+
+@font-face {
+    font-family: 'MyWebFont';
+    src : url('font-awesome/fonts/DFWaWaW5.woff');
+    /*src: url('font-awesome/fonts/W5.eot'); !* IE9 Compat Modes *!*/
+    /*src: url('font-awesome/fonts/W5.eot?#iefix') format('embedded-opentype'), !* IE6-IE8 *!*/
+    /*url('font-awesome/fonts/W5.woff2') format('woff2'), !* Super Modern Browsers *!*/
+    /*url('font-awesome/fonts/W5.woff') format('woff'), !* Pretty Modern Browsers *!*/
+    /*url('font-awesome/fonts/W5.ttf')  format('truetype'), !* Safari, Android, iOS *!*/
+    /*url('font-awesome/fonts/W5.svg#svgFontName') format('svg'); !* Legacy iOS *!*/
+}
+

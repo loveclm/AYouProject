@@ -23,7 +23,7 @@
         <div class="tab-content">
             <div id="tab_content1" class="tab-pane <?php echo $showList == '1' ? 'active' : ''; ?>">
                 <div class="content" style="min-height: 800px;">
-                    <div class="container">
+                    <div>
                         <div class="row">
                             <div class="col-xs-4 col-sm-4 form-inline">
                                     <div class="form-group area-search-name-view"
@@ -66,7 +66,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="container">
+                    <div >
                         <div class="row">
                             <table class="table table-bordered area-result-view">
                                 <thead>
@@ -105,7 +105,7 @@
                                         </td>
                                         <?php foreach ($shops as $sh) {
                                             $j++;
-                                            $price = floatval($sh->address_2->price);
+                                            $price = floatval($sh->address->price);
                                             $status = $sh->status != "" ? $sh->status->status : "";
                                             $fee = $price * floatval($sh->discount_rate);
                                             $settle = $price - $fee;
@@ -129,12 +129,12 @@
                                                 echo $status == 0 ? '未结算' : '已结算'; ?>
                                             </td>
                                             <td>
-                                                <a href="#" onclick="settleBuyDetail('<?php echo base_url(); ?>','<?php echo $sh->id; ?>');">查看订单
+                                                <a  onclick="settleBuyDetail('<?php echo base_url(); ?>','<?php echo $sh->id; ?>');">查看订单
                                                     &nbsp;</a>
                                                 <?php
                                                 if ($status == 0 && $shop_manager_number == '') {
                                                     ?>
-                                                    <a href="#"
+                                                    <a
                                                        onclick="showConfirmBuy('<?php echo $item['month_name']; ?>','<?php echo $sh->id; ?>');">
                                                         结算
                                                         &nbsp;</a>
@@ -193,7 +193,7 @@
 
             <div id="tab_content2" class="tab-pane <?php echo $showList == '1' ? '' : 'active'; ?>">
                 <div class="content" style="min-height: 800px;">
-                    <div class="container">
+                    <div >
                         <div class="row">
                             <div class="col-xs-4 col-sm-4 form-inline">
                                     <div class="form-group area-search-name-view"
@@ -237,7 +237,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="container">
+                    <div>
                         <div class="row">
                             <table class="table table-bordered area-result-view">
                                 <thead>
@@ -274,10 +274,10 @@
                                         </td>
                                         <?php foreach ($shops as $sh) {
                                             $j++;
-                                            $price = floatval($sh->address_2->price);
+                                            $price = floatval($sh->address->price);
                                             $status = $sh->status != "" ? $sh->status->status : "";
-                                            if (isset($sh->address_2->codeCount))
-                                                $codeCount = floatval($sh->address_2->codeCount);
+                                            if (isset($sh->address->codeCount))
+                                                $codeCount = floatval($sh->address->codeCount);
                                             else
                                                 $codeCount = 0;
                                             $sumTotal += $price;
@@ -297,12 +297,12 @@
                                                 echo $status == 0 ? '未结算' : '已结算'; ?>
                                             </td>
                                             <td>
-                                                <a href="#" onclick="settleAuthDetail('<?php echo base_url(); ?>','<?php echo $sh->id; ?>');">查看订单
+                                                <a  onclick="settleAuthDetail('<?php echo base_url(); ?>','<?php echo $sh->id; ?>');">查看订单
                                                     &nbsp;</a>
                                                 <?php
                                                 if ($status == 0 && $shop_manager_number == '') {
                                                     ?>
-                                                    <a href="#"
+                                                    <a
                                                        onclick="showConfirmAuth('<?php echo $item['month_name']; ?>','<?php echo $sh->id; ?>');">
                                                         结算
                                                         &nbsp;</a>

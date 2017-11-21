@@ -10,6 +10,9 @@ require_once 'log.php';
 $logHandler= new CLogFileHandler("../logs/".date('Y-m-d').'.log');
 $log = Log::Init($logHandler, 15);
 
+
+$status = 0;
+
 class PayNotifyCallBack extends WxPayNotify
 {
 	//查询订单
@@ -26,6 +29,7 @@ class PayNotifyCallBack extends WxPayNotify
 		{
 			return true;
 		}
+		
 		return false;
 	}
 	
@@ -44,22 +48,7 @@ class PayNotifyCallBack extends WxPayNotify
 			$msg = "订单查询失败";
 			return false;
 		}
-//        echo "<script>
-//            phone_num = localStorage.getItem('phone_number');
-//            payment_data = sessionStorage.getObject('payment_data');
-//
-//            $.ajax({
-//                type: 'POST',
-//                url: 'http://192.168.2.18/backend/api/Areas/getAllCourseInfos',
-//                dataType: 'json',
-//                data: {'phone' : phone_num, 'id':payment_data['id'], 'type':payment_data['type'], 'cost':payment_data['real_cost']},
-//                success: function (data) {
-//                    if (data.status == false) return;
-//                },
-//                error: function (data) {
-//                }
-//            });
-//            </script>";
+
 		return true;
 	}
 }

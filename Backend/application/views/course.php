@@ -1,9 +1,7 @@
 <div class="content-wrapper">
     <!-- Content Header (Page header) -->
     <section class="content-header">
-        <h1>
-            旅游线路列表
-        </h1>
+        <h1 id="page_Id">旅游线路列表</h1>
     </section>
 
     <section class="content" style="min-height: 800px;">
@@ -46,55 +44,15 @@
                     <tr style="background-color: lightslategrey;">
                         <th>旅游线路名称</th>
                         <th width="">具体线路</th>
+                        <th width="">所属国家</th>
+                        <th width="">所属地区</th>
                         <th width="">价格</th>
                         <th width="">状态</th>
                         <th width="">操作</th>
                     </tr>
                     </thead>
                     <tbody id="content_tbl">
-                    <?php
-                    $courseCount = count($courseList);
 
-                    for($i = 0; $i < $courseCount; $i++){
-                        $course = $courseList[$i];
-                        $areas = json_decode($courseList[$i]->point_list);
-                        $areaCount = count($areas);
-                        $courseName='';
-                        foreach($areas as $areaItem){
-                            if($courseName=='') $courseName=$areaItem->name;
-                            else $courseName=$courseName.' - '.$areaItem->name;
-                        }
-
-                        //for ($k = 0; $k < $areaCount; $k++){
-                        //    $price = $price + intval($areas[$k]->price);
-                        //}
-                        ?>
-                        <tr>
-                            <td><?php echo ($course->name);?></td>
-                            <td><?php echo $courseName;?></td>
-                            <td><?php echo floatval($course->price)*floatval($course->discount_rate);?></td>
-                            <td><?php echo $course->status == 1 ? '已上架': '未上架'; ?></td>
-                            <td>
-                                <a href="<?php echo base_url();?>editcourse/<?php echo $course->id;?>">查看 &nbsp;</a>
-                                <?php
-                                if($course->status == 0){
-                                    ?>
-                                    <a href="#" onclick="deleteAreaConfirm(<?php echo $course->id;?>);">删除 &nbsp;</a>
-                                    <?php
-                                }
-                                if($course->status == 0){
-                                    ?>
-                                    <a href="#" onclick="deployAreaConfirm(<?php echo $course->id;?>);">上架 &nbsp;</a>
-                                    <?php
-                                }else {
-                                    ?>
-                                    <a href="#" onclick="undeployAreaConfirm(<?php echo $course->id;?>);">下架</a>
-                                    <?php
-                                }
-                                ?>
-                            </td>
-                        </tr>
-                    <?php } ?>
                     </tbody>
                 </table>
                 <div class="form-group">

@@ -42,9 +42,12 @@ function display_order_detail_data(){
     content_html += '   <h5 class="order_state">'+state_string_List[order_detail['state']-1]+'</h5>';
     content_html += '</div>';
     content_html += '<div class="order_body">';
-    content_html += '   <img src="../resource/image/logo.png">';
+    content_html += '   <img src="'+order_detail['image']+'">';//'   <img src="../resource/image/logo.png">';
     content_html += '   <div>';
-    content_html += '       <h5>'+order_detail['name']+'</h5>';
+    if( order_detail['order_kind'] == 1)
+       content_html += '       <h5>'+order_detail['title']+'</h5>';
+    else
+       content_html += '       <h5>'+order_detail['name']+'</h5>';
 
     if(order_detail['pay_method'] == 1)
         content_html += '   <h5 style="color: red">¥' +order_detail['value']+ '</h5>';
@@ -182,15 +185,16 @@ function purchase_again_Order() {
 }
 
 function showMainpage(){
+    var shopid = sessionStorage.getItem('shopid');
+
     if(order_detail['order_kind'] == 1){
         sessionStorage.setItem('targetid', order_detail.areaid);
-        window.location.href = '../tourism.php?shopid='+shopid + "&targetid=" + order_detail.areaid;
+        window.location.href = '../tourism_new.php?shopid='+shopid + "&targetid=" + order_detail.areaid + "&map_type=0";
     }else {
         sessionStorage.setItem('explain_check', 0);
         sessionStorage.setItem('new_scenic_id', order_detail.areaid);
 
-        var shopid = sessionStorage.getItem('shopid');
-        window.location.href = '../home.php?shopid=' + shopid + '&type=2&targetid=' + order_detail.areaid;
+        window.location.href = '../home.php?shopid=' + shopid + '&type=2&targetid=' + order_detail.areaid + "&map_type=" + order_detail.map_type ;
     }
 }
 

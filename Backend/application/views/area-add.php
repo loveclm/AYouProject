@@ -282,7 +282,7 @@
         ?>
         <div class="container">
             <div class="row">
-                <div class="col-xs-6 col-sm-4 form-inline">
+                <div class="col-xs-6 col-sm-6 form-inline">
                     <div class="form-group area-add-view">
                         <label for="exampleInputName2">景区名称:</label>
                         <input type="text" class="form-control" id="areaname" maxlength="20"
@@ -294,43 +294,75 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-xs-6 col-sm-4 form-inline">
+                <div class="col-xs-6 col-sm-6 form-inline">
                     <div class="form-group area-add-view">
                         <label>上传录音：</label>
-                        <a class="btn btn-primary" href="#" onclick="uploadAreaAudio()">
+                        <a class="btn btn-primary" onclick="uploadAreaAudio()">
                             <span>上传录音</span>
                         </a>
                         <input id="upload-area-audio" type="file" style="display: none"/>
-                        <a href="#" id="area-audio-file"
-                           onclick="$('#area-audio-file').html('');"><?php echo isset($areaInfo) ? $areaInfo->audio : ''; ?></a>
+                        <a id="area-audio-file"
+                           onclick="$('#area-audio-file').html('');"
+                        ><?php echo(isset($areaInfo) ? $areaInfo->audio : ''); ?></a>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div id="tip" class="form-group">
+                    <label for="exampleInputName2">所属地区：</label>
+                    <select disabled style="background: #eaeaea">
+                        <option selected>亚洲</option>
+                    </select>
+                    <select disabled style="background: #eaeaea">
+                        <option selected>中国</option>
+                    </select>
+                    <?php
+                    $address = isset($area) ? ($area->address) : '';
+                    $address_1 = isset($area) ? ($area->address_1) : '';
+                    ?>
+                    <select id='province' onchange='search(this)'></select>
+                    <select id='city' onchange='search(this)'></select>
+                    <select id='district' onchange='search(this)' style="display: none"></select>
+                    <select id='street' onchange='setCenter(this)' style="display: none;"></select>
+                    <div id="provinceName" style="display: none;"><?php echo $address != '' ? ($address) : ''; ?></div>
+                    <div id="cityName" style="display: none;"><?php echo $address_1 != '' ? ($address_1) : ''; ?></div>
+                    <div id="districtName" style="display: none;"><?php echo $address != '' ? ($address) : ''; ?></div>
+                </div>
+                <input id="map_zoom_data" style="display: none;"
+                       value="<?= isset($areaInfo->zoom) ? $areaInfo->zoom : '13'; ?>">
+                </input>
+            </div>
+            <div class="row">
+                <div class="col-xs-6 col-sm-6 form-inline">
+                    <div class="form-group area-add-view">
+                        <label>上传图片：</label>
+                        <a class="btn btn-primary" onclick="uploadThumb()">
+                            <span>上传图片</span>
+                        </a>
+                        <input id="upload-thumb-file" type="file" style="display: none"/>
+                        <img src="
+                        <?php
+                        $thumb = (isset($areaInfo->thumbnail) ?
+                            ($areaInfo->thumbnail != '' ? ('uploads/' . $areaInfo->thumbnail) : ('assets/images/default.png'))
+                            : ('assets/images/default.png'));
+                        echo base_url() . $thumb;
+                        ?>" id="area-thumb-img"
+                             style="height: 100px;margin-left: 20px; vertical-align: text-top; border-radius: 3px; cursor: pointer;"
+                             onclick="deleteThumb()">
+                        <a id="upload-thumb-msg" style="display: none"><?php
+                            echo(isset($areaInfo->thumbnail) ? $areaInfo->thumbnail : '');
+                            ?></a>
                     </div>
                 </div>
             </div>
         </div>
         <div class="container">
             <div class="row">
-                <div id="tip" class="form-group">
-                    <label for="exampleInputName2">所属地区：</label>
-                    <?php
-                    $address = isset($area) ? ($area->address) : '';
-                    $addrs = explode(',', $address);
-                    ?>
-                    <select id='province' onchange='search(this)'></select>
-                    <select id='city' onchange='search(this)'></select>
-                    <select id='district' onchange='search(this)'></select>
-                    <select id='street' onchange='setCenter(this)' style="display: none;"></select>
-                    <div id="provinceName" style="display: none;"><?php echo $address != '' ? ($addrs[0]) : ''; ?></div>
-                    <div id="cityName" style="display: none;"><?php echo $address != '' ? ($addrs[1]) : ''; ?></div>
-                    <div id="districtName" style="display: none;"><?php echo $address != '' ? ($addrs[2]) : ''; ?></div>
-                </div>
-                <input id="map_zoom_data" style="display: none;"
-                       value="<?= isset($areaInfo->zoom) ? $areaInfo->zoom : '13'; ?>">
-                </input>
                 <div class="row">
                     <div class="form-inline">
                         <div class="form-group area-add-view">
                             <label for="exampleInputName2">景区折扣比率:</label>
-                            <input type="text" class="form-control" id="arearate"
+                            <input type="number" class="form-control" id="arearate"
                                    value="<?php echo isset($area) ? (floatval($area->discount_rate) * 100) : ''; ?>">
                             <label">%</label>
                         </div>
@@ -338,11 +370,11 @@
                     <div class="col-sm-8">
                         <div class="form-group col-md-12" style="position: absolute; z-index: 1000;">
                             <input class="btn btn-default" id="city_Name" type="text" placeholder="输入您要定位的地址"
-                                   value="<?php echo isset($addrs[3]) != '' ? ($addrs[3]) : ''; ?>"/>
+                                   value="<?php echo isset($areaInfo->pointText) != '' ? ($areaInfo->pointText) : ''; ?>"/>
 
                             <input id="area-position" style="display: none;"
                                    value="<?php echo isset($area) ? json_encode($areaInfo->position) : ''; ?>"/>
-                            <a href="#" class="btn btn-default" onclick="searchMapArea();">
+                            <a class="btn btn-default" onclick="searchMapArea();">
                                 <i class="fa fa-search"></i>
                             </a>
                         </div>
@@ -351,7 +383,7 @@
                         <!-- ////////////////////                -->
                     </div>
                     <div id="detail_editing_panel" class="col-sm-3"
-                         style="display:<?php echo $isEdit == '0' ? 'none' : 'block'; ?>; border: 1px solid;height: 600px;">
+                         style="display:<?php echo $isEdit == '0' ? 'none' : 'block'; ?>; border: 1px solid;height: 600px; overflow: auto;">
 
                         <div class="point-list-view">
                             <div class="form-group col-sm-6">
@@ -371,7 +403,7 @@
                             </div>
                         </div>
 
-                        <div class="point-add-view" style="display: none;">
+                        <div class="point-add-view" style="display: none; margin-top: 20px">
                             <input id="point-view-index" style="display: none;" value="0"/>
 
                             <div class="form-group">
@@ -405,13 +437,13 @@
                                 </a>
                                 <input id="upload-point-audio" type="file" style="display: none;">
                                 <label id="pointaudio" value="" style="display: none"></label>
-                                <a href="#" id="pointaudio_view"
+                                <a id="pointaudio_view"
                                    onclick="$('#pointaudio_view').html('');"></a>
                             </div>
 
                             <div class="form-group">
                                 <label>景点价格：</label>
-                                <input type="text" class="form-control" id="pointprice">
+                                <input type="number" class="form-control" id="pointprice">
                             </div>
 
                             <div class="form-group">
