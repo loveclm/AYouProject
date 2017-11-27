@@ -79,7 +79,7 @@ class Areas extends REST_Controller
                 $this->area_model->update($this->post(), $id);
                 $this->response(array('status' => true, 'message' => sprintf('Area #%d has been updated.', $id)), 200);
             } else {
-                $this->response(array('status' => false, 'message' => sprintf('Area #%d is using now.', $id)), 200);
+                $this->response(array('status' => false, 'message' => '该景区正在使用，无法下架。'), 200);
             }
 
         }
@@ -92,11 +92,25 @@ class Areas extends REST_Controller
             $this->response(array('status' => true, 'id' => $new_id, 'message' => sprintf('Course #%d has been created.', $new_id)), 200);
         } else {
             $area = $this->post();
-            if ($area['status'] != 1) {
+            if ($area['status'] != 1) { // undeploying
+
                 $this->area_model->update($this->post(), $id);
                 $this->response(array('status' => true, 'message' => sprintf('Course #%d has been updated.', $id)), 200);
-            } else if ($this->area_model->getAreaStatusByCourseId($id, '0')) {
-                $this->area_model->update($this->post(), $id);
+            } else if ($this->area_model->getAreaStatusByCourseId($id, '0')) { // deploying
+
+                $courseData = $this->area_model->getAreaById($area['id']);
+                $areaDatas = json_decode($courseData->point_list);
+                $price = 0;
+                foreach ($areaDatas as $areaitem){
+                    $item = $this->area_model->getAreaById($areaitem->id);
+                    $areaitem->price = $item->price;
+                    $price += floatval($item->price);
+                }
+
+                $area['point_list'] = json_encode($areaDatas);
+                $area['price']=$price;
+
+                $this->area_model->update($area, $id);
                 $this->response(array('status' => true, 'message' => sprintf('Course #%d has been updated.', $id)), 200);
             } else {
                 $this->response(array('status' => false, 'message' => sprintf('All areas in Course #%d have to be available.', $id)), 200);

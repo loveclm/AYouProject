@@ -166,7 +166,7 @@ function getAreas() {
         var areaId = $(areaList[i]).attr('data-id');
         var areaTitle = $('#areatitle-' + areaId).text();
         price += parseFloat($('#areaprice-' + areaId).text());
-        ret.push({id: areaId, price: price, name: areaTitle});
+        ret.push({id: areaId, price: parseFloat($('#areaprice-' + areaId).text()), name: areaTitle});
     }
     $("#courseprice").val(price);
     return JSON.stringify(ret);

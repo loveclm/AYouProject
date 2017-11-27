@@ -101,10 +101,10 @@
                             <td><?php echo $area->address . ',  &nbsp;' . $area->address_1; ?></td>
                             <td><?php echo $area->status == 1 ? '已上架' : '未上架'; ?></td>
                             <td>
-                                <a href="<?php echo base_url(); ?>editarea/<?php echo $area->id; ?>">编辑&nbsp;</a>
                                 <?php
                                 if ($area->status == 0) {
                                     ?>
+                                    <a href="<?php echo base_url(); ?>editarea/<?php echo $area->id; ?>">编辑&nbsp;</a>
                                     <a onclick="deleteAreaConfirm_jingqu(<?php echo $area->id; ?>);">删除&nbsp;</a>
                                     <?php
                                 }

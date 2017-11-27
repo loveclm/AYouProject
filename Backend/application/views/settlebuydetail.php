@@ -78,7 +78,7 @@
                                 <tr>
                                     <td><?php echo $item->number; ?></td>
                                     <td><?php echo $item->mobile; ?></td>
-                                    <td><?php echo $item->price; ?></td>
+                                    <td><?php echo (intval(floatval($item->price)*100)/100); ?></td>
                                     <td><?php
                                         $point_listitem = json_decode($item->point_list);
                                         $cs_name = '';

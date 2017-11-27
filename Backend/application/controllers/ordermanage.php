@@ -103,7 +103,7 @@ class ordermanage extends BaseController
             $output_html .= '<tr>';
             $output_html .= '<td>' . $item->number . '</td>';
             $output_html .= '<td>' . $item->mobile . '</td>';
-            $output_html .= '<td>' . $item->price . '</td>';
+            $output_html .= '<td>' . (intval(floatval($item->price) * 100) / 100) . '</td>';
 
             $point_listitem = json_decode($item->point_list);
             $cs_name = '';
@@ -198,13 +198,14 @@ class ordermanage extends BaseController
         $authCount = count($authList);
         for ($i = 0; $i < $authCount; $i++) {
             $item = $authList[$i];
-            if($item->mobile=='0') continue;
+            if ($item->mobile == '0') continue;
             $shop = $this->shop_model->getShopById($item->shop_name);
 
             if (count($shop) > 0)
                 if ($shop->status != 0) continue;
-            //if (count($shop) == 0) continue;
+
             if ($this->global['shop_manager_number'] != '') {
+                if (count($shop) == 0) continue;
                 if ($shop->phonenumber != $this->global['shop_manager_number']) continue;
             }
             $output_html .= '<tr>';

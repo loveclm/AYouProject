@@ -90,8 +90,8 @@ class area extends BaseController
             $output_html .= '<td>' . $addr[0] . ', &nbsp;' . $addr[1] . '</td>';
             $output_html .= '<td>' . $statusStr . '</td>';
             $output_html .= '<td>';
-            $output_html .= '<a href="' . base_url() . 'editarea/' . $area->id . '">编辑 &nbsp;</a>';
             if ($area->status == '0') {
+                $output_html .= '<a href="' . base_url() . 'editarea/' . $area->id . '">编辑 &nbsp;</a>';
                 $output_html .= '<a  onclick="deleteAreaConfirm_jingqu(' . $area->id . ')">删除 &nbsp;</a>';
             }
             if ($area->status == '0') {
@@ -147,11 +147,11 @@ class area extends BaseController
             $output_html .= '<td>' . floatval($course->price) * floatval($course->discount_rate) . '</td>';
             $output_html .= '<td>' . ($course->status == 1 ? '已上架' : '未上架') . '</td>';
             $output_html .= '<td>';
-            $output_html .= '<a href="' . base_url() . 'editcourse/' . $course->id . '">编辑 &nbsp;</a>';
             if ($course->status == '0') {
+                $output_html .= '<a href="' . base_url() . 'editcourse/' . $course->id . '">编辑 &nbsp;</a>';
                 $output_html .= '<a  onclick="deleteAreaConfirm(' . $course->id . ')">删除 &nbsp;</a>';
             }else {
-                $output_html .= '<a  onclick="" style="opacity:0;">删除 &nbsp;</a>';
+              //  $output_html .= '<a  onclick="" style="opacity:0;">删除 &nbsp;</a>';
             }
             if ($course->status == '0') {
                 $output_html .= '<a  onclick="deployAreaConfirm(' . $course->id . ')">上架 &nbsp;</a>';

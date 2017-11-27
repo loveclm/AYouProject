@@ -429,7 +429,7 @@ class area_model extends CI_Model
             $this->db->from('tourist_area');
             $this->db->where('type', $type);
             $this->db->where('status', 1);
-            if ($addr1 != '') $this->db->where("address", $addr1);
+            if ($addr1 != '中国' && $addr1 != '') $this->db->where("address", $addr1);
             if ($addr2 != '') $this->db->where("address_1", $addr2);
             if ($name != '') $this->db->where("name", $name);
             $this->db->order_by('isforeign');
