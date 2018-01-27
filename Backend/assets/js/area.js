@@ -96,11 +96,10 @@ function test_api() {
 //    var posi = [116.404845, 39.898345];
     //var id = '00700100002';
 
-    var phone = '13130545612';
-    var phone = '';
+    var phone = '12345678901';
     var cost = 0.22;
     var type = '1';
-    var id = '125';
+    var id = '63';
     var shopid = 26;
     var qr_areaid = 121;
     var txt = '亚洲·印度尼西亚';
@@ -111,14 +110,14 @@ function test_api() {
 //        url: 'http://192.168.2.18/backend/api/Areas/setPayOrder',
 //        url: 'http://192.168.2.18/backend/api/Areas/setAreaBuyOrder',
 //        url: 'http://www.ayoubc.com/backend/api/Areas/setAreaBuyOrder',
-        url: 'http://192.168.2.18/backend/api/Areas/getHotObjectInfos',
+        url: 'http://192.168.2.18/backend/api/Areas/getAreaInfoById',
         dataType: 'json',
 //        contentType: "application/json; charset=utf-8",
         data: {
-            // 'id': id,
+             'id': id,
              'search_text': txt,
              'search_type': 3,
-            // 'phone': phone,
+             'phone': phone,
             // 'cost': cost,
             // 'type': type,
             // 'qr_areaid': qr_areaid,

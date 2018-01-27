@@ -93,15 +93,15 @@ function selectCourse(id) {
 function showAreaList(address_1, address_2, isforeign, name) {
 
     var content_html = '';
-    if(name==undefined) name='';
+    if (name == undefined) name = '';
     var all_area_list = JSON.parse($('#all_area_list').val());
     var selected_area_list = JSON.parse(getAreas());
     for (var i = 0; i < all_area_list.length; i++) {
         var area = all_area_list[i];
-        var isExist=0;
-        for( var j=0; j<selected_area_list.length; j++){
-            if(area.id == selected_area_list[j].id){
-                isExist=1;
+        var isExist = 0;
+        for (var j = 0; j < selected_area_list.length; j++) {
+            if (area.id == selected_area_list[j].id) {
+                isExist = 1;
                 break;
             }
         }
@@ -109,7 +109,7 @@ function showAreaList(address_1, address_2, isforeign, name) {
         // if (address_1 != '' && area.address != address_1) continue;
         // if (address_2 != '' && area.address_1 != address_2) continue;
         content_html += '<li class="custom-areaitem" id="areaitem-' + area.id + '"';
-        if(isExist==1) content_html+=' style="display:none;"';
+        if (isExist == 1) content_html += ' style="display:none;"';
         content_html += ' onclick="selectCourse(' + area.id + ');">';
         content_html += '<div id="areatitle-' + area.id + '">' + area.name + '</div>';
         content_html += '<div id="areaprice-' + area.id + '" style="display:none;">';
@@ -123,7 +123,7 @@ function showAreaList(address_1, address_2, isforeign, name) {
 
 // add selected area to course
 function addAreaToCourse() {
-    if(currentSelectedArea=='') return;
+    if (currentSelectedArea == '') return;
     var areaName = $('#areatitle-' + currentSelectedArea).text();
     $("#courseItems").append("<li class='custom-courseitem' onclick='selectedCourseItem(this)' " +
         "data-id='" + currentSelectedArea + "'><div>" + areaName + "</div></li>");
@@ -131,8 +131,8 @@ function addAreaToCourse() {
     price = parseFloat($('#courseprice').val() == '' ? '0' : $('#courseprice').val());
     price += parseFloat($('#areaprice-' + currentSelectedArea).html());
     $('#courseprice').val(price);
-    currentSelectedArea='';
-    showAreaList('','',1);
+    currentSelectedArea = '';
+    showAreaList('', '', 1);
 }
 
 //Select area in Course
@@ -151,7 +151,7 @@ function removeAreaFromCourse() {
     var price = parseFloat($('#courseprice').val());
     price -= parseFloat($('#areaprice-' + $(currentSelectedCourseItem).attr('data-id')).html());
     $('#courseprice').val(price);
-    showAreaList('','',1);
+    showAreaList('', '', 1);
 }
 
 //Get area list on Course Add and Edit Page
@@ -238,12 +238,18 @@ function processCourse(url, id) {
     }
     var touristArea = '';
     var reqUrl = '';
+    var phone = $('#coursephone').val();
+    if (phone.length != 11) {
+        window.alert("请输入救援电话");
+        return;
+    }
     var info = {
         overay: thumb,
+        phone: phone
     };
     if (parseInt(id) != 0) {
         point_list = getAreas();
-        price = $("#courseprice").val();
+        price = $("#courseprice").attr("value");
         touristArea = {
             id: parseInt(id),
             name: area,

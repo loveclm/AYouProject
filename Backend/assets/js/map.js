@@ -991,8 +991,8 @@ function addPoint(param) {
         window.alert("景点名称要不超过10个字符");
         return;
     }
-    if (pointDescription.length > 20) {
-        window.alert("景点简述要不超过20个字符");
+    if (pointDescription.length > 500) {
+        window.alert("景点简述要不超过500个字符");
         return;
     }
 

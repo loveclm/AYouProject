@@ -315,6 +315,7 @@ class area_model extends CI_Model
                         'id' => $item->id,
                         'title' => $item->name,
                         'name' => $course_name,
+                        'phone' => (isset(json_decode($item->info)->phone)?(json_decode($item->info)->phone):''),
                         'image' => base_url() . 'uploads/' . $thumb,
                         'overlay' => base_url() . 'uploads/' . json_decode($item->info)->overay,
                         'cost' => $item->price,
@@ -353,6 +354,7 @@ class area_model extends CI_Model
                         'id' => $item->id,
                         'title' => $item->name,
                         'name' => $this->getCourseNameByAreaId($item->id),
+                        'phone' => (isset(json_decode($item->info)->phone)?(json_decode($item->info)->phone):''),
                         'image' => base_url() . 'uploads/' . (json_decode($item->info)->overay),
                         'cost' => $item->price,
                         'discount_rate' => $item->discount_rate,
@@ -450,6 +452,7 @@ class area_model extends CI_Model
                         'id' => $item->id,
                         'title' => $item->name,
                         'name' => $course_name,
+                        'phone' => (isset(json_decode($item->info)->phone)?(json_decode($item->info)->phone):''),
                         'image' => base_url() . 'uploads/' . $thumb,
                         'overlay' => base_url() . 'uploads/' . json_decode($item->info)->overay,
                         'cost' => $item->price,
@@ -475,6 +478,7 @@ class area_model extends CI_Model
                         'id' => $item->id,
                         'title' => $item->name,
                         'name' => $this->getCourseNameByAreaId($item->id),
+                        'phone' => (isset(json_decode($item->info)->phone)?(json_decode($item->info)->phone):''),
                         'image' => base_url() . 'uploads/' . (json_decode($item->info)->overay),
                         'cost' => $item->price,
                         'discount_rate' => $item->discount_rate,
@@ -487,6 +491,34 @@ class area_model extends CI_Model
 
         return array('hot_name' => $hot_name, 'hot_type' => $type, 'data' => $ret_data);
     }
+
+    function calculateCoursePrice($areaid = 0, $areatype = 0)
+    {
+        // get my selected price
+        $price = 0;
+        $areaItem = $this->getAreaById($areaid);
+        $type = $areaItem->type;
+        if ($type == 1) {// course
+            $areaInfos = json_decode($areaItem->point_list);
+
+            foreach ($areaInfos as $item) {
+                $areaInfo = $this->getAreaById($item->id);
+                //if ($this->getBuyStatusById($item->id, 1, $phone) == 1) {
+                //$price += floatval($areaInfo->price) * floatval($areaItem->discount_rate);
+                $price += $this->calculateCoursePrice($item->id);
+                //}
+            }
+        } else if ($type == 2) { // area
+            $pointInfos = json_decode($areaItem->point_list);
+            foreach ($pointInfos as $item) {
+                    if ($item->trial != 1) $price += floatval($item->price);
+                    //  var_dump($price);a
+            }
+        }
+        return $price;
+        // get real rest price
+    }
+
 
     /**
      * This function is used to get Tourist Area by id

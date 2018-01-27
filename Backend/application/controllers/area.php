@@ -144,7 +144,8 @@ class area extends BaseController
             $output_html .= '<td>' . $courseName . '</td>';
             $output_html .= '<td>' . (($course->isforeign == 1) ? '中国' : $course->address_1) . '</td>';
             $output_html .= '<td>' . (($course->isforeign == 1) ? $course->address : '') . '</td>';
-            $output_html .= '<td>' . floatval($course->price) * floatval($course->discount_rate) . '</td>';
+//            $output_html .= '<td>' . floatval($course->price) * floatval($course->discount_rate) . '</td>';
+            $output_html .= '<td>' . floatval($this->area_model->calculateCoursePrice($course->id)) * floatval($course->discount_rate) . '</td>';
             $output_html .= '<td>' . ($course->status == 1 ? '已上架' : '未上架') . '</td>';
             $output_html .= '<td>';
             if ($course->status == '0') {

@@ -1,12 +1,40 @@
 /**
  * Created by Administrator on 8/9/2017.
  */
-var SERVER_URL = "http://www.ayoubc.com/backend/";
+var SERVER_URL = "http://192.168.2.18/backend/";
 //var run_mode = "SIMULATE_MODE";   // This means system runs with simulate mode
 var run_mode = "REALTIME_MODE";   // This means system runs with real time mode
 var sms_code = "";
 var shop_id = "";
 var cur_scenic_data = null;
+
+var TRANS = {
+    'DISABLED': 0,
+    'ENABLED': 1,
+    'WEIXIN_ENABLED': 2,
+    'LEFT': 'left',
+    'RIGHT': 'right',
+    'LEFT_KEY_IMG': 'resource/image/left-key@3x.png',
+    'LEFT_MIC_IMG': 'resource/image/left-mic@3x.png',
+    'RIGHT_KEY_IMG': 'resource/image/right-key@3x.png',
+    'RIGHT_MIC_IMG': 'resource/image/right-mic@3x.png',
+    'MODE_MIC_IMG': 'resource/image/trans-mode1@3x.png',
+    'MODE_KEY_IMG': 'resource/image/trans-mode2@3x.png',
+    'KEY_MODE': 1,
+    'MIC_MODE': 0,
+    'SPEECH2TXT_KEY': '6e125d810bb94909bcba003dfd7f6c73',
+    'TXT2SPEECH_KEY': '6e125d810bb94909bcba003dfd7f6c73',
+    'TXT2TXT_KEY': '2ece6b6660b24db8ab8192073e79fb8b',
+    // 'SPEECH2TXT_KEY': '6e125d810bb94909bcba003dfd7f6c73',
+    // 'SPEECH2TXT_KEY': '9dda48d0c8054e4fa343e99a4413e218', // from customer
+    // 'TXT2TXT_KEY': '2ece6b6660b24db8ab8192073e79fb8b',
+    // 'TXT2TXT_KEY': 'ef9471acd2f34432bd5bb6f012b0bcd6',
+};
+
+
+function clearTranslatorHistory(){
+    sessionStorage.removeItem('trans_history')
+}
 
 // this function is used to the information for course and area manage page
 function getMenuAndAreaInfos(){
@@ -976,6 +1004,19 @@ function getDetailInfofromTime(tmpTime){
 function DetectIOSDevice(){
     if( is_weixin()) return false;
         
+    var uagent = navigator.userAgent.toLowerCase();
+    if (uagent.search("iphone") > -1)
+        return true;
+    else if (uagent.search("ipad") > -1)
+        return true;
+    else if (uagent.search("ipod") > -1)
+        return true;
+    else
+        return false;
+}
+
+function is_iPhone(){
+
     var uagent = navigator.userAgent.toLowerCase();
     if (uagent.search("iphone") > -1)
         return true;

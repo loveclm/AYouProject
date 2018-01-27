@@ -19,6 +19,7 @@ class Areas extends REST_Controller
         $this->load->model('auth_model');
         $this->load->model('user_model');
         $this->load->model('shop_model');
+        $this->load->model('lang_model');
     }
 
     public function test_post()
@@ -113,7 +114,7 @@ class Areas extends REST_Controller
                 $this->area_model->update($area, $id);
                 $this->response(array('status' => true, 'message' => sprintf('Course #%d has been updated.', $id)), 200);
             } else {
-                $this->response(array('status' => false, 'message' => sprintf('All areas in Course #%d have to be available.', $id)), 200);
+                $this->response(array('status' => false, 'message' => '请上架线路的所有景区'), 200);
             }
 
         }
@@ -336,6 +337,7 @@ class Areas extends REST_Controller
                         'title' => $item->name,    //  $item->name || $name
                         'name' => $name,    //  $item->name || $name
                         'image' => base_url() . 'uploads/' . $courseInfo->overay,
+                        'phone' => (isset($courseInfo->phone)?($courseInfo->phone):''),
                         'cost' => round((floatval($item->price) -
                                     floatval($this->order_model->calculateMyPrice($phone, $item->id))) *
                                 floatval($item->discount_rate) * 100) / 100,
@@ -363,8 +365,8 @@ class Areas extends REST_Controller
             $i = 0;
             $course_list = array();
             $item = $all_courses;
-            if ($item->status == 0)
-                $this->response(array('status' => false, 'result' => '-1'), 200);
+//            if ($item->status == 0)
+//                $this->response(array('status' => false, 'result' => '-1'), 200);
             $all_areas = json_decode($item->point_list);
             $courseInfo = json_decode($item->info);
             $j = 0;
@@ -406,6 +408,7 @@ class Areas extends REST_Controller
                 'title' => $item->name,    //  $item->name || $name
                 'name' => $name,    //  $item->name || $name
                 'image' => base_url() . 'uploads/' . $courseInfo->overay,
+                'phone' => (isset($courseInfo->phone)?($courseInfo->phone):''),
 //                'cost' => round(floatval($this->order_model->calculateMyPrice($phone, $item->id)) *
 //                        floatval($item->discount_rate) * 100) / 100,
                 'cost' => round((floatval($item->price) -
@@ -587,8 +590,8 @@ class Areas extends REST_Controller
     {
         $request = $this->post();
         $mobile = $request['phone'];
-        $areaItems = $this->area_model->getAreas('', 'all', 1);
-        $courseItems = $this->area_model->getCourses('', 1);
+        $areaItems = $this->area_model->getAreas('', 'all', 0);
+        $courseItems = $this->area_model->getCourses('', 0);
         if (count($areaItems) == 0) {
             $this->response(array('status' => false, 'MyAreas' => '-1'), 200);
         } else {
@@ -694,6 +697,7 @@ class Areas extends REST_Controller
                         array(
                             'id' => $atts->id,
                             'name' => $atts->name,
+                            'description' => $atts->description,
                             'position' => json_decode($atts->position),
                             'cost' => $atts->price,
                             'discount_rate' => $atts->discount_rate,
@@ -726,6 +730,30 @@ class Areas extends REST_Controller
                 'map_type' => (intval($item->isforeign) - 1)
             ];
             $this->response(array('status' => true, 'CurArea' => $scenic_area), 200);
+        }
+    }
+
+    public function getLangData_post(){
+        $request = $this->post();
+        //$mobile = $request['phone'];
+        $ret['lang'] = $this->lang_model->getLangList();
+        $ret['history'] = $this->lang_model->getLangHistory();
+        if(count($ret)==0) {
+            $this->response(array('status' => false, 'data' => array()), 200);
+        }else{
+            $this->response(array('status' => true, 'data' => $ret), 200);
+        }
+    }
+
+    public function setLangDara_post(){
+        $request = $this->post();
+        $mobile = $request['phone'];
+        $info = $request['historyInfo'];
+        $ret = $this->lang_model->setLangHistory($mobile, $info);
+        if(!$ret) {
+            $this->response(array('status' => false, 'data' => array()), 200);
+        }else{
+            $this->response(array('status' => true, 'data' => $mobile), 200);
         }
     }
 

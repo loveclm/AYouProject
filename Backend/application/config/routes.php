@@ -74,6 +74,9 @@ $route['showshop/(:any)'] = 'shop/showshop/$1';
 $route['qrmanage'] = 'qrmanage';
 $route['qrListing/(:any)/(:num)'] = "qrmanage/qrlisting/$1/$2";
 
+$route['language'] = 'langmanage';
+$route['language/edit/(:num)/(:num)/(:any)'] = 'langmanage/editItem/$1/$2/$3';
+
 $route['authmanage'] = 'authmanage';
 $route['authListing/(:num)/(:any)/(:num)'] = 'authmanage/listing/$1/$2/$3';
 $route['authDetail/(:num)/(:num)'] = 'authmanage/detail/$1/$2';

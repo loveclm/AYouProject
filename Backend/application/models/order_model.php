@@ -267,6 +267,8 @@ class order_model extends CI_Model
                 $retStatus = $this->getStatusByAttractionId($item->id, $phone);
                 //var_dump($retStatus);
                 //var_dump($item);
+                $orderItemPrice = $this->getPriceById($phone, $item->id);
+
                 if ($retStatus == 2) {
                     if ($item->trial != 1) $price += floatval($item->price);
                     //  var_dump($price);
@@ -275,6 +277,26 @@ class order_model extends CI_Model
         }
         return $price;
         // get real rest price
+    }
+
+    function getPriceById($phone, $id)
+    {
+        $ids = explode("_", $id);
+        if (count($ids) == 2) {
+            $areaId = $ids[0];
+            $attrId = $ids[1];
+        } else {
+            $areaId = $id;
+            $attrId = "";
+        }
+        $this->db->select('code');
+        $this->db->from('tbl_order');
+        $this->db->where('userphone', $phone);
+        $this->db->where('status', '1'); //paid
+        $this->db->where('ordertype <>', '4'); // online pay
+        $result = $this->db->get()->result();
+        if (count($result) == 0) return 0;
+        else return $result[0];
     }
 
     public function getMyOrderInfos($mobile)
@@ -308,6 +330,7 @@ class order_model extends CI_Model
                             'attractionid' => $item->attractionid,
                             'order_kind' => $kind,
                             'image' => base_url() . 'uploads/' . $area_Image,
+                            'phone' => (isset($area_info->phone)?($area_info->phone):''),
                             'pay_method' => 2, // auth order
                             'value' => $item->code,
                             'cost' => round((floatval($areaitem->price) - $this->calculateMyPrice($mobile, $item->areaid))
@@ -340,6 +363,7 @@ class order_model extends CI_Model
                             'attractionid' => $item->attractionid,
                             'order_kind' => $Types,
                             'image' => base_url() . 'uploads/' . $area_Image,
+                            'phone' => (isset($area_info->phone)?($area_info->phone):''),
                             'pay_method' => 1, // buy order
                             'value' => $item->code,
                             'cost' => round((floatval($item->code) - $this->calculateMyPrice($mobile, $item->areaid)
@@ -371,6 +395,7 @@ class order_model extends CI_Model
                         array(
                             'id' => $item->value,
                             'name' => $attritem->name,
+                            'description' => $attritem->description,
                             'areaid' => $item->areaid,
                             'attractionid' => $item->attractionid,
                             'order_kind' => $Types,
@@ -472,6 +497,7 @@ class order_model extends CI_Model
                         'attractionid' => $item->attractionid,
                         'order_kind' => $Types,
                         'image' => base_url() . 'uploads/' . $area_info->overay,
+                        'phone' => (isset($area_info->phone)?($area_info->phone):''),
                         'pay_method' => 1, // buy order
                         'value' => $item->code,
                         'cost' => intval($this->calculateMyPrice($phone, $item->areaid) * 100) / 100,
@@ -497,6 +523,7 @@ class order_model extends CI_Model
                     array(
                         'id' => $item->value,
                         'name' => $attritem->name,
+                        'description' => $attritem->description,
                         'areaid' => $item->areaid,
                         'attractionid' => $item->attractionid,
                         'order_kind' => $Types,
@@ -614,8 +641,8 @@ class order_model extends CI_Model
                 $area_info = json_decode($areaitem->info);
                 $kind = $areaitem->type;
                 if ($item->attractionid != 0) $kind = 3;
-                if($areaitem->type==1) $image_data=$area_info->overay;
-                else $image_data=$area_info->thumbnail;
+                if ($areaitem->type == 1) $image_data = $area_info->overay;
+                else $image_data = $area_info->thumbnail;
                 array_push(
                     $Auths,
                     array(
@@ -626,6 +653,7 @@ class order_model extends CI_Model
                         'attractionid' => $item->attractionid,
                         'order_kind' => $kind,
                         'image' => base_url() . 'uploads/' . $image_data,
+                        'phone' => (isset($area_info->phone)?($area_info->phone):''),
                         'pay_method' => 2, // auth order
                         'value' => $item->code,
                         'cost' => $this->calculateMyPrice($mobile, $item->areaid),
@@ -645,8 +673,8 @@ class order_model extends CI_Model
             if (count($areaitem) != 0) {
                 $attritem = json_decode($areaitem->point_list);
                 $area_info = json_decode($areaitem->info);
-                if($areaitem->type==1) $image_data=$area_info->overay;
-                else $image_data=$area_info->thumbnail;
+                if ($areaitem->type == 1) $image_data = $area_info->overay;
+                else $image_data = $area_info->thumbnail;
                 array_push(
                     $Auths,
                     array(
@@ -657,6 +685,7 @@ class order_model extends CI_Model
                         'attractionid' => $item->attractionid,
                         'order_kind' => $Types,
                         'image' => base_url() . 'uploads/' . $image_data,
+                        'phone' => (isset($area_info->phone)?($area_info->phone):''),
                         'pay_method' => 1, // buy order
                         'value' => $item->code,
                         'cost' => $this->calculateMyPrice($mobile, $item->areaid),
@@ -683,6 +712,7 @@ class order_model extends CI_Model
                     array(
                         'id' => $item->value,
                         'name' => $attritem->name,
+                        'description' => $attritem->description,
                         'areaid' => $item->areaid,
                         'attractionid' => $item->attractionid,
                         'order_kind' => $Types,

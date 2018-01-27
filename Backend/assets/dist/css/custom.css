@@ -162,3 +162,7 @@
 a{
     cursor: pointer;
 }
+.table-bordered > tbody > tr > td{
+    vertical-align: middle;
+
+}

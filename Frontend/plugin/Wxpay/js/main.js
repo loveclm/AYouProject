@@ -69,6 +69,7 @@ $(document).ready(function(){
             showNotification('已关闭景区讲解');
         }else
         {
+            explain_attraction_control("stop");
             $('#btn-commentary').css({'background':'url("resource/image/home_commentary_on.png") no-repeat', 'background-size':'contain'});
             explain_area_control("play");
             showNotification('已开启景区讲解');

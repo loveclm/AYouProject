@@ -203,6 +203,13 @@
                         </li>
                     </ul>
                 </li>
+                <li class="treeview" style="display:none">
+<!--                    style="--><?php //echo(($menu_acc != '') ? ($menu_acc->p_10 == '1' ? '' : 'display:none;') : 'display:none'); ?><!--">-->
+                    <a href="<?php echo base_url(); ?>language">
+                        <i class="fa fa-book"></i>
+                        <span>语种管理</span>
+                    </a>
+                </li>
 
                 <?php
                 if ($role == ROLE_ADMIN) {

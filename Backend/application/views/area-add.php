@@ -412,7 +412,10 @@
                             </div>
                             <div class="form-group">
                                 <label>景点简述：</label>
-                                <input type="text" class="form-control" id="pointdescription" maxlength="40">
+                                <textarea type="text" class="form-control"
+                                       id="pointdescription" maxlength="500"
+                                       style="max-width:100%; min-width:100%; max-height:200px;" >
+                                </textarea>
                             </div>
 
                             <div class="form-group" style="display: none;">

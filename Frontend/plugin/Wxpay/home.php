@@ -14,6 +14,7 @@ if (isset($_GET['map_type'])) $map_type = $_GET['map_type'];
 <head>
     <title>A游不错</title>
     <meta charset="utf-8">
+    <link rel="shortcut icon" href="resource/image/logo.png" type="image/x-icon"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <meta name="apple-touch-fullscreen" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -28,6 +29,8 @@ if (isset($_GET['map_type'])) $map_type = $_GET['map_type'];
 
     <script type="text/javascript" src="js/plugins/jquery.min.js"/>
     <script type="text/javascript" src="js/plugins/bootstrap.min.js"></script>
+    <script type="text/javascript" src="js/plugins/clamp.js"></script>
+
     <?php
     if ($map_type == 0) {
         ?>
@@ -66,6 +69,15 @@ if (isset($_GET['map_type'])) $map_type = $_GET['map_type'];
     <div class="btn-right" id="btn-commentary" style="display: none"></div>
     <div class="btn-right" id="btn-automatic" style="display: none"></div>
     <div class="btn-right" id="btn-position" style="display: none;"></div>
+
+    <!--phone number verify dialog-->
+
+
+    <div class="modal custom-modal" id="info_window">
+    </div>
+    <!--phone number verify dialog-->
+    <div class="modal custom-modal" id="more_description_window">
+    </div>
 
     <!--phone number authorization dialog-->
     <div class="modal custom-modal" id="login">
@@ -267,7 +279,8 @@ if (isset($_GET['map_type'])) $map_type = $_GET['map_type'];
         </div>
     </div>
     <div id="audio_control">
-        <img src="resource/image/pause.png" onclick="playStateChanged()">
+        <img src="resource/image/play@3x.png" onclick="playStateChanged()">
+        <img class="paused" src="resource/image/pause@3x.png" onclick="playStateChanged()">
         <label></label>
     </div>
 </div>
@@ -374,7 +387,7 @@ if (isset($_GET['map_type'])) $map_type = $_GET['map_type'];
                 $('#menu-detail').hide();
                 //window.location.href = "tourismcourse.php";
                 window.location.href = "tourism_manage.php?type=1";
-                //clearMenuSelection();
+                //clearMenuSelection();录音中
                 break;
             case 2:  // click 景点列表 menu item
                 $('#menu-detail').show();

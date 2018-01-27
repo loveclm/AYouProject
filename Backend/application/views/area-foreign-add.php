@@ -168,7 +168,10 @@
                             </div>
                             <div class="form-group">
                                 <label>景点简述：</label>
-                                <input type="text" class="form-control" id="pointdescription" maxlength="40">
+                                <textarea type="text" class="form-control"
+                                          id="pointdescription" maxlength="500"
+                                          style="max-width:100%; min-width:100%; max-height:200px;">
+                                </textarea>
                             </div>
 
                             <div class="form-group" style="display: none;">
@@ -234,8 +237,8 @@
 <!-- Baidu Map JS-->
 <!--//////////////////////////-->
 <script type="text/javascript"
-<!--        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBmofwXO4eBxqJY_GxcWJqoVtUnb4GtQAs&sensor=false&language=zh-CN&libraries=places"></script>-->
         src="http://ditu.google.cn/maps/api/js?key=AIzaSyBmofwXO4eBxqJY_GxcWJqoVtUnb4GtQAs&sensor=false&language=zh-CN&libraries=places"></script>
+<!--        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBmofwXO4eBxqJY_GxcWJqoVtUnb4GtQAs&sensor=false&language=zh-CN&libraries=places"></script>-->
 
 
 <!--<script type="text/javascript" charset="UTF-8" src="http://maps.google.cn/maps-api-v3/api/js/30/9/common.js"></script>-->

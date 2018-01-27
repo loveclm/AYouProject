@@ -79,6 +79,12 @@
                     <!-- ////////////////////                -->
                 </div>
             </div>
+            <div class="row custom-info-row">
+                <label class="col-sm-2" style="text-align: right;">救援电话：</label>
+                <input style="text-align: right;" type="text"
+                       class="col-sm-2" id="coursephone" maxlength="11" minlength="11"
+                       value="<?php echo isset($courseInfo->phone) ? ($courseInfo->phone) : ''; ?>">
+            </div>
             <div class="row  custom-info-row">
                 <label class="col-sm-2 " style="text-align: right;">上传图片：</label>
                 <div class="form-group area-add-view">

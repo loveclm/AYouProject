@@ -95,17 +95,29 @@ function showcourse() {
     $('#tourism-body').html(content_html);
 
     content_html = '';
+    content_html+='<div class="course_buttons" onclick="startTranslator();">'
+        +'<img src="resource/image/translation@3x.png"/><span>外语翻译</span></div>';
+    content_html+='<div class="course_buttons"><a href="tel:+86'+cur_tourism_course['phone']+'">'
+        +'<img src="resource/image/rescue@3x.png"/><span>人工救援</span></a></div>';
     if (total_cost == 0) {
         $('#btn_status').css('display', 'block');
     } else {
         $('#btn_status').css('display', 'none');
-        content_html += '<div class="btn-course" onclick="onlinePayment()" style="padding: 1px 10px; margin: 12px 15px;"><h5>支付' + total_cost.toFixed(2) + '元解锁线路</h5></div>';
-        content_html += '<div class="btn-course-auth" onclick="buy_with_authCode()" style="padding: 1px 10px; margin: 12px 15px;"><h5>输入授权码</h5></div>';
+        content_html += '<div class="course_buttons" onclick="onlinePayment()">'
+            +'<img src="resource/image/route@3x.png"/>'
+            +'<span>' + total_cost.toFixed(2) + '元解锁线路</span></div>';
+        content_html += '<div class="course_buttons" onclick="buy_with_authCode()">'
+            +'<img src="resource/image/enter@3x.png"/>'
+            +'<span>输入授权码</span></div>';
         $('#btnGroup').html(content_html);
     }
     $('home_img').css('height', (mPoints[2*cur_tourism_course['scenic_areas'].length+1] + 50)+'px');
 }
 
+function startTranslator(){
+    // clearTranslatorHistory();
+    location.href='translator.php';
+}
 // if select a scenic area of the current tourism course, shows the scenic area.
 function showAreaOfCourse(index, area_id) {
     sessionStorage.setItem('explain_check', 0);

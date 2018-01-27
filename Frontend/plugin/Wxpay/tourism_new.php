@@ -12,6 +12,7 @@ if (isset($_GET['map_type'])) $map_type = $_GET['map_type'];
 <head lang="en">
     <title>旅游线路</title>
     <meta charset="utf-8">
+    <link rel="shortcut icon" href="resource/image/logo.png" type="image/x-icon"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <meta name="apple-touch-fullscreen" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -77,7 +78,7 @@ if (isset($_GET['map_type'])) $map_type = $_GET['map_type'];
         <div id="tourism-body"></div>
     </div>
     <div id="btn_status">您已解锁旅游线路，点击景区开启导游之旅！</div>
-    <div id="btnGroup" style=" position: absolute; padding: 5px; bottom: 20px; right:0px;"></div>
+    <div id="btnGroup" class="course_btnGroup"></div>
 </div>
 
 <!--phone number verify dialog-->

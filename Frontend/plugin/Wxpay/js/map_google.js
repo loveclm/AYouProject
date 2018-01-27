@@ -37,7 +37,7 @@ function initMap() {
     // loading gaode map( center = IP location)
     map = new google.maps.Map(document.getElementById('custom-map-container'), {
         zoom: 7,
-        center : new google.maps.LatLng(currentLocation[0], currentLocation[1]),
+        center: new google.maps.LatLng(currentLocation[0], currentLocation[1]),
         scrollWheel: true
     });
 
@@ -62,10 +62,10 @@ function initMap() {
     });
 
     infoWindow = new google.maps.InfoWindow();
-
+    infoWindow.close();
 
     // Event that closes the Info Window with a click on the map
-    google.maps.event.addListener(map, 'click', function() {
+    google.maps.event.addListener(map, 'click', function () {
         infoWindow.close();
     });
 
@@ -78,17 +78,17 @@ function initMap() {
 
 
     if (cur_scenic_data != undefined)
-        map.setCenter({lat:cur_scenic_data.position[0], lng:cur_scenic_data.position[1]});
+        map.setCenter({lat: cur_scenic_data.position[0], lng: cur_scenic_data.position[1]});
 
     // get current location using GPS
     timer = setInterval(function () {
         //geolocation.getCurrentPosition();
         if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(function(position) {
+            navigator.geolocation.getCurrentPosition(function (position) {
                 var pos = [position.coords.latitude, position.coords.longitude];
                 getLocationCompleted(pos);
                 //map.setCenter(pos);
-            }, function() {
+            }, function () {
                 //handleLocationError(true, infoWindow, map.getCenter());
             });
         } else {
@@ -143,10 +143,10 @@ function showAttractionInfos() {
             map: map,
             icon: img_url,
             //offset: new AMap.Pixel(-15, -15),
-            position: {lat:cur_scenic_data.attractions[i].position[0], lng:cur_scenic_data.attractions[i].position[1]}
+            position: {lat: cur_scenic_data.attractions[i].position[0], lng: cur_scenic_data.attractions[i].position[1]}
         });
         markList.push(marker);
-        google.maps.event.addListener(marker, 'click', function() {
+        google.maps.event.addListener(marker, 'click', function () {
             bcurAudioplaying = 0;
 
             var bAllpaid = 1;
@@ -165,38 +165,136 @@ function showAttractionInfos() {
 
             //实例化信息窗体
             var title = cur_scenic_data.attractions[index].name;
+            $('#audio_control img').attr("onclick", "playStateChanged(" + index + ")");
+            var description = cur_scenic_data.attractions[index].description;
             var cur_attraction_cost = parseFloat(cur_scenic_data.attractions[index].cost); //* parseFloat(cur_scenic_data.discount_rate)
-            var contents = [];
-            contents.push('<div><h5><b>'+title+'</b></h5></div>')
-            if (bAllpaid == 1) {
-                if (cur_scenic_data.attractions[index].buy_state == 1)
-                    contents.push('<div id="hear_button" class="info-button" onclick="processInfoEvents(1,' + index + ')">开始试听</div>');
-                else
-                    contents.push('<div id="hear_button" class="info-button" onclick="processInfoEvents(1,' + index + ')">开始解说</div>');
 
-                contents.push('<div class="info-button" onclick="processInfoEvents(2,' + index + ')">为您导航</div>');
+
+            // var contents = [];
+            // contents.push('<div><h5><b>'+title+'</b></h5></div>')
+            // if (bAllpaid == 1) {
+            //     if (cur_scenic_data.attractions[index].buy_state == 1)
+            //         contents.push('<div id="hear_button" class="info-button" onclick="processInfoEvents(1,' + index + ')">开始试听</div>');
+            //     else
+            //         contents.push('<div id="hear_button" class="info-button" onclick="processInfoEvents(1,' + index + ')">开始解说</div>');
+            //
+            //     contents.push('<div class="info-button" onclick="processInfoEvents(2,' + index + ')">为您导航</div>');
+            // } else {
+            //     switch (cur_scenic_data.attractions[index].buy_state) {
+            //         case 1:
+            //             contents.push('<div id="hear_button" class="info-button" onclick="processInfoEvents(1,' + index + ')">开始试听</div>');
+            //             break;
+            //         case 2:
+            //             contents.push('<div id="hear_button" class="info-button" onclick="processInfoEvents(1,' + index + ')">开始解说</div>');
+            //             break;
+            //         case 3:
+            //             contents.push('<div class="info-button" onclick="processInfoEvents(3,' + index + ')">' + cur_attraction_cost.toFixed(2) + '元解锁景点</div>');
+            //             break;
+            //     }
+            //     contents.push('<div class="info-button" onclick="processInfoEvents(4,' + index + ')">' + total_cost.toFixed(2) + '元解锁景区</div>');
+            //     contents.push('<div class="info-button" onclick="processInfoEvents(2,' + index + ')">为您导航</div>');
+            //     contents.push('<div class="info-button" onclick="processInfoEvents(5,' + index + ')">授权验证</div>');
+            // }
+            //
+            // infoWindow.setContent(contents.join(''));
+            // infoWindow.open(map, this);
+
+
+            var content_html = '';
+            content_html += '<div class="info_window_dialog">';
+
+            if (bAllpaid == 1) {
+
+                content_html += '<img class="info_back" src="resource/image/window03@3x.png"/>';
+                content_html += '<div class="info_window_content">';
+                content_html += '<button class="close" onclick="closeInfoWindow()"><span aria-hidden="true">╳</span></button>';
+                content_html += '<div class="title"><b>' + title;
+                content_html += '</b></div>';
+
+                content_html += '<div class="desc small">' + description;
+                content_html += '</div>';
+
+
+                content_html += '<div class="bottom">';
+
+
+                if (cur_scenic_data.attractions[index].buy_state == 1) {
+                    content_html += '<div class="attraction_buttons" onclick="processInfoEvents(1,' + index + ')">'
+                        + '<img src="resource/image/button04@3x.png"/>'
+                        + '<span id="hear_button">开始试听</span></div>';
+                } else {
+                    content_html += '<div class="attraction_buttons" onclick="processInfoEvents(1,' + index + ')">'
+                        + '<img src="resource/image/button04@3x.png"/>'
+                        + '<span id="hear_button">开始解说</span></div>';
+                }
+                content_html += '<div class="attraction_buttons" onclick="processInfoEvents(2,' + index + ')">'
+                    + '<img src="resource/image/button03@3x.png"/>'
+                    + '<span>' + '为您导航</span></div>';
+
+                content_html += '</div>';
             } else {
+                content_html += '<img class="info_back" src="resource/image/window02@3x.png"/>';
+                content_html += '<div class="info_window_content">';
+                content_html += '<button class="close" onclick="closeInfoWindow()"><span aria-hidden="true">╳</span></button>';
+                content_html += '<div class="title">' + title;
+                content_html += '</div>';
+
+                content_html += '<div class="desc">';
+
+                // content_html += '阿拉客人离开大家发了安慰了看见安抚拉的方法垃圾卡'
+                //     + '阿拉客人离开大家发了安慰了看见安抚拉的方法垃圾卡'
+                //     + '阿拉客人离开大家发了安慰了看见安抚拉的方法垃圾卡'
+                //     + '阿拉客人离开大家发了安慰了看见安抚拉的方法垃圾卡';
+
+                content_html += description;
+                content_html += '</div>';
+
+//        content_html += '<div class="more" onclick="show_more_description(\'' + title + '\',\'' + description + '\')"> 全文 ></div>';
+
+                content_html += '<div class="bottom">';
+
+                content_html += '<div class="attraction_buttons" onclick="processInfoEvents(4,' + index + ')">'
+                    + '<img src="resource/image/button02@3x.png"/>'
+                    + '<span>' + total_cost.toFixed(2) + '元解锁景区</span></div>';
+
+                content_html += '<div class="attraction_buttons" onclick="processInfoEvents(5,' + index + ')">'
+                    + '<img src="resource/image/button01@3x.png"/>'
+                    + '<span>授权验证</span></div>';
+
                 switch (cur_scenic_data.attractions[index].buy_state) {
                     case 1:
-                        contents.push('<div id="hear_button" class="info-button" onclick="processInfoEvents(1,' + index + ')">开始试听</div>');
+                        content_html += '<div class="attraction_buttons" onclick="processInfoEvents(1,' + index + ')">'
+                            + '<img src="resource/image/button04@3x.png"/>'
+                            + '<span id="hear_button">开始试听</span></div>';
                         break;
                     case 2:
-                        contents.push('<div id="hear_button" class="info-button" onclick="processInfoEvents(1,' + index + ')">开始解说</div>');
+                        content_html += '<div class="attraction_buttons" onclick="processInfoEvents(1,' + index + ')">'
+                            + '<img src="resource/image/button04@3x.png"/>'
+                            + '<span id="hear_button">开始解说</span></div>';
                         break;
                     case 3:
-                        contents.push('<div class="info-button" onclick="processInfoEvents(3,' + index + ')">' + cur_attraction_cost.toFixed(2) + '元解锁景点</div>');
+                        content_html += '<div class="attraction_buttons" onclick="processInfoEvents(3,' + index + ')">'
+                            + '<img src="resource/image/button02@3x.png"/>'
+                            + '<span>' + cur_attraction_cost.toFixed(2) + '元解锁景点</span></div>';
                         break;
                 }
-                contents.push('<div class="info-button" onclick="processInfoEvents(4,' + index + ')">' + total_cost.toFixed(2) + '元解锁景区</div>');
-                contents.push('<div class="info-button" onclick="processInfoEvents(2,' + index + ')">为您导航</div>');
-                contents.push('<div class="info-button" onclick="processInfoEvents(5,' + index + ')">授权验证</div>');
-            }
+                content_html += '<div class="attraction_buttons" onclick="processInfoEvents(2,' + index + ')">'
+                    + '<img src="resource/image/button03@3x.png"/>'
+                    + '<span>' + '为您导航</span></div>';
 
-            infoWindow.setContent(contents.join(''));
-            infoWindow.open(map, this);
-            // $($('.gm-style-iw').parent().find('img')[1]).attr('style', '');
-            // $('.gm-style-iw').parent().css('width', (parseInt($('.gm-style-iw').parent().css('width'))-20)+'px');
-            // $('.gm-style-iw').css('width', (parseInt($('.gm-style-iw').css('width'))-37)+'px!important');
+                content_html += '</div>';
+            }
+            content_html += '<div class="more" onclick="show_more_description(\'' + title + '\',\'' + description + '\')"> 全文 ></div>';
+
+            content_html += '</div>';
+            content_html += '</div>';
+            //alert("selected");
+            $('#info_window').html(content_html);
+            $('#info_window').show();
+
+            /// $($('.gm-style-iw').parent().find('img')[1]).attr('style', '');
+            /// $('.gm-style-iw').parent().css('width', (parseInt($('.gm-style-iw').parent().css('width'))-20)+'px');
+            /// $('.gm-style-iw').css('width', (parseInt($('.gm-style-iw').css('width'))-37)+'px!important');
         });
         //markerClick(marker);
     }
@@ -222,7 +320,7 @@ function showAttractionInfos() {
         //offset: new AMap.Pixel(-9, -8),
     });
 
-    map.setCenter({lat:cur_scenic_data.position[0], lng:cur_scenic_data.position[1]});
+    map.setCenter({lat: cur_scenic_data.position[0], lng: cur_scenic_data.position[1]});
     map.setZoom(parseInt(cur_scenic_data.zoom) - 1);
     if (bCommentaryState == 0) explain_area_control('play');
     if (bMovable == 1) {
@@ -245,35 +343,132 @@ function selectAttraction(index) {
 
     //实例化信息窗体
     var title = cur_scenic_data.attractions[index].name;
+    $('#audio_control img').attr("onclick", "playStateChanged(" + index + ")");
+    var description = cur_scenic_data.attractions[index].description;
     var cur_attraction_cost = parseFloat(cur_scenic_data.attractions[index].cost); //* parseFloat(cur_scenic_data.discount_rate)
-    var contents = [];
-    if (bAllpaid == 1) {
-        if (cur_scenic_data.attractions[index].buy_state == 1)
-            contents.push('<div id="hear_button" class="info-button" onclick="processInfoEvents(1,' + index + ')">开始试听</div>');
-        else
-            contents.push('<div id="hear_button" class="info-button" onclick="processInfoEvents(1,' + index + ')">开始解说</div>');
 
-        contents.push('<div class="info-button" onclick="processInfoEvents(2,' + index + ')">为您导航</div>');
+    //
+    // var contents = [];
+    // if (bAllpaid == 1) {
+    //     if (cur_scenic_data.attractions[index].buy_state == 1)
+    //         contents.push('<div id="hear_button" class="info-button" onclick="processInfoEvents(1,' + index + ')">开始试听</div>');
+    //     else
+    //         contents.push('<div id="hear_button" class="info-button" onclick="processInfoEvents(1,' + index + ')">开始解说</div>');
+    //
+    //     contents.push('<div class="info-button" onclick="processInfoEvents(2,' + index + ')">为您导航</div>');
+    // } else {
+    //     switch (cur_scenic_data.attractions[index].buy_state) {
+    //         case 1:
+    //             contents.push('<div id="hear_button" class="info-button" onclick="processInfoEvents(1,' + index + ')">开始试听</div>');
+    //             break;
+    //         case 2:
+    //             contents.push('<div id="hear_button" class="info-button" onclick="processInfoEvents(1,' + index + ')">开始解说</div>');
+    //             break;
+    //         case 3:
+    //             contents.push('<div class="info-button" onclick="processInfoEvents(3,' + index + ')">' + cur_attraction_cost.toFixed(0) + '元解锁景点</div>');
+    //             break;
+    //     }
+    //     contents.push('<div class="info-button" onclick="processInfoEvents(4,' + index + ')">' + total_cost.toFixed(0) + '元解锁景区</div>');
+    //     contents.push('<div class="info-button" onclick="processInfoEvents(2,' + index + ')">为您导航</div>');
+    //     contents.push('<div class="info-button" onclick="processInfoEvents(5,' + index + ')">授权验证</div>');
+    // }
+    // var infoWindow = new google.maps.InfoWindow({content:contents.join('<br>')});
+    // //infoWindow.setContent(contents.join('<br>')); //createInfoWindow(title, content.join('<br>')));
+    // infoWindow.open(map, markList[index]);
+
+
+    var content_html = '';
+    content_html += '<div class="info_window_dialog">';
+
+    if (bAllpaid == 1) {
+
+        content_html += '<img class="info_back" src="resource/image/window03@3x.png"/>';
+        content_html += '<div class="info_window_content">';
+        content_html += '<button class="close" onclick="closeInfoWindow()"><span aria-hidden="true">╳</span></button>';
+        content_html += '<div class="title"><b>' + title;
+        content_html += '</b></div>';
+
+        content_html += '<div class="desc small">' + description;
+        content_html += '</div>';
+
+
+        content_html += '<div class="bottom">';
+
+
+        if (cur_scenic_data.attractions[index].buy_state == 1) {
+            content_html += '<div class="attraction_buttons" onclick="processInfoEvents(1,' + index + ')">'
+                + '<img src="resource/image/button04@3x.png"/>'
+                + '<span id="hear_button">开始试听</span></div>';
+        } else {
+            content_html += '<div class="attraction_buttons" onclick="processInfoEvents(1,' + index + ')">'
+                + '<img src="resource/image/button04@3x.png"/>'
+                + '<span id="hear_button">开始解说</span></div>';
+        }
+        content_html += '<div class="attraction_buttons" onclick="processInfoEvents(2,' + index + ')">'
+            + '<img src="resource/image/button03@3x.png"/>'
+            + '<span>' + '为您导航</span></div>';
+
+        content_html += '</div>';
     } else {
+        content_html += '<img class="info_back" src="resource/image/window02@3x.png"/>';
+        content_html += '<div class="info_window_content">';
+        content_html += '<button class="close" onclick="closeInfoWindow()"><span aria-hidden="true">╳</span></button>';
+        content_html += '<div class="title">' + title;
+        content_html += '</div>';
+
+        content_html += '<div class="desc">';
+
+        // content_html += '阿拉客人离开大家发了安慰了看见安抚拉的方法垃圾卡'
+        //     + '阿拉客人离开大家发了安慰了看见安抚拉的方法垃圾卡'
+        //     + '阿拉客人离开大家发了安慰了看见安抚拉的方法垃圾卡'
+        //     + '阿拉客人离开大家发了安慰了看见安抚拉的方法垃圾卡';
+
+        content_html += description;
+        content_html += '</div>';
+
+//        content_html += '<div class="more" onclick="show_more_description(\'' + title + '\',\'' + description + '\')"> 全文 ></div>';
+
+        content_html += '<div class="bottom">';
+
+        content_html += '<div class="attraction_buttons" onclick="processInfoEvents(4,' + index + ')">'
+            + '<img src="resource/image/button02@3x.png"/>'
+            + '<span>' + total_cost.toFixed(2) + '元解锁景区</span></div>';
+
+        content_html += '<div class="attraction_buttons" onclick="processInfoEvents(5,' + index + ')">'
+            + '<img src="resource/image/button01@3x.png"/>'
+            + '<span>授权验证</span></div>';
+
         switch (cur_scenic_data.attractions[index].buy_state) {
             case 1:
-                contents.push('<div id="hear_button" class="info-button" onclick="processInfoEvents(1,' + index + ')">开始试听</div>');
+                content_html += '<div class="attraction_buttons" onclick="processInfoEvents(1,' + index + ')">'
+                    + '<img src="resource/image/button04@3x.png"/>'
+                    + '<span id="hear_button">开始试听</span></div>';
                 break;
             case 2:
-                contents.push('<div id="hear_button" class="info-button" onclick="processInfoEvents(1,' + index + ')">开始解说</div>');
+                content_html += '<div class="attraction_buttons" onclick="processInfoEvents(1,' + index + ')">'
+                    + '<img src="resource/image/button04@3x.png"/>'
+                    + '<span id="hear_button">开始解说</span></div>';
                 break;
             case 3:
-                contents.push('<div class="info-button" onclick="processInfoEvents(3,' + index + ')">' + cur_attraction_cost.toFixed(0) + '元解锁景点</div>');
+                content_html += '<div class="attraction_buttons" onclick="processInfoEvents(3,' + index + ')">'
+                    + '<img src="resource/image/button02@3x.png"/>'
+                    + '<span>' + cur_attraction_cost.toFixed(2) + '元解锁景点</span></div>';
                 break;
         }
-        contents.push('<div class="info-button" onclick="processInfoEvents(4,' + index + ')">' + total_cost.toFixed(0) + '元解锁景区</div>');
-        contents.push('<div class="info-button" onclick="processInfoEvents(2,' + index + ')">为您导航</div>');
-        contents.push('<div class="info-button" onclick="processInfoEvents(5,' + index + ')">授权验证</div>');
-    }
+        content_html += '<div class="attraction_buttons" onclick="processInfoEvents(2,' + index + ')">'
+            + '<img src="resource/image/button03@3x.png"/>'
+            + '<span>' + '为您导航</span></div>';
 
-    var infoWindow = new google.maps.InfoWindow({content:contents.join('<br>')});
-    //infoWindow.setContent(contents.join('<br>')); //createInfoWindow(title, content.join('<br>')));
-    infoWindow.open(map, markList[index]);
+        content_html += '</div>';
+    }
+    content_html += '<div class="more" onclick="show_more_description(\'' + title + '\',\'' + description + '\')"> 全文 ></div>';
+
+    content_html += '</div>';
+    content_html += '</div>';
+    //alert("selected");
+    $('#info_window').html(content_html);
+    $('#info_window').show();
+
 }
 
 //解析定位结果
@@ -332,18 +527,18 @@ function getLocationCompleted(data) {
     //     location_mark.moveAlong(path, 2000);
     // }
     var prevPosn = location_mark.getPosition();
-    location_mark.setPosition({lat:data[0], lng:data[1]});
+    location_mark.setPosition({lat: data[0], lng: data[1]});
     location_mark.setIcon({
         path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
         rotation: google.maps.geometry.spherical.computeHeading(prevPosn, location_mark.getPosition())
     });
 
-    location_circle.setCenter({lat:data[0], lng:data[1]});
+    location_circle.setCenter({lat: data[0], lng: data[1]});
 
     prevLocation = currentLocation;
     currentLocation = cur_pos;
     // control map view to show the current location
-    if (bMovable == 0) map.setCenter({lat:currentLocation[0], lng:currentLocation[1]});
+    if (bMovable == 0) map.setCenter({lat: currentLocation[0], lng: currentLocation[1]});
 
     // search a attraction near 20 meters and if exists then check options and play the attraction's audio
     for (var i = 0; i < markList.length; i++) {
@@ -380,37 +575,166 @@ function markerClick(marker) {
 
     //实例化信息窗体
     var title = cur_scenic_data.attractions[index].name;
+    $('#audio_control img').attr("onclick", "playStateChanged(" + index + ")");
+    var description = cur_scenic_data.attractions[index].description;
     var cur_attraction_cost = parseFloat(cur_scenic_data.attractions[index].cost); //* parseFloat(cur_scenic_data.discount_rate)
-    var contents = [];
-    contents.push('<div><h5>'+title+'</h5></div>')
-    if (bAllpaid == 1) {
-        if (cur_scenic_data.attractions[index].buy_state == 1)
-            contents.push('<div id="hear_button" class="info-button" onclick="processInfoEvents(1,' + index + ')">开始试听</div>');
-        else
-            contents.push('<div id="hear_button" class="info-button" onclick="processInfoEvents(1,' + index + ')">开始解说</div>');
+    // var contents = [];
+    // contents.push('<div><h5>'+title+'</h5></div>')
+    // if (bAllpaid == 1) {
+    //     if (cur_scenic_data.attractions[index].buy_state == 1)
+    //         contents.push('<div id="hear_button" class="info-button" onclick="processInfoEvents(1,' + index + ')">开始试听</div>');
+    //     else
+    //         contents.push('<div id="hear_button" class="info-button" onclick="processInfoEvents(1,' + index + ')">开始解说</div>');
+    //
+    //     contents.push('<div class="info-button" onclick="processInfoEvents(2,' + index + ')">为您导航</div>');
+    // } else {
+    //     switch (cur_scenic_data.attractions[index].buy_state) {
+    //         case 1:
+    //             contents.push('<div id="hear_button" class="info-button" onclick="processInfoEvents(1,' + index + ')">开始试听</div>');
+    //             break;
+    //         case 2:
+    //             contents.push('<div id="hear_button" class="info-button" onclick="processInfoEvents(1,' + index + ')">开始解说</div>');
+    //             break;
+    //         case 3:
+    //             contents.push('<div class="info-button" onclick="processInfoEvents(3,' + index + ')">' + cur_attraction_cost.toFixed(2) + '元解锁景点</div>');
+    //             break;
+    //     }
+    //     contents.push('<div class="info-button" onclick="processInfoEvents(4,' + index + ')">' + total_cost.toFixed(2) + '元解锁景区</div>');
+    //     contents.push('<div class="info-button" onclick="processInfoEvents(2,' + index + ')">为您导航</div>');
+    //     contents.push('<div class="info-button" onclick="processInfoEvents(5,' + index + ')">授权验证</div>');
+    // }
+    //
+    // var infoWindow = new google.maps.InfoWindow({content:contents.join('<br>')})
+    // marker.addListener('click', function(){
+    //     infoWindow.open(map, marker);
+    // });
 
-        contents.push('<div class="info-button" onclick="processInfoEvents(2,' + index + ')">为您导航</div>');
+
+    var content_html = '';
+    content_html += '<div class="info_window_dialog">';
+
+    if (bAllpaid == 1) {
+
+        content_html += '<img class="info_back" src="resource/image/window03@3x.png"/>';
+        content_html += '<div class="info_window_content">';
+        content_html += '<button class="close" onclick="closeInfoWindow()"><span aria-hidden="true">╳</span></button>';
+        content_html += '<div class="title"><b>' + title;
+        content_html += '</b></div>';
+
+        content_html += '<div class="desc small">' + description;
+        content_html += '</div>';
+
+
+        content_html += '<div class="bottom">';
+
+
+        if (cur_scenic_data.attractions[index].buy_state == 1) {
+            content_html += '<div class="attraction_buttons" onclick="processInfoEvents(1,' + index + ')">'
+                + '<img src="resource/image/button04@3x.png"/>'
+                + '<span id="hear_button">开始试听</span></div>';
+        } else {
+            content_html += '<div class="attraction_buttons" onclick="processInfoEvents(1,' + index + ')">'
+                + '<img src="resource/image/button04@3x.png"/>'
+                + '<span id="hear_button">开始解说</span></div>';
+        }
+        content_html += '<div class="attraction_buttons" onclick="processInfoEvents(2,' + index + ')">'
+            + '<img src="resource/image/button03@3x.png"/>'
+            + '<span>' + '为您导航</span></div>';
+
+        content_html += '</div>';
     } else {
+        content_html += '<img class="info_back" src="resource/image/window02@3x.png"/>';
+        content_html += '<div class="info_window_content">';
+        content_html += '<button class="close" onclick="closeInfoWindow()"><span aria-hidden="true">╳</span></button>';
+        content_html += '<div class="title">' + title;
+        content_html += '</div>';
+
+        content_html += '<div class="desc">';
+
+        // content_html += '阿拉客人离开大家发了安慰了看见安抚拉的方法垃圾卡'
+        //     + '阿拉客人离开大家发了安慰了看见安抚拉的方法垃圾卡'
+        //     + '阿拉客人离开大家发了安慰了看见安抚拉的方法垃圾卡'
+        //     + '阿拉客人离开大家发了安慰了看见安抚拉的方法垃圾卡';
+
+        content_html += description;
+        content_html += '</div>';
+
+//        content_html += '<div class="more" onclick="show_more_description(\'' + title + '\',\'' + description + '\')"> 全文 ></div>';
+
+        content_html += '<div class="bottom">';
+
+        content_html += '<div class="attraction_buttons" onclick="processInfoEvents(4,' + index + ')">'
+            + '<img src="resource/image/button02@3x.png"/>'
+            + '<span>' + total_cost.toFixed(2) + '元解锁景区</span></div>';
+
+        content_html += '<div class="attraction_buttons" onclick="processInfoEvents(5,' + index + ')">'
+            + '<img src="resource/image/button01@3x.png"/>'
+            + '<span>授权验证</span></div>';
+
         switch (cur_scenic_data.attractions[index].buy_state) {
             case 1:
-                contents.push('<div id="hear_button" class="info-button" onclick="processInfoEvents(1,' + index + ')">开始试听</div>');
+                content_html += '<div class="attraction_buttons" onclick="processInfoEvents(1,' + index + ')">'
+                    + '<img src="resource/image/button04@3x.png"/>'
+                    + '<span id="hear_button">开始试听</span></div>';
                 break;
             case 2:
-                contents.push('<div id="hear_button" class="info-button" onclick="processInfoEvents(1,' + index + ')">开始解说</div>');
+                content_html += '<div class="attraction_buttons" onclick="processInfoEvents(1,' + index + ')">'
+                    + '<img src="resource/image/button04@3x.png"/>'
+                    + '<span id="hear_button">开始解说</span></div>';
                 break;
             case 3:
-                contents.push('<div class="info-button" onclick="processInfoEvents(3,' + index + ')">' + cur_attraction_cost.toFixed(2) + '元解锁景点</div>');
+                content_html += '<div class="attraction_buttons" onclick="processInfoEvents(3,' + index + ')">'
+                    + '<img src="resource/image/button02@3x.png"/>'
+                    + '<span>' + cur_attraction_cost.toFixed(2) + '元解锁景点</span></div>';
                 break;
         }
-        contents.push('<div class="info-button" onclick="processInfoEvents(4,' + index + ')">' + total_cost.toFixed(2) + '元解锁景区</div>');
-        contents.push('<div class="info-button" onclick="processInfoEvents(2,' + index + ')">为您导航</div>');
-        contents.push('<div class="info-button" onclick="processInfoEvents(5,' + index + ')">授权验证</div>');
-    }
+        content_html += '<div class="attraction_buttons" onclick="processInfoEvents(2,' + index + ')">'
+            + '<img src="resource/image/button03@3x.png"/>'
+            + '<span>' + '为您导航</span></div>';
 
-    var infoWindow = new google.maps.InfoWindow({content:contents.join('<br>')})
-    marker.addListener('click', function(){
-        infoWindow.open(map, marker);
-    });
+        content_html += '</div>';
+    }
+    content_html += '<div class="more" onclick="show_more_description(\'' + title + '\',\'' + description + '\')"> 全文 ></div>';
+
+    content_html += '</div>';
+    content_html += '</div>';
+    //alert("selected");
+    $('#info_window').html(content_html);
+    $('#info_window').show();
+
+    var desc_tag = document.getElementsByClassName('info_window_content')[0].getElementsByClassName('desc')[0];
+    $clamp(desc_tag, {clamp: 6, useNativeClamp: false})
+
+}
+
+function close_more_desc_window() {
+    $('#more_description_window').hide();
+}
+
+function show_more_description(title, description) {
+
+
+    var content_html = '';
+    content_html += '<div class="info_window_dialog more_description">';
+
+    content_html += '<img class="info_back" src="resource/image/window01@3x.png"/>';
+    content_html += '<div class="info_window_content">';
+    content_html += '<button class="close" onclick="close_more_desc_window()">'
+        + '<img src="resource/image/back1@3x.png" style="width: 20px;height:15px;"/>'
+        + '</button>';
+    content_html += '<div class="title"><b>' + title;
+    content_html += '</b></div>';
+
+    content_html += '<div class="desc"> &nbsp; &nbsp; &nbsp; ' + description;
+    content_html += '</div>';
+
+    content_html += '</div>';
+    content_html += '</div>';
+    //alert("selected");
+    $('#more_description_window').html(content_html);
+    $('#more_description_window').show();
+
+
 }
 
 function processInfoEvents(index, data) {
@@ -425,6 +749,13 @@ function processInfoEvents(index, data) {
     switch (index) {
         case 1:
             // play audio and exchange button title
+
+
+            $('#audio_control img').attr("src", "resource/image/play@3x.png");
+            $('#audio_control .paused').attr("src", "resource/image/pause@3x.png");
+            $('#audio_control label').html(cur_scenic_data.attractions[data].name);
+
+
             switch (bcurAudioplaying) {
                 case 0:
                     if (cur_scenic_data.attractions[data].buy_state == 1)
@@ -434,9 +765,14 @@ function processInfoEvents(index, data) {
 
                     bcurAudioplaying = 1;
                     start_explain_attraction(data);
-                    $('#audio_control img').attr("src", "resource/image/pause.png");
                     $('#audio_control label').html(cur_scenic_data.attractions[data].name);
                     $('#audio_control').css({'display': 'block'});
+                    $('#audio_control img').css({'display': 'block'});
+                    $('#audio_control .paused').css({'display': 'none'});
+
+                    // $('#audio_control img').attr("src", "resource/image/pause.png");
+                    // $('#audio_control label').html(cur_scenic_data.attractions[data].name);
+                    // $('#audio_control').css({'display': 'block'});
 
                     $('#btn-commentary').css({
                         'background': 'url("resource/image/home_commentary_off.png") no-repeat',
@@ -454,7 +790,10 @@ function processInfoEvents(index, data) {
 
                     bcurAudioplaying = 2;
                     explain_attraction_control("stop");
-                    $('#audio_control img').attr("src", "resource/image/play.png");
+                    $('#audio_control').css({'display': 'block'});
+                    $('#audio_control img').css({'display': 'none'});
+                    $('#audio_control .paused').css({'display': 'block'});
+                    // $('#audio_control img').attr("src", "resource/image/play.png");
                     break;
                 case 2:
                     if (cur_scenic_data.attractions[data].buy_state == 1)
@@ -464,7 +803,10 @@ function processInfoEvents(index, data) {
 
                     bcurAudioplaying = 1;
                     explain_attraction_control("play");
-                    $('#audio_control img').attr("src", "resource/image/pause.png");
+                    $('#audio_control').css({'display': 'block'});
+                    $('#audio_control img').css({'display': 'block'});
+                    $('#audio_control .paused').css({'display': 'none'});
+                    // $('#audio_control img').attr("src", "resource/image/pause.png");
                     break;
             }
             break;
@@ -596,13 +938,15 @@ function createInfoWindow(title, content) {
 
 //关闭信息窗体
 function closeInfoWindow() {
-    infoWindow.close();
+    //infoWindow.close();
     explain_attraction_control('stop');
     $('#audio_control').css({'display': 'none'});
+    $('#info_window').hide();
 }
 
-function playStateChanged() {
-    processInfoEvents(1, 0);
+function playStateChanged(index) {
+    if(index==undefined) index=0;
+    processInfoEvents(1, index);
 }
 
 function clearAllMarker() {

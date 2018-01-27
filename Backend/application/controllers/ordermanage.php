@@ -200,7 +200,7 @@ class ordermanage extends BaseController
             $item = $authList[$i];
             if ($item->mobile == '0') continue;
             $shop = $this->shop_model->getShopById($item->shop_name);
-
+		if(!(isset($shop->name))) continue;
             if (count($shop) > 0)
                 if ($shop->status != 0) continue;
 
